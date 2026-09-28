@@ -1,0 +1,11 @@
+id,nombre,apellidos,telefono,email,empresa,cargo,ciudad
+1,Laura,Medina Torres,000 000 001,laura.medina@example.com,Nube Violeta,Programadora,Valencia
+2,Daniel,Rojas Serrano,000 000 002,daniel.rojas@example.com,Pixel Olmo,Diseñador,Madrid
+3,Clara,Vega Molina,000 000 003,clara.vega@example.com,Datos Cometa,Analista,Sevilla
+4,Hugo,Navarro Gil,000 000 004,hugo.navarro@example.com,Red Brisa,Técnico de redes,Alicante
+5,Elena,Castro Ramos,000 000 005,elena.castro@example.com,Aula Lucero,Profesora,Zaragoza
+6,Marcos,Soler Blanco,000 000 006,marcos.soler@example.com,Código Lila,Desarrollador web,Málaga
+7,Irene,Pardo Fuentes,000 000 007,irene.pardo@example.com,Gestión Aurora,Administrativa,Murcia
+8,Adrián,Reyes Campos,000 000 008,adrian.reyes@example.com,Sistemas Trébol,Consultor,Bilbao
+9,Nuria,Ortega Vidal,000 000 009,nuria.ortega@example.com,Estudio Planeta,Diseñadora UX,Barcelona
+10,Pablo,Ferrer Lozano,000 000 010,pablo.ferrer@example.com,Soporte Bambú,Técnico informático,Castellón

@@ -1,0 +1,12 @@
+# Directrices locales del agente
+AGENTS.md
+agents.md
+
+# Variables de entorno y configuración privada
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Agenda ficticia para las pruebas de acceso a ficheros
+/001-Acceso a datos/001-Manejo de ficheros/004-Operaciones sobre ficheros secuenciales y aleatorios/empresa/clientes_pierodev.csv
