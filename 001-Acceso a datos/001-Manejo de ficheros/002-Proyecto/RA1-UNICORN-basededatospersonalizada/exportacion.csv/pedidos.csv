@@ -1,0 +1,13 @@
+id,activo,cliente_id,fecha,estado
+1,1,1,2026-09-24,reservado
+2,1,2,2026-09-24,vendido
+3,1,3,2026-09-24,reservado
+4,1,4,2026-09-24,reservado
+5,1,5,2026-09-24,vendido
+6,1,6,2026-09-24,vendido
+7,1,7,2026-09-24,vendido
+8,1,8,2026-09-24,vendido
+9,1,9,2026-09-24,cancelado
+10,1,10,2026-09-24,cancelado
+11,1,1,2026-09-24,vendido
+12,1,11,2026-09-24,vendido

@@ -1,0 +1,25 @@
+{
+    "formato": "unicorn-copia-1",
+    "base": "unicorn_demo",
+    "fecha": "2026-09-24T17:14:07.642935+00:00",
+    "tamanoRegistro": 512,
+    "archivos": {
+        "relaciones.json": "d1a4e18df9bc7bc1b5fd5c33a7acd2123fd16adb27d05d0e34bf9dce00fa4b3b",
+        "clientes.csv": "92e06c0e6d3161841dea353bef2fdfde3339caad7bda1faf540e0a9cd2f7d179",
+        "clientes.idx": "925dc19f3b93b6bfce3972dc7720f5f9648c6ba89543819ae39a8f77b0c25229",
+        "clientes.esquema": "0ce26441f70b1552890080e509c4ffc17a854f17f970a3be2b8098c43573d29f",
+        "clientes.meta.json": "352ceba07683076549b2e95d385c9ece31a2575ae6d868e464ad12c25742b715",
+        "libros.csv": "d62995a124a8029ebbaa7e33e6fd0adfa0b94164c988edbfe4468b76d3e0b553",
+        "libros.idx": "cbd99bfdbb755ee8d91ac66712636fcecf3bf3090e7b3ed609d51f4d00bd3d76",
+        "libros.esquema": "8ded1cdfd49c1cfd542e9cbd68ee8dbff48ba0809e5959c13ab776fa3ce62abe",
+        "libros.meta.json": "352ceba07683076549b2e95d385c9ece31a2575ae6d868e464ad12c25742b715",
+        "pedidos.csv": "7e8743e4ffce6a9981af99b9a9ca6e427a1009c7585a8406f821eaaaf1e80258",
+        "pedidos.idx": "cbd99bfdbb755ee8d91ac66712636fcecf3bf3090e7b3ed609d51f4d00bd3d76",
+        "pedidos.esquema": "76c299894463d952bbb4c71eb44ed17b6b989f0fdc038dc5a64fc94c1cc76e53",
+        "pedidos.meta.json": "352ceba07683076549b2e95d385c9ece31a2575ae6d868e464ad12c25742b715",
+        "lineas_pedido.csv": "700b4abee0b9fb0e8a9e02f4ed62bd8de0acf426fa64690dacb71a3b6364c5f3",
+        "lineas_pedido.idx": "2861053481771b258e0e69aa88003992cb18b69178a2150b16057feb3a72d9bb",
+        "lineas_pedido.esquema": "0ee37fd30583c42851a62358467102c5a7d3cb3cfa4d0981721bf14f0ae7935f",
+        "lineas_pedido.meta.json": "352ceba07683076549b2e95d385c9ece31a2575ae6d868e464ad12c25742b715"
+    }
+}

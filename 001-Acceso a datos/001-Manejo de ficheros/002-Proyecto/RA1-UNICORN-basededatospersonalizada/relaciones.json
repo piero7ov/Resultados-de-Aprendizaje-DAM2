@@ -1,0 +1,8 @@
+{
+    "version": 1,
+    "relaciones": [
+        {"tabla": "pedidos", "campo": "cliente_id", "tabla_destino": "clientes"},
+        {"tabla": "lineas_pedido", "campo": "pedido_id", "tabla_destino": "pedidos"},
+        {"tabla": "lineas_pedido", "campo": "libro_id", "tabla_destino": "libros"}
+    ]
+}

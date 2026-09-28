@@ -1,0 +1,17 @@
+{
+    "formato": "unicorn-intercambio-1",
+    "tablas": {
+        "clientes": {
+            "retirados": []
+        },
+        "libros": {
+            "retirados": []
+        },
+        "pedidos": {
+            "retirados": []
+        },
+        "lineas_pedido": {
+            "retirados": []
+        }
+    }
+}

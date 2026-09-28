@@ -1,0 +1,465 @@
+{
+    "formato": "unicorn-intercambio-1",
+    "tablas": {
+        "clientes": {
+            "registros": [
+                {
+                    "id": "1",
+                    "activo": "1",
+                    "nombre": "Alba",
+                    "apellidos": "Serrano Vidal",
+                    "email": "alba.serrano@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "2",
+                    "activo": "1",
+                    "nombre": "Bruno",
+                    "apellidos": "Salvatierra Ríos",
+                    "email": "bruno.salvatierra@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "3",
+                    "activo": "1",
+                    "nombre": "Clara",
+                    "apellidos": "Montiel Vega",
+                    "email": "clara.montiel@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "4",
+                    "activo": "1",
+                    "nombre": "Diego",
+                    "apellidos": "Valcárcel Soto",
+                    "email": "diego.valcarcel@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "5",
+                    "activo": "1",
+                    "nombre": "Elena",
+                    "apellidos": "Robles Luján",
+                    "email": "elena.robles@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "6",
+                    "activo": "1",
+                    "nombre": "Fabio",
+                    "apellidos": "Castañeda Soler",
+                    "email": "fabio.castaneda@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "7",
+                    "activo": "1",
+                    "nombre": "Gala",
+                    "apellidos": "Beltrán Olmedo",
+                    "email": "gala.beltran@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "8",
+                    "activo": "0",
+                    "nombre": "Piero",
+                    "apellidos": "Olivares",
+                    "email": "hugo.aranda@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "9",
+                    "activo": "1",
+                    "nombre": "Inés",
+                    "apellidos": "Valverde Pardo",
+                    "email": "ines.valverde@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "10",
+                    "activo": "0",
+                    "nombre": "Joel",
+                    "apellidos": "Montalvo Ferrer",
+                    "email": "joel.montalvo@correo.example",
+                    "telefono": ""
+                },
+                {
+                    "id": "11",
+                    "activo": "1",
+                    "nombre": "Erin",
+                    "apellidos": "Giorgiana",
+                    "email": "erinillovan@gmail.com",
+                    "telefono": "345678654"
+                }
+            ],
+            "retirados": []
+        },
+        "libros": {
+            "registros": [
+                {
+                    "id": "1",
+                    "activo": "1",
+                    "isbn": "9789900000013",
+                    "titulo": "El bosque de papel",
+                    "autor": "Marina Valdovinos",
+                    "precio_centimos": "925",
+                    "stock": "20"
+                },
+                {
+                    "id": "2",
+                    "activo": "1",
+                    "isbn": "9789900000020",
+                    "titulo": "Viaje a la luna azul",
+                    "autor": "Tomás Arce Belmonte",
+                    "precio_centimos": "1050",
+                    "stock": "19"
+                },
+                {
+                    "id": "3",
+                    "activo": "1",
+                    "isbn": "9789900000037",
+                    "titulo": "Python entre páginas",
+                    "autor": "Alicia Vilar Castaño",
+                    "precio_centimos": "1175",
+                    "stock": "16"
+                },
+                {
+                    "id": "4",
+                    "activo": "1",
+                    "isbn": "9789900000044",
+                    "titulo": "La ciudad de los faroles",
+                    "autor": "Gabriel Sanz Oliva",
+                    "precio_centimos": "1300",
+                    "stock": "20"
+                },
+                {
+                    "id": "5",
+                    "activo": "1",
+                    "isbn": "9789900000051",
+                    "titulo": "Recetas entre páginas",
+                    "autor": "Celia Monfort",
+                    "precio_centimos": "1425",
+                    "stock": "19"
+                },
+                {
+                    "id": "6",
+                    "activo": "1",
+                    "isbn": "9789900000068",
+                    "titulo": "El mapa de las mareas",
+                    "autor": "Nicolás Brezo",
+                    "precio_centimos": "1550",
+                    "stock": "17"
+                },
+                {
+                    "id": "7",
+                    "activo": "1",
+                    "isbn": "9789900000075",
+                    "titulo": "Historias del mar",
+                    "autor": "Lara Cendales",
+                    "precio_centimos": "1675",
+                    "stock": "17"
+                },
+                {
+                    "id": "8",
+                    "activo": "1",
+                    "isbn": "9789900000082",
+                    "titulo": "Jardines de invierno",
+                    "autor": "Samuel Niebla",
+                    "precio_centimos": "1800",
+                    "stock": "17"
+                },
+                {
+                    "id": "9",
+                    "activo": "1",
+                    "isbn": "9789900000099",
+                    "titulo": "La estación de los días lentos",
+                    "autor": "Vera Alcántara",
+                    "precio_centimos": "1925",
+                    "stock": "17"
+                },
+                {
+                    "id": "10",
+                    "activo": "1",
+                    "isbn": "9789900000105",
+                    "titulo": "Cuaderno de estrellas",
+                    "autor": "Adrián Loma",
+                    "precio_centimos": "2050",
+                    "stock": "20"
+                },
+                {
+                    "id": "11",
+                    "activo": "0",
+                    "isbn": "9789900000112",
+                    "titulo": "El reloj de las dunas",
+                    "autor": "Irene Valcázar",
+                    "precio_centimos": "2175",
+                    "stock": "20"
+                },
+                {
+                    "id": "12",
+                    "activo": "1",
+                    "isbn": "9789900000129",
+                    "titulo": "Un mundo por descubrir",
+                    "autor": "Mateo Albor",
+                    "precio_centimos": "2300",
+                    "stock": "5"
+                }
+            ],
+            "retirados": []
+        },
+        "pedidos": {
+            "registros": [
+                {
+                    "id": "1",
+                    "activo": "1",
+                    "cliente_id": "1",
+                    "fecha": "2026-09-24",
+                    "estado": "reservado"
+                },
+                {
+                    "id": "2",
+                    "activo": "1",
+                    "cliente_id": "2",
+                    "fecha": "2026-09-24",
+                    "estado": "vendido"
+                },
+                {
+                    "id": "3",
+                    "activo": "1",
+                    "cliente_id": "3",
+                    "fecha": "2026-09-24",
+                    "estado": "reservado"
+                },
+                {
+                    "id": "4",
+                    "activo": "1",
+                    "cliente_id": "4",
+                    "fecha": "2026-09-24",
+                    "estado": "reservado"
+                },
+                {
+                    "id": "5",
+                    "activo": "1",
+                    "cliente_id": "5",
+                    "fecha": "2026-09-24",
+                    "estado": "vendido"
+                },
+                {
+                    "id": "6",
+                    "activo": "1",
+                    "cliente_id": "6",
+                    "fecha": "2026-09-24",
+                    "estado": "vendido"
+                },
+                {
+                    "id": "7",
+                    "activo": "1",
+                    "cliente_id": "7",
+                    "fecha": "2026-09-24",
+                    "estado": "vendido"
+                },
+                {
+                    "id": "8",
+                    "activo": "1",
+                    "cliente_id": "8",
+                    "fecha": "2026-09-24",
+                    "estado": "vendido"
+                },
+                {
+                    "id": "9",
+                    "activo": "1",
+                    "cliente_id": "9",
+                    "fecha": "2026-09-24",
+                    "estado": "cancelado"
+                },
+                {
+                    "id": "10",
+                    "activo": "1",
+                    "cliente_id": "10",
+                    "fecha": "2026-09-24",
+                    "estado": "cancelado"
+                },
+                {
+                    "id": "11",
+                    "activo": "1",
+                    "cliente_id": "1",
+                    "fecha": "2026-09-24",
+                    "estado": "vendido"
+                },
+                {
+                    "id": "12",
+                    "activo": "1",
+                    "cliente_id": "11",
+                    "fecha": "2026-09-24",
+                    "estado": "vendido"
+                }
+            ],
+            "retirados": []
+        },
+        "lineas_pedido": {
+            "registros": [
+                {
+                    "id": "1",
+                    "activo": "1",
+                    "pedido_id": "1",
+                    "libro_id": "1",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "925"
+                },
+                {
+                    "id": "2",
+                    "activo": "1",
+                    "pedido_id": "1",
+                    "libro_id": "2",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1050"
+                },
+                {
+                    "id": "3",
+                    "activo": "1",
+                    "pedido_id": "2",
+                    "libro_id": "2",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1050"
+                },
+                {
+                    "id": "4",
+                    "activo": "1",
+                    "pedido_id": "2",
+                    "libro_id": "3",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1175"
+                },
+                {
+                    "id": "5",
+                    "activo": "1",
+                    "pedido_id": "3",
+                    "libro_id": "3",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1175"
+                },
+                {
+                    "id": "6",
+                    "activo": "1",
+                    "pedido_id": "3",
+                    "libro_id": "4",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1300"
+                },
+                {
+                    "id": "7",
+                    "activo": "1",
+                    "pedido_id": "4",
+                    "libro_id": "4",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1300"
+                },
+                {
+                    "id": "8",
+                    "activo": "1",
+                    "pedido_id": "4",
+                    "libro_id": "5",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1425"
+                },
+                {
+                    "id": "9",
+                    "activo": "1",
+                    "pedido_id": "5",
+                    "libro_id": "5",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1425"
+                },
+                {
+                    "id": "10",
+                    "activo": "1",
+                    "pedido_id": "5",
+                    "libro_id": "6",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1550"
+                },
+                {
+                    "id": "11",
+                    "activo": "1",
+                    "pedido_id": "6",
+                    "libro_id": "6",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1550"
+                },
+                {
+                    "id": "12",
+                    "activo": "1",
+                    "pedido_id": "6",
+                    "libro_id": "7",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1675"
+                },
+                {
+                    "id": "13",
+                    "activo": "1",
+                    "pedido_id": "7",
+                    "libro_id": "7",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1675"
+                },
+                {
+                    "id": "14",
+                    "activo": "1",
+                    "pedido_id": "7",
+                    "libro_id": "8",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1800"
+                },
+                {
+                    "id": "15",
+                    "activo": "1",
+                    "pedido_id": "8",
+                    "libro_id": "8",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1800"
+                },
+                {
+                    "id": "16",
+                    "activo": "1",
+                    "pedido_id": "8",
+                    "libro_id": "9",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1925"
+                },
+                {
+                    "id": "17",
+                    "activo": "1",
+                    "pedido_id": "9",
+                    "libro_id": "9",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1925"
+                },
+                {
+                    "id": "18",
+                    "activo": "1",
+                    "pedido_id": "10",
+                    "libro_id": "10",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "2050"
+                },
+                {
+                    "id": "19",
+                    "activo": "1",
+                    "pedido_id": "11",
+                    "libro_id": "3",
+                    "cantidad": "2",
+                    "precio_unitario_centimos": "1175"
+                },
+                {
+                    "id": "20",
+                    "activo": "1",
+                    "pedido_id": "12",
+                    "libro_id": "9",
+                    "cantidad": "1",
+                    "precio_unitario_centimos": "1925"
+                }
+            ],
+            "retirados": []
+        }
+    }
+}
