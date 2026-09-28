@@ -1,0 +1,59 @@
+<section class="verificacion">
+  <div class="cabecera-verificacion">
+    <div>
+      <h1>Verificación del entorno</h1>
+      <p>Comprobación de los requisitos técnicos previstos para ERIN ERP.</p>
+    </div>
+    <div class="acciones-verificacion">
+      <span class="estado-entorno">Comprobando…</span>
+      <a class="boton" href="api/informe_verificacion.php">Descargar informe</a>
+    </div>
+  </div>
+
+  <div class="comprobaciones"></div>
+
+  <p class="nota-verificacion">
+    Esta comprobación solo revisa la compatibilidad del servidor. No crea ni modifica ninguna base de datos.
+  </p>
+</section>
+
+<script>
+  fetch("api/verificacion.php")
+  .then(function(respuesta){
+    if(!respuesta.ok){
+      throw new Error("La verificación no ha respondido correctamente");
+    }
+    return respuesta.json();
+  })
+  .then(function(datos){
+    let estado = document.querySelector(".estado-entorno");
+    estado.textContent = datos.estado;
+    estado.classList.add(datos.correcto ? "correcto" : "pendiente");
+
+    let contenedor = document.querySelector(".comprobaciones");
+    datos.comprobaciones.forEach(function(comprobacion){
+      let articulo = document.createElement("article");
+      articulo.className = "comprobacion";
+
+      let titulo = document.createElement("h2");
+      titulo.textContent = comprobacion.nombre;
+
+      let valor = document.createElement("strong");
+      valor.textContent = comprobacion.valor;
+      valor.className = comprobacion.correcto ? "correcto" : "pendiente";
+
+      let detalle = document.createElement("p");
+      detalle.textContent = comprobacion.detalle;
+
+      articulo.appendChild(titulo);
+      articulo.appendChild(valor);
+      articulo.appendChild(detalle);
+      contenedor.appendChild(articulo);
+    });
+  })
+  .catch(function(error){
+    document.querySelector(".estado-entorno").textContent = "No se ha podido completar";
+    document.querySelector(".estado-entorno").classList.add("pendiente");
+    document.querySelector(".comprobaciones").textContent = error.message;
+  });
+</script>
