@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERIN | Acceso</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="js/preferencias-tema.js"></script>
+    <script src="js/componentes.js" defer></script>
+    <script src="js/interacciones.js" defer></script>
+</head>
+<body class="pagina-login">
+    <main class="login-contenedor">
+        <section class="login-identidad">
+            <div class="login-marca">
+                <div class="logotipo" aria-label="ERIN">ER<span class="letra-identidad">I</span>N</div>
+            </div>
+
+            <div class="login-bienvenida">
+                <p class="rotulo-login">Bienvenido</p>
+                <h1>Tu negocio en un solo lugar.</h1>
+            </div>
+
+            <div class="login-registro">
+                <span>¿Aún no tienes acceso?</span>
+                <button class="boton boton-claro" id="solicitar-acceso" type="button">Solicitar acceso</button>
+            </div>
+        </section>
+
+        <section class="login-panel" aria-labelledby="titulo-login">
+            <div class="login-encabezado">
+                <h2 id="titulo-login">Iniciar sesión</h2>
+            </div>
+
+            <form class="formulario-login" id="formulario-login">
+                <label>
+                    <span>Correo electrónico</span>
+                    <input name="correo" type="email" autocomplete="username" required>
+                </label>
+                <label>
+                    <span>Contraseña</span>
+                    <input name="contrasena" type="password" autocomplete="current-password" required>
+                </label>
+
+                <div class="opciones-login">
+                    <label class="campo-check">
+                        <input name="mantener" type="checkbox">
+                        <span>Recordarme</span>
+                    </label>
+                    <button class="enlace-login" id="recuperar-contrasena" type="button">He olvidado mi contraseña</button>
+                </div>
+
+                <button class="boton" type="submit">Entrar</button>
+            </form>
+
+            <p class="nota-seguridad">Acceso protegido al entorno de gestión ERIN.</p>
+        </section>
+    </main>
+
+    <div id="contenedor-toasts" class="contenedor-toasts" role="region" aria-label="Notificaciones" aria-live="polite" aria-atomic="false"></div>
+    <div id="templates" hidden></div>
+</body>
+</html>

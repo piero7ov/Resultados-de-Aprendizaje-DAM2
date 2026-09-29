@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+    <form>
+    </form>
+
+    <script>
+      let formulario = document.querySelector("form")
+
+      fetch("datos.json")
+      .then(function(resultado){
+        return resultado.json()
+      })
+      .then(function(datos){
+        console.log(datos)
+
+        let campos = datos.campos
+
+        campos.forEach(function(campo){
+          let control = document.createElement("input")
+
+          control.setAttribute("type",campo.tipo)
+          control.setAttribute("placeholder",campo.etiqueta)
+          control.setAttribute("name",campo.nombre)
+
+          formulario.appendChild(control)
+        })
+      })
+    </script>
+  </body>
+</html>

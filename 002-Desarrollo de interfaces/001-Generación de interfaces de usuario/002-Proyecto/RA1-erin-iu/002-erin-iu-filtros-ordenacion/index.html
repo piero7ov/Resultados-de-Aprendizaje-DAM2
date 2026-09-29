@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERIN | Más mejoras</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="js/preferencias-tema.js"></script>
+    <script src="js/componentes.js" defer></script>
+    <script src="js/tabla-controles.js" defer></script>
+</head>
+<body class="erin">
+    <!-- Cabecera corporativa, herramientas y datos del usuario. -->
+    <header>
+        <div class="marca">
+            <a class="logotipo" href="#productos" aria-label="ERIN, inicio">ER<span class="letra-identidad">I</span>N</a>
+            <small>Ecosistema de Recursos,<br>Información y Negocio</small>
+        </div>
+        <div class="herramientas">
+            <label for="buscar">Buscar</label>
+            <input class="buscador" id="buscar" type="search" placeholder="Buscar productos…">
+            <button class="boton" type="button">Herramientas</button>
+        </div>
+        <div class="usuario" data-source="data/usuario.json"></div>
+    </header>
+
+    <!-- Las dos columnas laterales conservan la estructura de 005-redimensionable. -->
+    <main>
+        <nav class="navegacion" data-source="data/menu.json" aria-label="Áreas de gestión"></nav>
+        <!-- Cada separador redimensiona la columna situada inmediatamente a su izquierda. -->
+        <div class="separador" role="separator" aria-orientation="vertical" aria-label="Redimensionar navegación" data-minimo="150" data-maximo="300"></div>
+
+        <section class="elementos" data-source="data/entidades.json" aria-label="Elementos"></section>
+        <div class="separador" role="separator" aria-orientation="vertical" aria-label="Redimensionar elementos" data-minimo="180" data-maximo="360"></div>
+
+        <!-- Escenario principal: la tabla se genera desde productos.json. -->
+        <section class="escenario" id="productos" aria-labelledby="titulo-listado">
+            <div class="titulo-listado">
+                <div>
+                    <h1 id="titulo-listado">Catálogo de productos</h1>
+                    <p>Información comercial y disponibilidad</p>
+                </div>
+
+                <form class="panel-filtros" id="panel-filtros" hidden>
+                    <label>
+                        <span>Categoría</span>
+                        <select id="filtro-categoria">
+                            <option value="">Todas</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>Disponibilidad</span>
+                        <select id="filtro-disponibilidad">
+                            <option value="">Todos</option>
+                            <option value="si">Disponibles</option>
+                            <option value="no">No disponibles</option>
+                        </select>
+                    </label>
+                    <button class="boton boton-secundario" id="limpiar-filtros" type="button">Limpiar</button>
+                    <p id="resultados-filtro" role="status" aria-live="polite"></p>
+                </form>
+
+                <button class="boton" id="mostrar-filtros" type="button" aria-expanded="false" aria-controls="panel-filtros">Filtrar</button>
+            </div>
+
+            <div class="tabla">
+                <table data-source="data/productos.json"></table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Aquí se insertan los templates externos antes de clonar sus componentes. -->
+    <div id="templates" hidden></div>
+</body>
+</html>

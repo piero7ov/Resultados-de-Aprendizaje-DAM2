@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+
+    <table data-source="datos.json"></table>
+
+    <table data-source="productos.json"></table>
+
+    <script>
+
+      function tablasDinamicas(){
+
+        let tablas = document.querySelectorAll("table")
+
+        tablas.forEach(function(tabla){
+
+          // Solo procesamos tablas con data-source
+          if(tabla.hasAttribute("data-source")){
+
+            let origen = tabla.getAttribute("data-source")
+
+            fetch(origen)
+            .then(function(resultado){
+              return resultado.json()
+            })
+            .then(function(datos){
+
+              let campos = datos.campos
+              let registros = datos.datos
+
+              // CABECERA
+
+              let cabecera = document.createElement("thead")
+              let filaCabecera = document.createElement("tr")
+
+              campos.forEach(function(campo){
+
+                let celda = document.createElement("th")
+                celda.textContent = campo.etiqueta
+
+                filaCabecera.appendChild(celda)
+
+              })
+
+              cabecera.appendChild(filaCabecera)
+              tabla.appendChild(cabecera)
+
+              // CUERPO
+
+              let cuerpo = document.createElement("tbody")
+
+              registros.forEach(function(registro){
+
+                let fila = document.createElement("tr")
+
+                campos.forEach(function(campo){
+
+                  let celda = document.createElement("td")
+                  let valor = registro[campo.nombre]
+
+                  // CHECKBOX / BOOLEAN
+                  if(campo.tipo == "checkbox"){
+
+                    let control = document.createElement("input")
+
+                    control.setAttribute("type","checkbox")
+                    control.disabled = true
+                    control.checked = valor
+
+                    celda.appendChild(control)
+
+                  }
+
+                  // RESTO DE CAMPOS
+                  else{
+
+                    celda.textContent = valor
+
+                  }
+
+                  fila.appendChild(celda)
+
+                })
+
+                cuerpo.appendChild(fila)
+
+              })
+
+              tabla.appendChild(cuerpo)
+
+            })
+
+          }
+
+        })
+
+      }
+
+      tablasDinamicas()
+
+    </script>
+
+  </body>
+</html>

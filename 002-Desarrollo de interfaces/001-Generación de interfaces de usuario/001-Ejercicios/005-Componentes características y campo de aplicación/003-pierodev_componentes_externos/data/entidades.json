@@ -1,0 +1,18 @@
+[
+  {
+    "texto": "Directorio",
+    "activo": true
+  },
+  {
+    "texto": "Empresas",
+    "activo": false
+  },
+  {
+    "texto": "Contactos",
+    "activo": false
+  },
+  {
+    "texto": "Seguimiento",
+    "activo": false
+  }
+]

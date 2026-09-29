@@ -1,0 +1,22 @@
+[
+  {
+    "texto": "Clientes",
+    "url": "#clientes",
+    "activo": false
+  },
+  {
+    "texto": "Productos",
+    "url": "#productos",
+    "activo": true
+  },
+  {
+    "texto": "Pedidos",
+    "url": "#pedidos",
+    "activo": false
+  },
+  {
+    "texto": "Actividad",
+    "url": "#actividad",
+    "activo": false
+  }
+]

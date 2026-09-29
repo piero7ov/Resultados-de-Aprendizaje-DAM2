@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERIN-ERP</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="js/componentes.js" defer></script>
+</head>
+<body class="erin">
+    <header>
+        <div class="marca">
+            <a class="logotipo" href="#clientes" aria-label="ERIN, inicio">ER<span class="letra-i">I</span>N</a>
+            <small>Ecosistema de Recursos,<br>Información y Negocio</small>
+        </div>
+        <div class="herramientas"></div>
+        <div class="usuario"></div>
+    </header>
+
+    <main>
+        <nav class="navegacion" data-source="data/menu.json" aria-label="Áreas de gestión"></nav>
+
+        <section class="elementos" data-source="data/entidades.json" aria-label="Elementos"></section>
+
+        <section class="escenario" id="clientes" aria-labelledby="titulo-listado">
+            <div class="titulo-listado">
+                <div>
+                    <h1 id="titulo-listado">Directorio</h1>
+                    <p>Información de contacto y seguimiento</p>
+                </div>
+            </div>
+            <div class="tabla">
+                <table data-source="data/clientes.json"></table>
+            </div>
+        </section>
+    </main>
+
+    <div id="templates" hidden></div>
+</body>
+</html>

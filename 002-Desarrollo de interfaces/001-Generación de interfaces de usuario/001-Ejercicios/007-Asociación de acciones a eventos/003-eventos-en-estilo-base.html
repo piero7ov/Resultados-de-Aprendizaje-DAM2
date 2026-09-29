@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERIN | 003 · Eventos</title>
+    <style>
+        @font-face {
+            font-family: Coolvetica;
+            src: url("../../../Fuente favorita/Coolvetica Rg.otf") format("opentype");
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --fuente-identidad: Coolvetica, Arial, sans-serif;
+            --fuente-texto: Arial, sans-serif;
+            --crema: #f8f1e5;
+            --arena: #eee4d5;
+            --papel: #fffaf2;
+            --salmon: #f5aa91;
+            --terracota: #bd573e;
+            --tinta: #382d29;
+            --borde: #ddd0bf;
+            --relleno: 12px;
+            --radio: 14px;
+            --radio-control: 9px;
+            --radio-esquina-recta: 0px;
+            --radio-acento: 3px;
+            --metal-salmon: linear-gradient(120deg, #f6baa1 0%, #ed977e 48%, #dc7d65 100%);
+            --metal-crema: linear-gradient(120deg, var(--papel), #e5d9c9);
+            --borde-boton: #a54c37;
+            --borde-boton-secundario: #b9aa97;
+            --texto-boton: #4b291f;
+            --sombra-boton: inset 0 1px 0 #ffe7d7, 0 2px 3px #59362610;
+            --sombra-boton-secundario: inset 0 1px 0 white, 0 2px 3px #59362610;
+            --brillo-acento: 0 0 12px #f5aa91aa;
+            --tamano-logo: 32px;
+            --tamano-acento: 7px;
+            --texto-marca: 12px;
+            --texto-titulo-elementos: 16px;
+            --texto-control: 15px;
+            --separacion-letras: 0.07em;
+            --salmon-suave: #f8dfd2;
+            --color-resaltado: #efd4c3;
+            --color-resaltado-tabla: var(--salmon-suave);
+            --duracion-transicion: 1s;
+            --crecimiento-hover: 0.9;
+            --metal-buscador: linear-gradient(120deg, #e9c9b9 0%, #dfb9a7 48%, #d5ac99 100%);
+            --sombra-buscador: inset 0 2px 4px #59362626, inset 0 -1px 0 #ffe7d780;
+            --linea-activo: 4px;
+            --indicador-activo: 8px;
+            --ancho-navegacion: 170px;
+            --ancho-elementos: 220px;
+            --ancho-compacto: 52px;
+
+            --color0: var(--borde);
+            --color: var(--arena);
+            --color2: var(--crema);
+            --color3: var(--papel);
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; }
+        .erin {
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-family: var(--fuente-texto);
+            font-size: 14px;
+            color: var(--tinta);
+            background: var(--color3);
+        }
+        .erin a { color: inherit; text-decoration: none; }
+        .erin button, .erin input { font: inherit; color: inherit; }
+        .erin button { cursor: pointer; }
+        .erin :focus-visible { outline: 2px solid var(--terracota); outline-offset: 2px; }
+        .erin header {
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--relleno);
+            padding: var(--relleno);
+            background: var(--color);
+        }
+
+        .marca { display: flex; align-items: center; gap: var(--relleno); }
+        .marca small { border-left: 1px solid var(--borde); padding-left: var(--relleno); font-size: var(--texto-marca); line-height: 1.5; }
+        .logotipo { display: inline-flex; align-items: baseline; font-family: var(--fuente-identidad); font-size: var(--tamano-logo); line-height: 1; }
+        .letra-i { position: relative; margin: 0 calc(var(--relleno) / 4); color: var(--terracota); }
+        .letra-i::before {
+            content: "";
+            position: absolute;
+            width: var(--tamano-acento);
+            height: var(--tamano-acento);
+            top: calc(var(--tamano-acento) * -1);
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: var(--radio-acento);
+            background: currentColor;
+            box-shadow: var(--brillo-acento);
+        }
+        .herramientas { display: flex; align-items: center; gap: var(--relleno); flex-wrap: wrap; }
+        .buscador { background: var(--color0); border: 0; border-radius: var(--radio-control); padding: calc(var(--relleno) / 2); width: 200px; }
+        .erin .buscador:focus { outline: none; background: var(--metal-buscador); box-shadow: var(--sombra-buscador); }
+        .boton, .usuario a {
+            display: inline-block;
+            background: var(--metal-salmon);
+            border: 1px solid var(--borde-boton);
+            border-radius: var(--radio-control) var(--radio-esquina-recta) var(--radio-control) var(--radio-esquina-recta);
+            padding: calc(var(--relleno) / 2) var(--relleno);
+            color: var(--texto-boton);
+            box-shadow: var(--sombra-boton);
+        }
+        .usuario a { background: var(--metal-crema); border-color: var(--borde-boton-secundario); color: var(--tinta); box-shadow: var(--sombra-boton-secundario); }
+        .usuario { display: flex; align-items: center; gap: var(--relleno); }
+        .avatar { width: 50px; height: 50px; background: var(--salmon); border-radius: 100px; flex-shrink: 0; }
+        .usuario p { margin: 0 0 var(--relleno); }
+
+        .erin main { display: flex; flex: 1; min-height: 0; }
+        .navegacion, .elementos {
+            position: relative;
+            transition: width 0.3s, padding 0.3s;
+        }
+        .navegacion {
+            width: var(--ancho-navegacion);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: var(--relleno);
+            padding: var(--relleno);
+            overflow: hidden auto;
+            background: var(--color);
+        }
+        .navegacion a {
+            flex-shrink: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            background: var(--color2);
+            padding: var(--relleno);
+            border-radius: var(--radio-control) var(--radio-esquina-recta) var(--radio-control) var(--radio-esquina-recta);
+        }
+        .elementos {
+            width: var(--ancho-elementos);
+            overflow: hidden auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: var(--relleno);
+            padding: var(--relleno);
+            background: var(--color2);
+        }
+        .elementos h2 { margin: 0; font-size: var(--texto-titulo-elementos); white-space: nowrap; }
+        .elementos article {
+            flex-shrink: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            padding: var(--relleno);
+            background: var(--color3);
+            border-radius: var(--radio) var(--radio-esquina-recta) var(--radio) var(--radio-esquina-recta);
+        }
+        .navegacion .activo, .elementos .activo {
+            display: flex;
+            align-items: center;
+            gap: var(--relleno);
+            background: var(--salmon-suave);
+            border-left: var(--linea-activo) solid var(--terracota);
+        }
+        .navegacion .activo::before, .elementos .activo::before {
+            content: "";
+            width: var(--indicador-activo);
+            height: var(--indicador-activo);
+            flex-shrink: 0;
+            background: var(--terracota);
+            border-radius: var(--radio-acento);
+            box-shadow: var(--brillo-acento);
+        }
+
+        .minimizar {
+            width: 100%;
+            min-height: 38px;
+            flex-shrink: 0;
+            margin-top: auto;
+            border: 1px solid var(--borde-boton-secundario);
+            border-radius: var(--radio-control) var(--radio-esquina-recta) var(--radio-control) var(--radio-esquina-recta);
+            background: var(--metal-crema);
+            box-shadow: var(--sombra-boton-secundario);
+        }
+        .navegacion.compacto, .elementos.compacto {
+            width: var(--ancho-compacto);
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+        .compacto a, .compacto article, .compacto h2 {
+            width: 40px;
+            min-width: 40px;
+            overflow: hidden;
+        }
+        .compacto .minimizar { width: 40px; }
+
+        .escenario { flex: 1; min-width: 0; overflow-y: auto; padding: var(--relleno); }
+        .titulo-listado { display: flex; justify-content: space-between; align-items: center; gap: var(--relleno); margin-bottom: calc(var(--relleno) * 2); }
+        h1 { margin: 0 0 calc(var(--relleno) * 2 / 3); font-size: 24px; font-weight: normal; font-family: var(--fuente-identidad); }
+        .titulo-listado p { margin: 0; }
+
+        .zonas-arrastre {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: var(--relleno);
+            margin-bottom: calc(var(--relleno) * 2);
+        }
+        #origen, #destino {
+            min-height: 92px;
+            padding: var(--relleno);
+            border: 1px dashed var(--borde-boton-secundario);
+            border-radius: var(--radio) var(--radio-esquina-recta) var(--radio) var(--radio-esquina-recta);
+            background: var(--color2);
+        }
+        #destino { display: flex; align-items: center; justify-content: center; color: #6f625b; }
+        #objeto {
+            width: max-content;
+            max-width: 100%;
+            padding: var(--relleno);
+            border: 1px solid var(--borde-boton);
+            border-radius: var(--radio-control) var(--radio-esquina-recta) var(--radio-control) var(--radio-esquina-recta);
+            background: var(--metal-salmon);
+            box-shadow: var(--sombra-boton);
+            cursor: grab;
+            font-family: var(--fuente-identidad);
+            font-size: var(--texto-control);
+            text-transform: uppercase;
+            letter-spacing: var(--separacion-letras);
+        }
+        #objeto:active { cursor: grabbing; }
+        #destino.encima { background: var(--salmon-suave); border-color: var(--terracota); }
+
+        .tabla { overflow-x: auto; }
+        table { width: 100%; border-spacing: 0; text-align: left; white-space: nowrap; }
+        caption { text-align: left; padding-bottom: var(--relleno); font-size: 12px; }
+        thead th { background: var(--color); }
+        th, td { padding: var(--relleno); border-bottom: 1px solid var(--color2); }
+        tfoot th, tfoot td { background: var(--color2); }
+        thead th:first-child { border-top-left-radius: var(--radio); }
+        thead th:last-child { border-top-right-radius: var(--radio-esquina-recta); }
+        tfoot th:first-child { border-bottom-left-radius: var(--radio-esquina-recta); }
+        tfoot td:last-child { border-bottom-right-radius: var(--radio); }
+
+        .erin button, .usuario a, .navegacion a, .elementos article, .elementos h2, table th {
+            font-family: var(--fuente-identidad);
+            font-weight: 400;
+        }
+        .erin button, .usuario a, .navegacion a, .elementos article {
+            font-size: var(--texto-control);
+            text-transform: uppercase;
+            letter-spacing: var(--separacion-letras);
+            line-height: 1.4;
+        }
+        .navegacion a, .elementos article {
+            transition: background-color var(--duracion-transicion), width var(--duracion-transicion);
+        }
+        .navegacion a:not(.activo):focus-visible { background: var(--color-resaltado); }
+
+        @media (hover: hover) and (pointer: fine) {
+            tbody tr:hover { background: var(--color-resaltado-tabla); }
+            .navegacion a:not(.activo):hover, .elementos article:not(.activo):hover { background: var(--color-resaltado); }
+        }
+
+        @media (min-width: 851px) {
+            .navegacion a, .elementos article { width: 100%; }
+            .navegacion .activo, .elementos .activo {
+                width: calc(100% + var(--relleno));
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+            .navegacion.compacto a, .elementos.compacto article { width: 40px; }
+        }
+
+        @media (min-width: 851px) and (hover: hover) and (pointer: fine) {
+            .navegacion a:not(.activo):hover, .elementos article:not(.activo):hover {
+                width: calc(100% + var(--relleno) * var(--crecimiento-hover));
+            }
+            .navegacion.compacto a:not(.activo):hover, .elementos.compacto article:not(.activo):hover { width: 40px; }
+        }
+
+        @media (max-width: 850px) {
+            .erin { height: auto; min-height: 100dvh; overflow: visible; }
+            .erin main { flex-direction: column; }
+            .navegacion { width: 100%; flex-direction: row; flex-wrap: wrap; padding-top: var(--relleno); }
+            .navegacion .activo { width: auto; }
+            .elementos { width: 100%; overflow: hidden; }
+            .escenario { overflow: visible; }
+            .elementos .activo { width: 100%; }
+            .buscador { width: 160px; }
+            .navegacion.compacto, .elementos.compacto { width: var(--ancho-compacto); align-self: flex-start; }
+            .zonas-arrastre { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="erin">
+    <header>
+        <div class="marca">
+            <a class="logotipo" href="#productos" aria-label="ERIN, inicio">ER<span class="letra-i">I</span>N</a>
+            <small>Ecosistema de Recursos,<br>Información y Negocio</small>
+        </div>
+        <div class="herramientas">
+            <label for="buscar">Buscar</label>
+            <input class="buscador" id="buscar" type="search" placeholder="Buscar productos…">
+            <button class="boton" type="button">Herramientas</button>
+        </div>
+        <div class="usuario">
+            <div class="avatar" aria-hidden="true"></div>
+            <div><p>Mi espacio</p><a href="#">Cerrar sesión</a></div>
+        </div>
+    </header>
+    <main>
+        <nav class="navegacion" aria-label="Áreas de gestión">
+            <a href="#clientes">Clientes</a>
+            <a class="activo" href="#productos" aria-current="page">Productos</a>
+            <a href="#pedidos">Pedidos</a>
+            <a href="#actividad">Actividad</a>
+            <button class="minimizar" type="button" aria-label="Minimizar navegación" aria-expanded="true">◀</button>
+        </nav>
+        <section class="elementos" aria-label="Elementos">
+            <h2>Elementos</h2>
+            <article>Directorio</article>
+            <article class="activo">Catálogo</article>
+            <article id="pedidos">Inventario</article>
+            <article id="actividad">Actividad</article>
+            <button class="minimizar" type="button" aria-label="Minimizar elementos" aria-expanded="true">◀</button>
+        </section>
+        <section class="escenario" id="productos" aria-labelledby="titulo-listado">
+            <div class="titulo-listado">
+                <div><h1 id="titulo-listado">Catálogo de productos</h1><p>Información comercial y disponibilidad</p></div>
+                <button class="boton" type="button">Filtrar</button>
+            </div>
+
+            <div class="zonas-arrastre">
+                <div id="origen">
+                    <div id="objeto" draggable="true">Arrástrame</div>
+                </div>
+                <div id="destino">Suelta aquí</div>
+            </div>
+
+            <div class="tabla">
+                <table data-source="../006-Enlace de componentes a orígenes de datos/productos.json"></table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+      function tablasDinamicas(){
+        let tablas = document.querySelectorAll("table")
+
+        tablas.forEach(function(tabla){
+          if(tabla.hasAttribute("data-source")){
+            let origenDatos = tabla.getAttribute("data-source")
+
+            fetch(origenDatos)
+            .then(function(resultado){
+              return resultado.json()
+            })
+            .then(function(datos){
+              let campos = datos.campos
+              let registros = datos.datos
+
+              let cabecera = document.createElement("thead")
+              let filaCabecera = document.createElement("tr")
+
+              campos.forEach(function(campo){
+                let celda = document.createElement("th")
+                celda.textContent = campo.etiqueta
+                filaCabecera.appendChild(celda)
+              })
+
+              cabecera.appendChild(filaCabecera)
+              tabla.appendChild(cabecera)
+
+              let cuerpo = document.createElement("tbody")
+
+              registros.forEach(function(registro){
+                let fila = document.createElement("tr")
+
+                campos.forEach(function(campo){
+                  let celda = document.createElement("td")
+                  let valor = registro[campo.nombre]
+
+                  if(campo.tipo == "checkbox"){
+                    let control = document.createElement("input")
+                    control.setAttribute("type", "checkbox")
+                    control.disabled = true
+                    control.checked = valor
+                    celda.appendChild(control)
+                  }else{
+                    celda.textContent = valor
+                  }
+
+                  fila.appendChild(celda)
+                })
+
+                cuerpo.appendChild(fila)
+              })
+
+              tabla.appendChild(cuerpo)
+            })
+          }
+        })
+      }
+
+      tablasDinamicas()
+
+      let objeto = document.querySelector("#objeto")
+      let destino = document.querySelector("#destino")
+
+      objeto.ondragstart = function(evento){
+        evento.dataTransfer.setData("text/plain", objeto.id)
+      }
+
+      destino.ondragover = function(evento){
+        evento.preventDefault()
+        destino.classList.add("encima")
+      }
+
+      destino.ondragleave = function(){
+        destino.classList.remove("encima")
+      }
+
+      destino.ondrop = function(evento){
+        evento.preventDefault()
+
+        let id = evento.dataTransfer.getData("text/plain")
+        let elemento = document.querySelector("#" + id)
+
+        destino.textContent = ""
+        destino.appendChild(elemento)
+        destino.classList.remove("encima")
+      }
+
+      let columnas = document.querySelectorAll("main .navegacion, main .elementos")
+
+      columnas.forEach(function(columna){
+        let boton = columna.querySelector(".minimizar")
+
+        boton.onclick = function(){
+          columna.classList.toggle("compacto")
+
+          if(columna.classList.contains("compacto")){
+            boton.textContent = "▶"
+            boton.setAttribute("aria-expanded", "false")
+          }else{
+            boton.textContent = "◀"
+            boton.setAttribute("aria-expanded", "true")
+          }
+        }
+      })
+    </script>
+</body>
+</html>

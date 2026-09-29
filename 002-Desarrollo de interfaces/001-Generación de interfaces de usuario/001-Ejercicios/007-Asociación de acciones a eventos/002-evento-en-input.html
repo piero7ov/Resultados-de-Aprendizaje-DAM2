@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Eventos en un campo input</title>
+    <style>
+      body{
+        font-family:Arial, sans-serif;
+        margin:30px;
+      }
+
+      section{
+        border-bottom:1px solid lightgrey;
+        padding:10px 0px 20px 0px;
+      }
+
+      input{
+        padding:10px;
+        min-width:280px;
+      }
+
+      .resultado{
+        min-height:20px;
+        font-weight:bold;
+      }
+
+      .observacion{
+        color:darkred;
+      }
+
+      code{
+        background:#eeeeee;
+        padding:2px 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Eventos en un campo input</h1>
+    <p>
+      Los campos de texto pueden responder a acciones como recibir el foco,
+      perderlo, cambiar su contenido o detectar las teclas pulsadas.
+    </p>
+
+    <section>
+      <h2>1. Seleccionar un campo de texto</h2>
+      <p>
+        Para trabajar con un <code>&lt;input&gt;</code> desde JavaScript,
+        primero se selecciona y se guarda en una variable.
+      </p>
+      <input id="entrada-seleccionada" type="text" placeholder="Campo seleccionado">
+      <p id="resultado-seleccion" class="resultado"></p>
+      <p class="observacion">
+        Si el elemento es un <code>&lt;input&gt;</code>, conviene utilizar un
+        nombre como <code>entrada</code> y no conservar por error la variable
+        <code>boton</code> de un ejercicio anterior.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Evento onfocus</h2>
+      <p>
+        <code>onfocus</code> se ejecuta cuando el campo recibe el foco. Esto
+        ocurre, por ejemplo, al pulsar dentro de él o al llegar mediante el
+        tabulador.
+      </p>
+      <input id="entrada-foco" type="text" placeholder="Pulsa dentro del campo">
+      <p id="resultado-foco" class="resultado"></p>
+    </section>
+
+    <section>
+      <h2>3. Evento onblur</h2>
+      <p>
+        <code>onblur</code> se ejecuta cuando el campo pierde el foco. Es
+        necesario entrar primero en el campo y después pulsar fuera de él.
+      </p>
+      <input id="entrada-desenfoque" type="text" placeholder="Entra y después pulsa fuera">
+      <p id="resultado-desenfoque" class="resultado"></p>
+    </section>
+
+    <section>
+      <h2>4. Evento onchange</h2>
+      <p>
+        <code>onchange</code> se activa cuando el valor ha cambiado y el campo
+        confirma ese cambio, normalmente al perder el foco.
+      </p>
+      <input id="entrada-cambio" type="text" placeholder="Escribe algo y pulsa fuera">
+      <p id="resultado-cambio" class="resultado"></p>
+    </section>
+
+    <section>
+      <h2>5. Evento onkeypress</h2>
+      <p>
+        <code>onkeypress</code> se ejecuta al introducir una tecla que genera
+        un carácter. El manejador recibe un objeto de evento con información
+        sobre la tecla pulsada.
+      </p>
+      <input id="entrada-tecla" type="text" placeholder="Escribe varias teclas">
+      <p id="resultado-tecla" class="resultado"></p>
+      <p>
+        En este ejemplo se consulta <code>evento.key</code> para mostrar el
+        carácter y también se envía el objeto completo a la consola.
+      </p>
+    </section>
+
+    <section>
+      <h2>6. Todos los eventos en un mismo input</h2>
+      <p>
+        Este campo combina los cuatro eventos. El mensaje indica cuál ha
+        sido la última acción detectada.
+      </p>
+      <input id="entrada-completa" type="text" placeholder="Prueba todos los eventos">
+      <p id="resultado-completo" class="resultado"></p>
+      <p>
+        Para comprobar <code>onchange</code>, modifica el texto y pulsa fuera
+        del campo. Según la acción, pueden ejecutarse varios eventos seguidos.
+      </p>
+    </section>
+
+    <script>
+      let entradaSeleccionada = document.querySelector("#entrada-seleccionada")
+      let resultadoSeleccion = document.querySelector("#resultado-seleccion")
+
+      resultadoSeleccion.textContent = "El campo input se ha seleccionado correctamente"
+
+      let entradaFoco = document.querySelector("#entrada-foco")
+      let resultadoFoco = document.querySelector("#resultado-foco")
+
+      entradaFoco.onfocus = function(){
+        resultadoFoco.textContent = "El campo ha recibido el foco"
+      }
+
+      let entradaDesenfoque = document.querySelector("#entrada-desenfoque")
+      let resultadoDesenfoque = document.querySelector("#resultado-desenfoque")
+
+      entradaDesenfoque.onfocus = function(){
+        resultadoDesenfoque.textContent = "El campo tiene el foco"
+      }
+
+      entradaDesenfoque.onblur = function(){
+        resultadoDesenfoque.textContent = "El campo ha perdido el foco"
+      }
+
+      let entradaCambio = document.querySelector("#entrada-cambio")
+      let resultadoCambio = document.querySelector("#resultado-cambio")
+
+      entradaCambio.onchange = function(){
+        resultadoCambio.textContent = "El contenido ha cambiado a: " + entradaCambio.value
+      }
+
+      let entradaTecla = document.querySelector("#entrada-tecla")
+      let resultadoTecla = document.querySelector("#resultado-tecla")
+
+      entradaTecla.onkeypress = function(evento){
+        resultadoTecla.textContent = "Has pulsado la tecla: " + evento.key
+        console.log(evento)
+      }
+
+      let entradaCompleta = document.querySelector("#entrada-completa")
+      let resultadoCompleto = document.querySelector("#resultado-completo")
+
+      entradaCompleta.onfocus = function(){
+        resultadoCompleto.textContent = "Evento focus: el campo ha recibido el foco"
+      }
+
+      entradaCompleta.onblur = function(){
+        resultadoCompleto.textContent = "Evento blur: el campo ha perdido el foco"
+      }
+
+      entradaCompleta.onchange = function(){
+        resultadoCompleto.textContent = "Evento change: el contenido ha cambiado a " + entradaCompleta.value
+      }
+
+      entradaCompleta.onkeypress = function(evento){
+        resultadoCompleto.textContent = "Evento keypress: has pulsado la tecla " + evento.key
+        console.log(evento)
+      }
+    </script>
+  </body>
+</html>

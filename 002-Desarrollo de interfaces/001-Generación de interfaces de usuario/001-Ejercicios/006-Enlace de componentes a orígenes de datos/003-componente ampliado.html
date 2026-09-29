@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+    <form>
+    </form>
+
+    <script>
+      let formulario = document.querySelector("form")
+
+      fetch("datos.json")
+      .then(function(resultado){
+        return resultado.json()
+      })
+      .then(function(datos){
+        console.log(datos)
+
+        let campos = datos.campos
+
+        campos.forEach(function(campo){
+
+          // Creamos un contenedor para cada campo
+          let grupo = document.createElement("div")
+
+          // Creamos la etiqueta
+          let etiqueta = document.createElement("label")
+          etiqueta.textContent = campo.etiqueta
+          etiqueta.setAttribute("for",campo.nombre)
+          grupo.appendChild(etiqueta)
+
+          // TEXTAREA
+          if(campo.tipo == "textarea"){
+
+            let control = document.createElement("textarea")
+
+            control.setAttribute("placeholder",campo.etiqueta)
+            control.setAttribute("name",campo.nombre)
+            control.setAttribute("id",campo.nombre)
+
+            grupo.appendChild(control)
+
+          }
+
+          // SELECT -> INPUT + DATALIST
+          else if(campo.tipo == "select"){
+
+            let control = document.createElement("input")
+
+            control.setAttribute("type","text")
+            control.setAttribute("placeholder",campo.etiqueta)
+            control.setAttribute("name",campo.nombre)
+            control.setAttribute("id",campo.nombre)
+            control.setAttribute("list","lista_"+campo.nombre)
+
+            grupo.appendChild(control)
+
+            let lista = document.createElement("datalist")
+            lista.setAttribute("id","lista_"+campo.nombre)
+
+            campo.opciones.forEach(function(opcion){
+
+              let elemento = document.createElement("option")
+              elemento.setAttribute("value",opcion)
+
+              lista.appendChild(elemento)
+
+            })
+
+            grupo.appendChild(lista)
+
+          }
+
+          // CHECKBOX
+          else if(campo.tipo == "checkbox"){
+
+            let control = document.createElement("input")
+
+            control.setAttribute("type","checkbox")
+            control.setAttribute("name",campo.nombre)
+            control.setAttribute("id",campo.nombre)
+
+            grupo.appendChild(control)
+
+          }
+
+          // RESTO DE INPUTS
+          else{
+
+            let control = document.createElement("input")
+
+            control.setAttribute("type",campo.tipo)
+            control.setAttribute("placeholder",campo.etiqueta)
+            control.setAttribute("name",campo.nombre)
+            control.setAttribute("id",campo.nombre)
+
+            grupo.appendChild(control)
+
+          }
+
+          formulario.appendChild(grupo)
+
+        })
+
+        // Botón enviar
+        let boton = document.createElement("button")
+        boton.setAttribute("type","submit")
+        boton.textContent = "Enviar"
+
+        formulario.appendChild(boton)
+
+      })
+    </script>
+  </body>
+</html>

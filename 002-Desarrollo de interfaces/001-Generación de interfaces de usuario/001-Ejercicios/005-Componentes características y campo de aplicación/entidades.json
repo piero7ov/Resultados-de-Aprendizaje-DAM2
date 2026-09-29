@@ -1,0 +1,22 @@
+[
+  {
+    "emoji": "📒",
+    "texto": "Directorio",
+    "activo": true
+  },
+  {
+    "emoji": "🏢",
+    "texto": "Empresas",
+    "activo": false
+  },
+  {
+    "emoji": "📞",
+    "texto": "Contactos",
+    "activo": false
+  },
+  {
+    "emoji": "📋",
+    "texto": "Seguimiento",
+    "activo": false
+  }
+]

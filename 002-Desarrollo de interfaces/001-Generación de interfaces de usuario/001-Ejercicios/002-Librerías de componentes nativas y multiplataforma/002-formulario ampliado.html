@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscripción a un curso — Versión 2: formulario ampliado</title>
+</head>
+<body>
+    <h1>Inscripción a un curso</h1>
+    <p>Versión 2: formulario ampliado</p>
+    <form id="formulario">
+        <fieldset>
+            <legend>Datos personales</legend>
+            <p>
+                <label for="nombre">Nombre (obligatorio):</label>
+                <input type="text" id="nombre" name="nombre" autocomplete="name" required>
+            </p>
+            <p>
+                <label for="correo">Correo electrónico (obligatorio):</label>
+                <input type="email" id="correo" name="correo" autocomplete="email" required>
+            </p>
+            <p>
+                <label for="clave">Contraseña:</label>
+                <input type="password" id="clave" name="clave" autocomplete="new-password">
+            </p>
+            <p>
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono" autocomplete="tel">
+            </p>
+            <p>
+                <label for="observaciones">Observaciones:</label><br>
+                <textarea id="observaciones" name="observaciones" rows="4" cols="40"></textarea>
+            </p>
+        </fieldset>
+        <fieldset>
+            <legend>Preferencias del curso</legend>
+            <p>
+                <label for="modalidad">Modalidad (obligatoria):</label>
+                <select id="modalidad" name="modalidad" required>
+                    <option value="">Selecciona una modalidad</option>
+                    <option value="presencial">Presencial</option>
+                    <option value="distancia">A distancia</option>
+                </select>
+            </p>
+            <fieldset>
+                <legend>Turno</legend>
+                <input type="radio" id="manana" name="turno" value="manana">
+                <label for="manana">Mañana</label>
+                <input type="radio" id="tarde" name="turno" value="tarde">
+                <label for="tarde">Tarde</label>
+            </fieldset>
+            <p>
+                <input type="checkbox" id="material" name="material" value="si">
+                <label for="material">Recibir material complementario</label>
+            </p>
+            <p>
+                <input type="checkbox" id="avisos" name="avisos" value="si">
+                <label for="avisos">Recibir avisos del curso</label>
+            </p>
+        </fieldset>
+        <fieldset>
+            <legend>Más controles</legend>
+            <p>
+                <label for="lenguaje">Lenguaje de programación:</label>
+                <input type="text" id="lenguaje" name="lenguaje" list="lenguajes">
+                <datalist id="lenguajes">
+                    <option value="Python">
+                    <option value="Java">
+                    <option value="JavaScript">
+                    <option value="PHP">
+                    <option value="C++">
+                </datalist>
+            </p>
+            <p>La lista ofrece sugerencias; también puedes escribir otro lenguaje.</p>
+            <p>
+                <label for="inicio">Fecha de inicio:</label>
+                <input type="date" id="inicio" name="inicio">
+            </p>
+            <p>
+                <label for="hora">Hora preferida:</label>
+                <input type="time" id="hora" name="hora">
+            </p>
+            <p>
+                <label for="tutoria">Fecha y hora de tutoría:</label>
+                <input type="datetime-local" id="tutoria" name="tutoria">
+            </p>
+            <p>
+                <label for="mes">Mes de convocatoria:</label>
+                <input type="month" id="mes" name="mes">
+            </p>
+            <p>
+                <label for="semana">Semana de prácticas:</label>
+                <input type="week" id="semana" name="semana">
+            </p>
+            <p>
+                <label for="web">Página web:</label>
+                <input type="url" id="web" name="web">
+            </p>
+            <p>
+                <label for="color">Color de identificación:</label>
+                <input type="color" id="color" name="color">
+            </p>
+            <p>
+                <label for="archivo">Archivo adjunto:</label>
+                <input type="file" id="archivo" name="archivo">
+            </p>
+            <p>
+                <label for="semanas">Duración en semanas:</label>
+                <input type="number" id="semanas" name="semanas" min="1" max="52" step="1" value="1">
+            </p>
+            <p>
+                <label for="horas">Horas semanales:</label>
+                <input type="number" id="horas" name="horas" min="1" max="40" step="0.5" value="1">
+            </p>
+            <p>
+                <label for="experiencia">Experiencia (de 0 a 10):</label>
+                <input type="range" id="experiencia" name="experiencia" min="0" max="10" step="1" value="0">
+            </p>
+        </fieldset>
+
+        <p>
+            <button type="reset">Restablecer</button>
+            <button type="button" id="comprobar" onclick="document.getElementById('formulario').reportValidity()">Comprobar formulario</button>
+        </p>
+        <p>Ejercicio de controles: los datos no se envían ni se guardan.</p>
+    </form>
+
+</body>
+</html>

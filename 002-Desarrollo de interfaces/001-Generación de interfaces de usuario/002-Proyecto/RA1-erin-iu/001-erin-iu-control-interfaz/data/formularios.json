@@ -1,0 +1,14 @@
+[
+  {
+    "texto": "Formulario completo",
+    "activo": true
+  },
+  {
+    "texto": "Controles",
+    "activo": false
+  },
+  {
+    "texto": "Validación",
+    "activo": false
+  }
+]

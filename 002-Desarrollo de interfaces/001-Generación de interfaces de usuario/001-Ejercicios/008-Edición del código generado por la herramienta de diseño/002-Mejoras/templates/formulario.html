@@ -1,0 +1,58 @@
+<template id="template-formulario">
+    <article class="panel-mejora">
+        <div class="cabecera-panel">
+            <div>
+                <h1>Nuevo contacto</h1>
+                <p>Datos comerciales y preferencias de seguimiento</p>
+            </div>
+            <span class="estado-panel">Formulario ERIN</span>
+        </div>
+
+        <form class="formulario-erin" id="formulario-contacto">
+            <label>
+                <span>Nombre</span>
+                <input name="nombre" type="text" required>
+            </label>
+            <label>
+                <span>Correo electrónico</span>
+                <input name="correo" type="email" required>
+            </label>
+            <label>
+                <span>Teléfono</span>
+                <input name="telefono" type="tel">
+            </label>
+            <label>
+                <span>Fecha de alta</span>
+                <input name="fecha" type="date">
+            </label>
+            <label>
+                <span>Tipo de contacto</span>
+                <select name="tipo">
+                    <option value="cliente">Cliente</option>
+                    <option value="proveedor">Proveedor</option>
+                    <option value="colaborador">Colaborador</option>
+                </select>
+            </label>
+            <label>
+                <span>Prioridad</span>
+                <select name="prioridad">
+                    <option value="normal">Normal</option>
+                    <option value="alta">Alta</option>
+                    <option value="urgente">Urgente</option>
+                </select>
+            </label>
+            <label class="campo-completo">
+                <span>Observaciones</span>
+                <textarea name="observaciones" rows="5"></textarea>
+            </label>
+            <label class="campo-check campo-completo">
+                <input name="seguimiento" type="checkbox">
+                <span>Activar seguimiento comercial</span>
+            </label>
+            <div class="acciones-formulario campo-completo">
+                <button class="boton" type="submit">Guardar contacto</button>
+                <button class="boton boton-secundario" type="reset">Limpiar</button>
+            </div>
+        </form>
+    </article>
+</template>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <nav>
+    </nav>
+
+    <template>
+      <button>
+        <span class="emoji">🚀</span>
+        <span class="texto">Nuevo proyecto</span>
+      </button>
+    </template>
+
+    <script>
+      let navegacion = document.querySelector("nav")
+      let plantilla = document.querySelector("template")
+
+      for(let i = 0;i < 10;i++){
+        let clon = plantilla.content.cloneNode(true)
+        navegacion.appendChild(clon)
+      }
+    </script>
+  </body>
+</html>

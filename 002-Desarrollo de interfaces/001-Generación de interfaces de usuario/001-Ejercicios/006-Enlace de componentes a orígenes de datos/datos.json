@@ -1,0 +1,142 @@
+{
+  "campos": [
+    {
+      "nombre": "id",
+      "etiqueta": "ID",
+      "tipo": "number"
+    },
+    {
+      "nombre": "nombre",
+      "etiqueta": "Nombre",
+      "tipo": "text"
+    },
+    {
+      "nombre": "apellidos",
+      "etiqueta": "Apellidos",
+      "tipo": "text"
+    },
+    {
+      "nombre": "email",
+      "etiqueta": "Correo electrónico",
+      "tipo": "email"
+    },
+    {
+      "nombre": "telefono",
+      "etiqueta": "Teléfono",
+      "tipo": "tel"
+    },
+    {
+      "nombre": "fecha_nacimiento",
+      "etiqueta": "Fecha de nacimiento",
+      "tipo": "date"
+    },
+    {
+      "nombre": "numero_empleados",
+      "etiqueta": "Número de empleados",
+      "tipo": "number"
+    },
+    {
+      "nombre": "facturacion",
+      "etiqueta": "Facturación anual",
+      "tipo": "number"
+    },
+    {
+      "nombre": "web",
+      "etiqueta": "Página web",
+      "tipo": "url"
+    },
+    {
+      "nombre": "tipo_cliente",
+      "etiqueta": "Tipo de cliente",
+      "tipo": "select",
+      "opciones": [
+        "Particular",
+        "Autónomo",
+        "Empresa",
+        "Administración"
+      ]
+    },
+    {
+      "nombre": "activo",
+      "etiqueta": "Cliente activo",
+      "tipo": "checkbox"
+    },
+    {
+      "nombre": "observaciones",
+      "etiqueta": "Observaciones",
+      "tipo": "textarea"
+    }
+  ],
+  "datos": [
+    {
+      "id": 1,
+      "nombre": "Piero",
+      "apellidos": "Olivares",
+      "email": "piero.olivares@example.com",
+      "telefono": "600000001",
+      "fecha_nacimiento": "2000-01-15",
+      "numero_empleados": 1,
+      "facturacion": 36000,
+      "web": "https://example.com/piero-olivares",
+      "tipo_cliente": "Autónomo",
+      "activo": true,
+      "observaciones": "Está preparando una plataforma para organizar sus proyectos y centralizar la relación con sus clientes."
+    },
+    {
+      "id": 2,
+      "nombre": "Lucía",
+      "apellidos": "Serrano Vidal",
+      "email": "lucia.serrano@example.com",
+      "telefono": "600000002",
+      "fecha_nacimiento": "1989-06-21",
+      "numero_empleados": 8,
+      "facturacion": 145000,
+      "web": "https://example.com/lucia-serrano",
+      "tipo_cliente": "Empresa",
+      "activo": true,
+      "observaciones": "Quiere renovar su aplicación de gestión antes de incorporar una nueva línea de negocio."
+    },
+    {
+      "id": 3,
+      "nombre": "Marcos",
+      "apellidos": "Navarro Ruiz",
+      "email": "marcos.navarro@example.com",
+      "telefono": "600000003",
+      "fecha_nacimiento": "1978-11-04",
+      "numero_empleados": 25,
+      "facturacion": 510000,
+      "web": "https://example.com/marcos-navarro",
+      "tipo_cliente": "Empresa",
+      "activo": true,
+      "observaciones": "Tiene contratado un servicio de mantenimiento trimestral y suele solicitar los cambios por lotes."
+    },
+    {
+      "id": 4,
+      "nombre": "Elena",
+      "apellidos": "Campos Ortega",
+      "email": "elena.campos@example.com",
+      "telefono": "600000004",
+      "fecha_nacimiento": "1995-03-18",
+      "numero_empleados": 1,
+      "facturacion": 28500,
+      "web": "https://example.com/elena-campos",
+      "tipo_cliente": "Particular",
+      "activo": false,
+      "observaciones": "No tiene proyectos activos, pero desea recibir información sobre próximos servicios."
+    },
+    {
+      "id": 5,
+      "nombre": "Hugo",
+      "apellidos": "Molina Ferrer",
+      "email": "hugo.molina@example.com",
+      "telefono": "600000005",
+      "fecha_nacimiento": "1984-09-30",
+      "numero_empleados": 4,
+      "facturacion": 87000,
+      "web": "https://example.com/hugo-molina",
+      "tipo_cliente": "Autónomo",
+      "activo": true,
+      "observaciones": "Prefiere recibir las propuestas por correo electrónico durante la primera semana de cada mes."
+    }
+  ]
+}

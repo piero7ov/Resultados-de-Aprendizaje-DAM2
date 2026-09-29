@@ -1,0 +1,71 @@
+{
+  "titulo": "Listado de clientes",
+  "columnas": [
+    {
+      "campo": "id",
+      "etiqueta": "ID"
+    },
+    {
+      "campo": "nombre",
+      "etiqueta": "Nombre"
+    },
+    {
+      "campo": "apellidos",
+      "etiqueta": "Apellidos"
+    },
+    {
+      "campo": "email",
+      "etiqueta": "Correo electrónico"
+    },
+    {
+      "campo": "telefono",
+      "etiqueta": "Teléfono"
+    },
+    {
+      "campo": "empresa",
+      "etiqueta": "Empresa"
+    }
+  ],
+  "registros": [
+    {
+      "id": 1,
+      "nombre": "Piero",
+      "apellidos": "Olivares",
+      "email": "piero.olivares@example.com",
+      "telefono": "+34 600 000 001",
+      "empresa": "Profesional independiente"
+    },
+    {
+      "id": 2,
+      "nombre": "Lucía",
+      "apellidos": "Serrano Vidal",
+      "email": "lucia.serrano@example.com",
+      "telefono": "+34 600 000 002",
+      "empresa": "Horizonte Creativo S.L."
+    },
+    {
+      "id": 3,
+      "nombre": "Marcos",
+      "apellidos": "Navarro Ruiz",
+      "email": "marcos.navarro@example.com",
+      "telefono": "+34 600 000 003",
+      "empresa": "Nexo Logística S.A."
+    },
+    {
+      "id": 4,
+      "nombre": "Elena",
+      "apellidos": "Campos Ortega",
+      "email": "elena.campos@example.com",
+      "telefono": "+34 600 000 004",
+      "empresa": "Taller Marea S.L."
+    },
+    {
+      "id": 5,
+      "nombre": "Hugo",
+      "apellidos": "Molina Ferrer",
+      "email": "hugo.molina@example.com",
+      "telefono": "+34 600 000 005",
+      "empresa": "Estudio Prisma S.L."
+    }
+  ]
+}

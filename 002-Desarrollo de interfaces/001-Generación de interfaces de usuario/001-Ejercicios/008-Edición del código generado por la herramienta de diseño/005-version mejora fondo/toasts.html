@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERIN | Toasts</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="js/componentes.js" defer></script>
+    <script src="js/mejoras.js" defer></script>
+</head>
+<body class="erin">
+    <header>
+        <div class="marca">
+            <a class="logotipo" href="index.html" aria-label="ERIN, inicio">ER<span class="letra-identidad">I</span>N</a>
+            <small>Ecosistema de Recursos,<br>Información y Negocio</small>
+        </div>
+        <div class="herramientas">
+            <label for="buscar">Buscar</label>
+            <input class="buscador" id="buscar" type="search" placeholder="Buscar...">
+            <a class="boton" href="index.html">Aplicación</a>
+        </div>
+        <div class="usuario" data-source="data/usuario.json"></div>
+    </header>
+
+    <main>
+        <nav class="navegacion" data-source="data/menu.json" aria-label="Áreas de gestión"></nav>
+        <div class="separador" role="separator" aria-orientation="vertical" aria-label="Redimensionar navegación" data-minimo="150" data-maximo="300"></div>
+
+        <section class="elementos" data-source="data/toasts.json" aria-label="Tipos de mensaje"></section>
+        <div class="separador" role="separator" aria-orientation="vertical" aria-label="Redimensionar elementos" data-minimo="180" data-maximo="360"></div>
+
+        <section class="escenario escenario-mejora" aria-labelledby="titulo-toasts">
+            <article class="panel-mejora">
+                <div class="cabecera-panel">
+                    <div>
+                        <h1 id="titulo-toasts">Mensajes emergentes</h1>
+                        <p>Notificaciones reutilizables para comunicar el estado de una operación</p>
+                    </div>
+                </div>
+
+                <div class="muestrario-toasts">
+                    <button class="boton" type="button" data-toast="exito">Mostrar éxito</button>
+                    <button class="boton boton-informacion" type="button" data-toast="informacion">Mostrar información</button>
+                    <button class="boton boton-aviso" type="button" data-toast="aviso">Mostrar aviso</button>
+                    <button class="boton boton-error" type="button" data-toast="error">Mostrar error</button>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <div id="contenedor-toasts" class="contenedor-toasts" aria-live="polite"></div>
+    <div id="templates" hidden></div>
+</body>
+</html>

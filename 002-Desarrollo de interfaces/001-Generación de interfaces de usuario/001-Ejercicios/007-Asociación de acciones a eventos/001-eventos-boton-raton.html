@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Eventos de botón y ratón</title>
+    <style>
+      body{
+        font-family:Arial, sans-serif;
+        margin:30px;
+      }
+
+      section{
+        border-bottom:1px solid lightgrey;
+        padding:10px 0px 20px 0px;
+      }
+
+      button{
+        padding:10px 15px;
+        cursor:pointer;
+      }
+
+      .resultado{
+        min-height:20px;
+        font-weight:bold;
+      }
+
+      .observacion{
+        color:darkred;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Eventos de botón y ratón</h1>
+    <p>
+      Estos ejemplos muestran cómo seleccionar botones y asociarles
+      diferentes acciones mediante JavaScript.
+    </p>
+
+    <section>
+      <h2>1. Seleccionar un botón</h2>
+      <p>
+        <code>document.querySelector()</code> permite seleccionar un elemento
+        del documento para guardarlo en una variable.
+      </p>
+      <button id="boton-seleccionado">Botón seleccionado</button>
+      <p id="resultado-seleccion" class="resultado"></p>
+      <p class="observacion">
+        Es necesario escribir <code>document.querySelector()</code>;
+        utilizar solamente <code>querySelector()</code> provoca un error.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Evento onclick</h2>
+      <p>
+        El evento <code>onclick</code> se ejecuta cuando se completa un clic
+        sobre el botón.
+      </p>
+      <button id="boton-clic">Púlsame</button>
+      <p id="resultado-clic" class="resultado"></p>
+    </section>
+
+    <section>
+      <h2>3. Eventos onmousedown y onmouseup</h2>
+      <p>
+        <code>onmousedown</code> se activa al presionar el botón del ratón
+        y <code>onmouseup</code> al soltarlo.
+      </p>
+      <button id="boton-pulsacion">Presiona y suelta</button>
+      <p id="resultado-pulsacion" class="resultado"></p>
+    </section>
+
+    <section>
+      <h2>4. Eventos onmouseenter y onmouseleave</h2>
+      <p>
+        <code>onmouseenter</code> detecta la entrada del puntero en el botón
+        y <code>onmouseleave</code> detecta su salida.
+      </p>
+      <button id="boton-entrada-salida">Entra y sal del botón</button>
+      <p id="resultado-entrada-salida" class="resultado"></p>
+    </section>
+
+    <section>
+      <h2>5. Todos los eventos en un mismo botón</h2>
+      <p>
+        Un elemento puede responder a varios eventos. El texto indica
+        la última acción realizada sobre este botón.
+      </p>
+      <button id="boton-completo">Prueba todos los eventos</button>
+      <p id="resultado-completo" class="resultado"></p>
+    </section>
+
+    <script>
+      let botonSeleccionado = document.querySelector("#boton-seleccionado")
+      let resultadoSeleccion = document.querySelector("#resultado-seleccion")
+
+      resultadoSeleccion.textContent = "El botón se ha seleccionado correctamente"
+
+      let botonClic = document.querySelector("#boton-clic")
+      let resultadoClic = document.querySelector("#resultado-clic")
+
+      botonClic.onclick = function(){
+        resultadoClic.textContent = "Has pulsado en el botón"
+      }
+
+      let botonPulsacion = document.querySelector("#boton-pulsacion")
+      let resultadoPulsacion = document.querySelector("#resultado-pulsacion")
+
+      botonPulsacion.onmousedown = function(){
+        resultadoPulsacion.textContent = "Has pulsado hacia abajo en el botón"
+      }
+
+      botonPulsacion.onmouseup = function(){
+        resultadoPulsacion.textContent = "Has soltado el botón del ratón"
+      }
+
+      let botonEntradaSalida = document.querySelector("#boton-entrada-salida")
+      let resultadoEntradaSalida = document.querySelector("#resultado-entrada-salida")
+
+      botonEntradaSalida.onmouseenter = function(){
+        resultadoEntradaSalida.textContent = "Has entrado en el botón"
+      }
+
+      botonEntradaSalida.onmouseleave = function(){
+        resultadoEntradaSalida.textContent = "Has salido del botón"
+      }
+
+      let botonCompleto = document.querySelector("#boton-completo")
+      let resultadoCompleto = document.querySelector("#resultado-completo")
+
+      botonCompleto.onclick = function(){
+        resultadoCompleto.textContent = "Evento click: has pulsado en el botón"
+      }
+
+      botonCompleto.onmousedown = function(){
+        resultadoCompleto.textContent = "Evento mousedown: has presionado el botón"
+      }
+
+      botonCompleto.onmouseup = function(){
+        resultadoCompleto.textContent = "Evento mouseup: has soltado el botón"
+      }
+
+      botonCompleto.onmouseenter = function(){
+        resultadoCompleto.textContent = "Evento mouseenter: has entrado en el botón"
+      }
+
+      botonCompleto.onmouseleave = function(){
+        resultadoCompleto.textContent = "Evento mouseleave: has salido del botón"
+      }
+    </script>
+  </body>
+</html>

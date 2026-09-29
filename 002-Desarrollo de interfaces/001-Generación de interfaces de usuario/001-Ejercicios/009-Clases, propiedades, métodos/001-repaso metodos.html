@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+    <script>
+      class Boton {
+        constructor(anchura, altura) {
+          this.width = anchura
+          this.height = altura
+          this.color = "white"
+        }
+
+        click() {
+          console.log("Me has hecho click")
+        }
+      }
+
+      let MiBoton = new Boton(400, 200)
+      console.log(MiBoton)
+      MiBoton.click()
+    </script>
+  </body>
+</html>
