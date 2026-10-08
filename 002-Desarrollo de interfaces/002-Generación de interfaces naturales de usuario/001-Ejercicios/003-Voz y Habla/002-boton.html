@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <body>
+    <button onclick="hablar()">Hablar</button>
+
+    <script>
+      let voces = [];
+
+      speechSynthesis.onvoiceschanged = function(){
+        voces = speechSynthesis.getVoices();
+        console.log(voces);
+      };
+
+      function hablar(){
+        // Por si las voces ya estaban cargadas
+        voces = speechSynthesis.getVoices();
+        console.log(voces);
+
+        let mensaje = new SpeechSynthesisUtterance(
+          "Hola, soy el navegador Chrome"
+        );
+
+        mensaje.lang = "es-ES";
+
+        let voz = voces.find(v => v.name.includes("Pablo"));
+
+        if(voz){
+          mensaje.voice = voz;
+        }
+
+        speechSynthesis.speak(mensaje);
+      }
+    </script>
+  </body>
+</html>

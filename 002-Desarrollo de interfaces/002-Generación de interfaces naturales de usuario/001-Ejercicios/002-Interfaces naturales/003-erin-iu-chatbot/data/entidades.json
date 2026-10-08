@@ -1,0 +1,18 @@
+[
+  {
+    "texto": "Directorio",
+    "activo": false
+  },
+  {
+    "texto": "Catálogo",
+    "activo": true
+  },
+  {
+    "texto": "Inventario",
+    "activo": false
+  },
+  {
+    "texto": "Actividad",
+    "activo": false
+  }
+]

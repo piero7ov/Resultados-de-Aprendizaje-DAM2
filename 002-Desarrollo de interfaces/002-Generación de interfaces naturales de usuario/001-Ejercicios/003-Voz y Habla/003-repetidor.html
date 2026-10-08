@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <body>
+    <button onclick="escuchar()">Escuchar y repetir</button>
+
+    <script>
+      function escuchar(){
+        let reconocimiento = new webkitSpeechRecognition();
+        reconocimiento.lang = "es-ES";
+
+        reconocimiento.onresult = function(evento){
+          let texto = evento.results[0][0].transcript;
+          console.log(evento);
+          console.log(texto);
+
+          let mensaje = new SpeechSynthesisUtterance(texto);
+          mensaje.lang = "es-ES";
+
+          let voces = speechSynthesis.getVoices();
+          let voz = voces.find(v => v.name.includes("Pablo"));
+
+          if(voz){
+            mensaje.voice = voz;
+          }
+
+          speechSynthesis.speak(mensaje);
+        };
+
+        reconocimiento.start();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+[
+  {
+    "texto": "Modal",
+    "activo": true
+  },
+  {
+    "texto": "Panel lateral",
+    "activo": false
+  }
+]

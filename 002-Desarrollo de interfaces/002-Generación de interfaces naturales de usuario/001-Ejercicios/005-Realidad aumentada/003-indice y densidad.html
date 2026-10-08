@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Galería de arte 3D — índice y densidad</title>
+  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+  <style>
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101827;font-family:Arial,sans-serif}
+    #estado{
+      position:fixed;left:18px;top:18px;z-index:20;
+      max-width:min(460px,calc(100vw - 36px));padding:12px 16px;
+      border:1px solid #ffffff45;border-radius:12px;
+      background:#101827dc;color:white;box-shadow:0 8px 24px #0005;
+      font-size:14px;line-height:1.4;
+    }
+    #estado strong{display:block;margin-bottom:3px;font-size:16px}
+    #pip{
+      position:fixed;right:18px;bottom:18px;z-index:20;
+      width:220px;aspect-ratio:4/3;overflow:hidden;
+      border:2px solid #ffffff9c;border-radius:14px;
+      background:#111;box-shadow:0 8px 30px #0008;
+    }
+    #pip video,#pip canvas{
+      position:absolute;inset:0;width:100%;height:100%;
+      object-fit:cover;transform:scaleX(-1);
+    }
+    #pip canvas{z-index:1;pointer-events:none}
+    @media(max-width:600px){
+      #pip{width:145px;right:12px;bottom:12px}
+      #estado{left:12px;top:12px;font-size:12px}
+    }
+  </style>
+</head>
+<body>
+  <div id="estado" role="status" aria-live="polite">
+    <strong>Galería de arte · índice extendido</strong>
+    <span id="mensaje">Preparando la cámara…</span>
+  </div>
+  <div id="pip">
+    <video id="video" autoplay muted playsinline aria-label="Vista de la webcam"></video>
+    <canvas id="marcaCara" width="640" height="480"></canvas>
+  </div>
+
+  <a-scene renderer="antialias:true; colorManagement:true" background="color:#101827">
+    <a-assets timeout="15000">
+      <img id="obraGirasoles" src="cuadros/obra-girasoles.png">
+      <img id="obraRetrato" src="cuadros/obra-retrato.png">
+      <img id="obraNenufares" src="cuadros/obra-nenufares.png">
+    </a-assets>
+    <a-entity light="type:ambient;intensity:1.1"></a-entity>
+    <a-entity light="type:directional;intensity:0.9" position="-3 5 2"></a-entity>
+
+    <a-plane position="0 -0.1 -9" rotation="-90 0 0" width="30" height="30" color="#172b41"></a-plane>
+    <a-plane position="0 4 -16" width="32" height="10" color="#172236"></a-plane>
+
+    <!-- Franjas y postes a distancias regulares para leer el movimiento de cámara. -->
+    <a-plane position="0 -0.08 -3" rotation="-90 0 0" width="6.5" height="0.08" color="#416378"></a-plane>
+    <a-plane position="0 -0.08 -5" rotation="-90 0 0" width="6.5" height="0.08" color="#416378"></a-plane>
+    <a-plane position="0 -0.08 -7" rotation="-90 0 0" width="6.5" height="0.08" color="#416378"></a-plane>
+    <a-plane position="0 -0.08 -9" rotation="-90 0 0" width="6.5" height="0.08" color="#416378"></a-plane>
+    <a-plane position="0 -0.08 -11" rotation="-90 0 0" width="6.5" height="0.08" color="#416378"></a-plane>
+    <a-plane position="0 -0.08 -13" rotation="-90 0 0" width="6.5" height="0.08" color="#416378"></a-plane>
+    <a-cylinder position="-3.6 1.05 -3.5" radius="0.12" height="2.1" color="#4ba9ba"></a-cylinder>
+    <a-cylinder position="3.6 1.05 -3.5" radius="0.12" height="2.1" color="#4ba9ba"></a-cylinder>
+    <a-cylinder position="-3.6 1.05 -5.5" radius="0.12" height="2.1" color="#5cb6a9"></a-cylinder>
+    <a-cylinder position="3.6 1.05 -5.5" radius="0.12" height="2.1" color="#5cb6a9"></a-cylinder>
+    <a-cylinder position="-3.6 1.05 -7.5" radius="0.12" height="2.1" color="#c79c64"></a-cylinder>
+    <a-cylinder position="3.6 1.05 -7.5" radius="0.12" height="2.1" color="#c79c64"></a-cylinder>
+    <a-cylinder position="-3.6 1.05 -9.5" radius="0.12" height="2.1" color="#b8889e"></a-cylinder>
+    <a-cylinder position="3.6 1.05 -9.5" radius="0.12" height="2.1" color="#b8889e"></a-cylinder>
+    <a-cylinder position="-3.6 1.05 -11.5" radius="0.12" height="2.1" color="#8f86c7"></a-cylinder>
+    <a-cylinder position="3.6 1.05 -11.5" radius="0.12" height="2.1" color="#8f86c7"></a-cylinder>
+    <a-cylinder position="-3.6 1.05 -13.5" radius="0.12" height="2.1" color="#777db4"></a-cylinder>
+    <a-cylinder position="3.6 1.05 -13.5" radius="0.12" height="2.1" color="#777db4"></a-cylinder>
+    <a-sphere position="-3.6 2.25 -3.5" radius="0.18" color="#9ef8e6"></a-sphere>
+    <a-sphere position="3.6 2.25 -3.5" radius="0.18" color="#9ef8e6"></a-sphere>
+    <a-sphere position="-3.6 2.25 -9.5" radius="0.18" color="#ffe9a8"></a-sphere>
+    <a-sphere position="3.6 2.25 -9.5" radius="0.18" color="#ffe9a8"></a-sphere>
+
+    <!-- Tres obras a distintas distancias: sus tamaños aparentes revelan el paralaje. -->
+    <a-entity position="-2.05 1.55 -5">
+      <a-plane position="0 0 -0.05" width="1.55" height="2.65" color="#103b48" material="emissive:#0a5264;emissiveIntensity:0.3"></a-plane>
+      <a-image src="#obraGirasoles" position="0 0.28 0.06" width="1.32" height="1.65" material="shader:flat"></a-image>
+      <a-box position="-0.82 0 0" width="0.12" height="2.9" depth="0.18" color="#65e1e1"></a-box>
+      <a-box position="0.82 0 0" width="0.12" height="2.9" depth="0.18" color="#65e1e1"></a-box>
+      <a-box position="0 1.4 0" width="1.75" height="0.12" depth="0.18" color="#65e1e1"></a-box>
+      <a-box position="0 -1.4 0" width="1.75" height="0.12" depth="0.18" color="#65e1e1"></a-box>
+      <a-text value="GIRASOLES" align="center" color="#ffffff" width="2.2" position="0 -0.97 0.07"></a-text>
+      <a-text value="CERCA" align="center" color="#ffffff" width="3" position="0 -1.72 0"></a-text>
+    </a-entity>
+
+    <a-entity position="0 1.55 -8">
+      <a-plane position="0 0 -0.05" width="1.55" height="2.65" color="#4a301e" material="emissive:#9d4f20;emissiveIntensity:0.25"></a-plane>
+      <a-image src="#obraRetrato" position="0 0.28 0.06" width="1.3" height="1.75" material="shader:flat"></a-image>
+      <a-box position="-0.82 0 0" width="0.12" height="2.9" depth="0.18" color="#ffca79"></a-box>
+      <a-box position="0.82 0 0" width="0.12" height="2.9" depth="0.18" color="#ffca79"></a-box>
+      <a-box position="0 1.4 0" width="1.75" height="0.12" depth="0.18" color="#ffca79"></a-box>
+      <a-box position="0 -1.4 0" width="1.75" height="0.12" depth="0.18" color="#ffca79"></a-box>
+      <a-text value="RETRATO" align="center" color="#ffffff" width="2.2" position="0 -0.97 0.07"></a-text>
+      <a-text value="MEDIA" align="center" color="#ffffff" width="3" position="0 -1.72 0"></a-text>
+    </a-entity>
+
+    <a-entity position="2.5 1.55 -11">
+      <a-plane position="0 0 -0.05" width="1.55" height="2.65" color="#2b2b58" material="emissive:#574b9e;emissiveIntensity:0.25"></a-plane>
+      <a-image src="#obraNenufares" position="0 0.28 0.06" width="1.4" height="1.4" material="shader:flat"></a-image>
+      <a-box position="-0.82 0 0" width="0.12" height="2.9" depth="0.18" color="#c3afff"></a-box>
+      <a-box position="0.82 0 0" width="0.12" height="2.9" depth="0.18" color="#c3afff"></a-box>
+      <a-box position="0 1.4 0" width="1.75" height="0.12" depth="0.18" color="#c3afff"></a-box>
+      <a-box position="0 -1.4 0" width="1.75" height="0.12" depth="0.18" color="#c3afff"></a-box>
+      <a-text value="NENUFARES" align="center" color="#ffffff" width="2.2" position="0 -0.97 0.07"></a-text>
+      <a-text value="LEJOS" align="center" color="#ffffff" width="3" position="0 -1.72 0"></a-text>
+    </a-entity>
+
+    <a-entity id="cameraRig" position="0 1.6 0">
+      <a-camera id="camera" position="0 0 0" look-controls="enabled:false" wasd-controls="enabled:false" fov="70"></a-camera>
+    </a-entity>
+  </a-scene>
+
+  <script type="module">
+  import {FaceDetector,HandLandmarker,FilesetResolver} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
+
+  const PARALAJE_X=1.15;
+  const PARALAJE_Y=0.6;
+  const PARALAJE_Z=1;
+  const SUAVIZADO=0.1;
+  const VELOCIDAD_AVANCE=2.2;
+  const VELOCIDAD_GIRO=65;
+  const UMBRAL_GESTO=0.45;
+  const video=document.querySelector('#video');
+  const canvas=document.querySelector('#marcaCara');
+  const contexto=canvas.getContext('2d');
+  const mensaje=document.querySelector('#mensaje');
+  const rig=document.querySelector('#cameraRig');
+  const cabezaObjetivo={x:0,y:0,z:0};
+  const cabezaActual={x:0,y:0,z:0};
+  const jugador={x:0,y:1.6,z:0,yaw:0};
+  let areaReferencia=null;
+  let centroReferencia=null;
+  let detectorCara=null;
+  let detectorMano=null;
+  let gesto='NEUTRO';
+  let ultimoTiempo=performance.now();
+
+  function procesarCara(cara){
+    const caja=cara.boundingBox;
+    const cx=caja.originX+caja.width/2;
+    const cy=caja.originY+caja.height/2;
+    const fx=cx/video.videoWidth;
+    const fy=cy/video.videoHeight;
+    if(centroReferencia===null)centroReferencia={x:fx,y:fy};
+    const area=caja.width*caja.height/(video.videoWidth*video.videoHeight);
+    if(areaReferencia===null)areaReferencia=area;
+    const profundidad=Math.max(-0.7,Math.min(0.7,area/areaReferencia-1));
+    cabezaObjetivo.x=-(fx-centroReferencia.x)*2*PARALAJE_X;
+    cabezaObjetivo.y=-(fy-centroReferencia.y)*2*PARALAJE_Y;
+    cabezaObjetivo.z=-profundidad*PARALAJE_Z;
+
+    const escalaX=canvas.width/video.videoWidth;
+    const escalaY=canvas.height/video.videoHeight;
+    contexto.strokeStyle='#8bffcf';
+    contexto.lineWidth=3;
+    contexto.strokeRect(caja.originX*escalaX,caja.originY*escalaY,
+      caja.width*escalaX,caja.height*escalaY);
+  }
+
+  function distancia3D(a,b){
+    return Math.hypot(a.x-b.x,a.y-b.y,(a.z||0)-(b.z||0));
+  }
+
+  function indiceExtendido(puntos){
+    const nudillo=puntos[5];
+    const articulacion=puntos[6];
+    const punta=puntos[8];
+    const ax=nudillo.x-articulacion.x;
+    const ay=nudillo.y-articulacion.y;
+    const az=(nudillo.z||0)-(articulacion.z||0);
+    const bx=punta.x-articulacion.x;
+    const by=punta.y-articulacion.y;
+    const bz=(punta.z||0)-(articulacion.z||0);
+    const largoA=Math.hypot(ax,ay,az);
+    const largoB=Math.hypot(bx,by,bz);
+    if(largoA<0.0001 || largoB<0.0001)return false;
+    const coseno=Math.max(-1,Math.min(1,
+      (ax*bx+ay*by+az*bz)/(largoA*largoB)));
+    const angulo=Math.acos(coseno)*180/Math.PI;
+    return angulo>155 &&
+      distancia3D(nudillo,punta)>distancia3D(puntos[0],puntos[9])*0.72;
+  }
+
+  function obtenerGesto(puntos){
+    if(!indiceExtendido(puntos))return 'NEUTRO';
+    const base=puntos[5];
+    const punta=puntos[8];
+    let dx=-(punta.x-base.x);
+    let dy=punta.y-base.y;
+    const longitud=Math.hypot(dx,dy);
+    if(longitud<0.035)return 'NEUTRO';
+    dx/=longitud;
+    dy/=longitud;
+    if(dy<-UMBRAL_GESTO && Math.abs(dy)>Math.abs(dx))return 'AVANZAR';
+    if(dx<-UMBRAL_GESTO && Math.abs(dx)>Math.abs(dy))return 'IZQUIERDA';
+    if(dx>UMBRAL_GESTO && Math.abs(dx)>Math.abs(dy))return 'DERECHA';
+    return 'NEUTRO';
+  }
+
+  function dibujarMano(puntos){
+    const conexiones=[
+      [0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],
+      [5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],
+      [13,17],[17,18],[18,19],[19,20],[0,17]
+    ];
+    contexto.strokeStyle='#5ce4f5';
+    contexto.lineWidth=2;
+    for(const [a,b] of conexiones){
+      contexto.beginPath();
+      contexto.moveTo(puntos[a].x*canvas.width,puntos[a].y*canvas.height);
+      contexto.lineTo(puntos[b].x*canvas.width,puntos[b].y*canvas.height);
+      contexto.stroke();
+    }
+    contexto.strokeStyle='#ffd56a';
+    contexto.lineWidth=5;
+    contexto.beginPath();
+    contexto.moveTo(puntos[5].x*canvas.width,puntos[5].y*canvas.height);
+    contexto.lineTo(puntos[8].x*canvas.width,puntos[8].y*canvas.height);
+    contexto.stroke();
+  }
+
+  function moverJugador(dt){
+    if(gesto==='IZQUIERDA')jugador.yaw+=VELOCIDAD_GIRO*dt;
+    if(gesto==='DERECHA')jugador.yaw-=VELOCIDAD_GIRO*dt;
+    if(gesto==='AVANZAR'){
+      const angulo=THREE.MathUtils.degToRad(jugador.yaw);
+      jugador.x-=Math.sin(angulo)*VELOCIDAD_AVANCE*dt;
+      jugador.z-=Math.cos(angulo)*VELOCIDAD_AVANCE*dt;
+    }
+  }
+
+  function actualizar(tiempo){
+    const dt=Math.max(0,Math.min(0.05,(tiempo-ultimoTiempo)/1000));
+    ultimoTiempo=tiempo;
+    contexto.clearRect(0,0,canvas.width,canvas.height);
+    gesto='NEUTRO';
+    if(detectorCara && detectorMano && video.readyState>=2){
+      const caras=detectorCara.detectForVideo(video,tiempo);
+      if(caras.detections.length)procesarCara(caras.detections[0]);
+      const manos=detectorMano.detectForVideo(video,tiempo);
+      if(manos.landmarks.length){
+        const puntos=manos.landmarks[0];
+        gesto=obtenerGesto(puntos);
+        dibujarMano(puntos);
+      }
+    }
+    moverJugador(dt);
+    cabezaActual.x+=(cabezaObjetivo.x-cabezaActual.x)*SUAVIZADO;
+    cabezaActual.y+=(cabezaObjetivo.y-cabezaActual.y)*SUAVIZADO;
+    cabezaActual.z+=(cabezaObjetivo.z-cabezaActual.z)*SUAVIZADO;
+    const angulo=THREE.MathUtils.degToRad(jugador.yaw);
+    const hx=cabezaActual.x*Math.cos(angulo)-cabezaActual.z*Math.sin(angulo);
+    const hz=cabezaActual.x*Math.sin(angulo)+cabezaActual.z*Math.cos(angulo);
+    rig.setAttribute('position',
+      (jugador.x+hx)+' '+(jugador.y+cabezaActual.y)+' '+(jugador.z+hz));
+    rig.setAttribute('rotation','0 '+jugador.yaw+' 0');
+    if(detectorMano){
+      const nombres={NEUTRO:'mano neutra',AVANZAR:'avanzar',
+        IZQUIERDA:'girar a la izquierda',DERECHA:'girar a la derecha'};
+      mensaje.textContent='Cabeza: paralaje · Índice extendido: '+nombres[gesto]+
+        ' · ↑ avanzar · ← / → girar';
+    }
+    requestAnimationFrame(actualizar);
+  }
+
+  requestAnimationFrame(actualizar);
+  async function iniciar(){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({
+        video:{width:{ideal:640},height:{ideal:480},facingMode:'user'},audio:false
+      });
+      video.srcObject=stream;
+      await video.play();
+      mensaje.textContent='Cargando detección de cara y manos…';
+      const vision=await FilesetResolver.forVisionTasks(
+        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+      );
+      detectorCara=await FaceDetector.createFromOptions(vision,{
+        baseOptions:{modelAssetPath:
+          'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite'},
+        runningMode:'VIDEO',minDetectionConfidence:0.5
+      });
+      detectorMano=await HandLandmarker.createFromOptions(vision,{
+        baseOptions:{modelAssetPath:
+          'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task'},
+        runningMode:'VIDEO',numHands:1,
+        minHandDetectionConfidence:0.5,minHandPresenceConfidence:0.5,
+        minTrackingConfidence:0.5
+      });
+    }catch(error){
+      console.error(error);
+      mensaje.textContent='No se pudo iniciar la cámara o MediaPipe.';
+    }
+  }
+  iniciar();
+</script>
+</body>
+</html>
+

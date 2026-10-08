@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <body>
+    <script>
+      function hablar(){
+        let mensaje = new SpeechSynthesisUtterance(
+          "Hola, soy el navegador Chrome"
+        );
+
+        mensaje.lang = "es-ES";
+
+        let voces = speechSynthesis.getVoices();
+        console.log(voces);
+        let voz = voces.find(v => v.lang === "es-ES");
+
+        if(voz){
+          mensaje.voice = voz;
+        }
+
+        speechSynthesis.speak(mensaje);
+      }
+
+      if(speechSynthesis.getVoices().length){
+        hablar();
+      } else {
+        speechSynthesis.onvoiceschanged = hablar;
+      }
+    </script>
+  </body>
+</html>

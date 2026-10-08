@@ -1,0 +1,123 @@
+{
+  "campos": [
+    {
+      "nombre": "id",
+      "etiqueta": "ID",
+      "tipo": "number"
+    },
+    {
+      "nombre": "nombre",
+      "etiqueta": "Nombre del producto",
+      "tipo": "text"
+    },
+    {
+      "nombre": "descripcion",
+      "etiqueta": "Descripción",
+      "tipo": "textarea"
+    },
+    {
+      "nombre": "categoria",
+      "etiqueta": "Categoría",
+      "tipo": "select",
+      "opciones": [
+        "Informática",
+        "Periféricos",
+        "Telefonía",
+        "Oficina",
+        "Almacenamiento"
+      ]
+    },
+    {
+      "nombre": "precio",
+      "etiqueta": "Precio",
+      "tipo": "number"
+    },
+    {
+      "nombre": "stock",
+      "etiqueta": "Stock",
+      "tipo": "number"
+    },
+    {
+      "nombre": "fecha_alta",
+      "etiqueta": "Fecha de alta",
+      "tipo": "date"
+    },
+    {
+      "nombre": "fabricante",
+      "etiqueta": "Fabricante",
+      "tipo": "text"
+    },
+    {
+      "nombre": "web",
+      "etiqueta": "Página del producto",
+      "tipo": "url"
+    },
+    {
+      "nombre": "disponible",
+      "etiqueta": "Disponible",
+      "tipo": "checkbox"
+    }
+  ],
+  "datos": [
+    {
+      "id": 1,
+      "nombre": "Portátil Altair 15",
+      "descripcion": "Portátil de 15 pulgadas preparado para programación y trabajo de oficina.",
+      "categoria": "Informática",
+      "precio": 789.95,
+      "stock": 14,
+      "fecha_alta": "2026-01-19",
+      "fabricante": "Altair Systems",
+      "web": "https://example.com/altair-15",
+      "disponible": true
+    },
+    {
+      "id": 2,
+      "nombre": "Monitor Boreal 27",
+      "descripcion": "Monitor IPS de 27 pulgadas con resolución QHD y soporte regulable.",
+      "categoria": "Periféricos",
+      "precio": 249.90,
+      "stock": 22,
+      "fecha_alta": "2026-02-06",
+      "fabricante": "Boreal View",
+      "web": "https://example.com/boreal-27",
+      "disponible": true
+    },
+    {
+      "id": 3,
+      "nombre": "Teclado Nébula T80",
+      "descripcion": "Teclado mecánico compacto con conexión USB y distribución española.",
+      "categoria": "Periféricos",
+      "precio": 84.50,
+      "stock": 35,
+      "fecha_alta": "2026-03-12",
+      "fabricante": "Nébula Devices",
+      "web": "https://example.com/nebula-t80",
+      "disponible": true
+    },
+    {
+      "id": 4,
+      "nombre": "Unidad Órbita 2 TB",
+      "descripcion": "Unidad SSD externa con conexión USB-C y carcasa de aluminio.",
+      "categoria": "Almacenamiento",
+      "precio": 159.75,
+      "stock": 9,
+      "fecha_alta": "2026-04-23",
+      "fabricante": "Órbita Storage",
+      "web": "https://example.com/orbita-2tb",
+      "disponible": true
+    },
+    {
+      "id": 5,
+      "nombre": "Teléfono Lumen X",
+      "descripcion": "Teléfono con pantalla OLED, cámara dual y 256 GB de almacenamiento.",
+      "categoria": "Telefonía",
+      "precio": 519.00,
+      "stock": 0,
+      "fecha_alta": "2026-05-08",
+      "fabricante": "Lumen Mobile",
+      "web": "https://example.com/lumen-x",
+      "disponible": false
+    }
+  ]
+}

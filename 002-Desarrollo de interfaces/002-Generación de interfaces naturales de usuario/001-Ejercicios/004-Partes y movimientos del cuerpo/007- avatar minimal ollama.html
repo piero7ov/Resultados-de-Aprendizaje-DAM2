@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avatar minimal con Ollama</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0}
+    body{background:#eee;font-family:Arial,sans-serif;overflow:hidden}
+    #pantalla{position:fixed;inset:0;display:grid;place-items:center}
+    #canvasSprite{display:block;width:min(100vw,100vh);height:min(100vw,100vh)}
+
+    #webcam{
+      position:fixed;top:22px;right:22px;z-index:2;
+      width:220px;height:165px;overflow:hidden;
+      border-radius:16px;background:#111;box-shadow:0 8px 30px #0005;
+      transition:width .25s,height .25s,border-radius .25s;
+    }
+    #video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+    #webcam.minimizada{width:48px;height:48px;border-radius:24px}
+    #webcam.minimizada #video{opacity:0}
+    #minimizarWebcam{
+      position:absolute;top:8px;right:8px;z-index:1;
+      width:32px;height:32px;border:0;border-radius:50%;
+      background:#0009;color:white;font-size:22px;line-height:32px;
+      cursor:pointer;
+    }
+
+    #microfono{
+      position:fixed;right:30px;bottom:30px;z-index:3;
+      width:68px;height:68px;border:0;border-radius:50%;
+      background:dodgerblue;color:white;font-size:30px;
+      cursor:pointer;box-shadow:0 6px 24px #0004;
+    }
+    #microfono.escuchando{animation:pulsar 1s infinite}
+    #microfono.pensando{opacity:.65;cursor:wait}
+    @keyframes pulsar{50%{box-shadow:0 0 0 12px #1e90ff44,0 6px 24px #0004;transform:scale(1.08)}}
+    #estado{
+      position:fixed;right:110px;bottom:48px;z-index:3;
+      max-width:min(55vw,320px);padding:8px 12px;border-radius:10px;
+      background:#222c;color:white;font-size:14px;
+    }
+    #estado:empty{display:none}
+    @media(max-width:600px){
+      #webcam{top:12px;right:12px;width:128px;height:96px}
+      #microfono{right:18px;bottom:18px}
+      #estado{right:96px;bottom:36px}
+    }
+  </style>
+</head>
+<body>
+  <main id="pantalla">
+    <canvas id="canvasSprite" width="640" height="640" aria-label="Avatar"></canvas>
+  </main>
+  <div id="webcam">
+    <video id="video" autoplay muted playsinline></video>
+    <button id="minimizarWebcam" type="button" aria-label="Minimizar webcam" title="Minimizar webcam">−</button>
+  </div>
+  <div id="estado" role="status" aria-live="polite"></div>
+  <button id="microfono" type="button" aria-label="Hablar con el avatar" title="Hablar con el avatar">🎤</button>
+
+  <script type="module">
+    import {FaceDetector,FilesetResolver} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
+
+    const video=document.querySelector('#video');
+    const canvasSprite=document.querySelector('#canvasSprite');
+    const ctxSprite=canvasSprite.getContext('2d');
+    const webcam=document.querySelector('#webcam');
+    const btnMinimizar=document.querySelector('#minimizarWebcam');
+    const btnMicro=document.querySelector('#microfono');
+    const estado=document.querySelector('#estado');
+
+    btnMinimizar.onclick=()=>{
+      const minimizada=webcam.classList.toggle('minimizada');
+      btnMinimizar.textContent=minimizada?'+':'−';
+      btnMinimizar.title=minimizada?'Mostrar webcam':'Minimizar webcam';
+      btnMinimizar.setAttribute('aria-label',btnMinimizar.title);
+    };
+
+    const spritesheet=new Image();
+    const spritesheetA=new Image();
+    await Promise.all([
+      [spritesheet,'spritesheet.png'],
+      [spritesheetA,'spritesheetA.png']
+    ].map(([imagen,archivo])=>new Promise((resolve,reject)=>{
+      imagen.onload=resolve;
+      imagen.onerror=()=>reject(new Error('No se ha podido cargar '+archivo));
+      imagen.src=archivo;
+    })));
+    if(spritesheet.width!==spritesheetA.width || spritesheet.height!==spritesheetA.height){
+      throw new Error('Los dos spritesheets deben tener las mismas dimensiones');
+    }
+
+    const COLUMNAS=5;
+    const FILAS=5;
+    const spriteW=spritesheet.width/COLUMNAS;
+    const spriteH=spritesheet.height/FILAS;
+    // Píxeles recortados por cada lado de la celda para ocultar las líneas negras.
+    const RECORTE_SPRITE=3;
+    const ZONA_FADE=0.18;
+    const SUAVIZADO=0.15;
+    let filaActual=2.5;
+    let columnaActual=2.5;
+    let cxSuave=null;
+    let cySuave=null;
+    let detector=null;
+    let hablando=false;
+    let bocaAbierta=false;
+    let temporizadorBoca=null;
+    let vozActiva=null;
+    let historial=[];
+    let esperando=false;
+    let reconocimiento=null;
+
+    function detenerLipSync(){
+      clearTimeout(temporizadorBoca);
+      temporizadorBoca=null;
+      hablando=false;
+      bocaAbierta=false;
+    }
+
+    function iniciarLipSync(){
+      detenerLipSync();
+      hablando=true;
+      function alternarBoca(){
+        if(!hablando)return;
+        bocaAbierta=!bocaAbierta;
+        temporizadorBoca=setTimeout(alternarBoca,90+Math.random()*90);
+      }
+      alternarBoca();
+    }
+
+    function mezclaEje(pos){
+      pos=Math.max(0,Math.min(4.999999,pos));
+      const base=Math.floor(pos);
+      const limite=Math.round(pos);
+      // Una sola transición, centrada en cada límite entre sprites.
+      if(limite>0 && limite<5 && Math.abs(pos-limite)<ZONA_FADE){
+        const t=(pos-(limite-ZONA_FADE))/(2*ZONA_FADE);
+        return {a:limite-1,b:limite,t};
+      }
+      return {a:base,b:base,t:0};
+    }
+
+    function dibujarCapa(fila,columna,alpha,hojaActiva){
+      if(alpha<=0)return;
+      const sx=columna*spriteW+RECORTE_SPRITE;
+      const sy=fila*spriteH+RECORTE_SPRITE;
+      const sw=spriteW-2*RECORTE_SPRITE;
+      const sh=spriteH-2*RECORTE_SPRITE;
+      const tamano=Math.min(canvasSprite.width,canvasSprite.height);
+      const dx=(canvasSprite.width-tamano)/2;
+      const dy=(canvasSprite.height-tamano)/2;
+      ctxSprite.globalAlpha=alpha;
+      ctxSprite.drawImage(hojaActiva,sx,sy,sw,sh,dx,dy,tamano,tamano);
+    }
+
+    function dibujarSpritePorZonas(filaPos,columnaPos){
+      ctxSprite.clearRect(0,0,canvasSprite.width,canvasSprite.height);
+      const hojaActiva=hablando && bocaAbierta?spritesheetA:spritesheet;
+      const mx=mezclaEje(columnaPos);
+      const my=mezclaEje(filaPos);
+      const pesos=[
+        [my.a,mx.a,(1-my.t)*(1-mx.t)],
+        [my.a,mx.b,(1-my.t)*mx.t],
+        [my.b,mx.a,my.t*(1-mx.t)],
+        [my.b,mx.b,my.t*mx.t]
+      ];
+      ctxSprite.globalCompositeOperation='lighter';
+      for(const [fila,columna,peso] of pesos){
+        dibujarCapa(fila,columna,peso,hojaActiva);
+      }
+      ctxSprite.globalAlpha=1;
+      ctxSprite.globalCompositeOperation='source-over';
+    }
+
+    function detectar(){
+      if(detector && video.readyState>=2){
+        const resultado=detector.detectForVideo(video,performance.now());
+        if(resultado.detections.length>0){
+          const caja=resultado.detections[0].boundingBox;
+          const cx=caja.originX+caja.width/2;
+          const cy=caja.originY+caja.height/2;
+          if(cxSuave===null){
+            cxSuave=cx;
+            cySuave=cy;
+          }else{
+            cxSuave+=(cx-cxSuave)*SUAVIZADO;
+            cySuave+=(cy-cySuave)*SUAVIZADO;
+          }
+          // Invertimos solo el eje horizontal; el giro vertical ya era correcto.
+          columnaActual=Math.max(0,Math.min(4.999999,5-cxSuave/video.videoWidth*5));
+          filaActual=Math.max(0,Math.min(4.999999,cySuave/video.videoHeight*5));
+        }
+      }
+      dibujarSpritePorZonas(filaActual,columnaActual);
+      requestAnimationFrame(detectar);
+    }
+
+    async function preguntar(texto){
+      texto=texto.trim();
+      if(!texto || esperando)return;
+      esperando=true;
+      btnMicro.classList.remove('escuchando');
+      btnMicro.classList.add('pensando');
+      btnMicro.textContent='…';
+      btnMicro.disabled=true;
+      estado.textContent='Pensando…';
+      try{
+        const respuestaHTTP=await fetch('../001-Herramientas para el aprendizaje automático/ollama.php',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({mensaje:texto,historial})
+        });
+        if(!respuestaHTTP.ok)throw new Error('HTTP '+respuestaHTTP.status);
+        const datos=await respuestaHTTP.json();
+        const respuesta=datos.respuesta || 'No he podido responder.';
+        historial.push({role:'user',content:texto});
+        historial.push({role:'assistant',content:respuesta});
+        historial=historial.slice(-10);
+        speechSynthesis.cancel();
+        detenerLipSync();
+        const voz=new SpeechSynthesisUtterance(respuesta);
+        vozActiva=voz;
+        voz.lang='es-ES';
+        voz.onstart=()=>{if(vozActiva===voz){iniciarLipSync();estado.textContent='';}};
+        voz.onend=()=>{if(vozActiva===voz){detenerLipSync();vozActiva=null;estado.textContent='';}};
+        voz.onerror=()=>{if(vozActiva===voz){detenerLipSync();vozActiva=null;estado.textContent='No se ha podido reproducir la voz.';}};
+        speechSynthesis.speak(voz);
+      }catch(error){
+        console.error(error);
+        estado.textContent='No se ha podido conectar con Ollama.';
+      }finally{
+        esperando=false;
+        btnMicro.classList.remove('pensando');
+        btnMicro.textContent='🎤';
+        btnMicro.disabled=false;
+      }
+    }
+
+    btnMicro.onclick=()=>{
+      if(esperando)return;
+      if(reconocimiento){
+        reconocimiento.stop();
+        return;
+      }
+      const SR=window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SR){
+        estado.textContent='El navegador no permite dictar por voz.';
+        return;
+      }
+      speechSynthesis.cancel();
+      vozActiva=null;
+      detenerLipSync();
+      reconocimiento=new SR();
+      reconocimiento.lang='es-ES';
+      reconocimiento.onstart=()=>{
+        btnMicro.classList.add('escuchando');
+        estado.textContent='Escuchando…';
+      };
+      reconocimiento.onresult=evento=>preguntar(evento.results[0][0].transcript);
+      reconocimiento.onerror=evento=>{
+        console.error('SpeechRecognition:',evento.error);
+        estado.textContent='No se ha podido reconocer la voz.';
+      };
+      reconocimiento.onend=()=>{
+        reconocimiento=null;
+        btnMicro.classList.remove('escuchando');
+        if(estado.textContent==='Escuchando…')estado.textContent='';
+      };
+      reconocimiento.start();
+    };
+
+    dibujarSpritePorZonas(filaActual,columnaActual);
+    requestAnimationFrame(detectar);
+
+    async function iniciarCamara(){
+      try{
+        const stream=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480}});
+        video.srcObject=stream;
+        await video.play();
+        const vision=await FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+        );
+        detector=await FaceDetector.createFromOptions(vision,{
+          baseOptions:{
+            modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite'
+          },
+          runningMode:'VIDEO',
+          minDetectionConfidence:0.5
+        });
+      }catch(error){
+        console.error(error);
+        estado.textContent='No se ha podido iniciar la webcam.';
+      }
+    }
+    iniciarCamara();
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+[
+  {
+    "texto": "Clientes",
+    "url": "#clientes",
+    "activo": false
+  },
+  {
+    "texto": "Productos",
+    "url": "index.html#productos",
+    "pagina": "index.html"
+  },
+  {
+    "texto": "Pedidos",
+    "url": "#pedidos",
+    "activo": false
+  },
+  {
+    "texto": "Actividad",
+    "url": "#actividad",
+    "activo": false
+  },
+  {
+    "texto": "Formularios",
+    "url": "formularios.html",
+    "pagina": "formularios.html"
+  },
+  {
+    "texto": "Toasts",
+    "url": "toasts.html",
+    "pagina": "toasts.html"
+  },
+  {
+    "texto": "Modal",
+    "url": "modal-paneles.html",
+    "pagina": "modal-paneles.html"
+  },
+  {
+    "texto": "Login",
+    "url": "login.html",
+    "pagina": "login.html"
+  }
+]

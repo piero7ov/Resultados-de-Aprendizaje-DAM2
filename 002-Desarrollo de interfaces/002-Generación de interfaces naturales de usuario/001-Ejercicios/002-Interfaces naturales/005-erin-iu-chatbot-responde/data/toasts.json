@@ -1,0 +1,22 @@
+[
+  {
+    "texto": "Mensajes",
+    "activo": true
+  },
+  {
+    "texto": "Éxito",
+    "activo": false
+  },
+  {
+    "texto": "Información",
+    "activo": false
+  },
+  {
+    "texto": "Aviso",
+    "activo": false
+  },
+  {
+    "texto": "Error",
+    "activo": false
+  }
+]

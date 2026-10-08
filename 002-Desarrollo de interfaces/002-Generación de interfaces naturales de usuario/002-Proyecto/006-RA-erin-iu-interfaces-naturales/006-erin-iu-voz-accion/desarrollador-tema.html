@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERIN | Control técnico del tema</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="js/preferencias-tema.js"></script>
+    <script src="js/tema-desarrollador.js" defer></script>
+</head>
+<body class="erin pagina-desarrollador">
+    <main class="desarrollador-contenedor">
+        <header class="desarrollador-cabecera">
+            <div>
+                <p class="desarrollador-etiqueta">Herramienta interna</p>
+                <h1>Control técnico del tema</h1>
+                <p>Esta página no forma parte de la navegación de los usuarios.</p>
+            </div>
+            <a class="boton" href="index.html">Ver aplicación</a>
+        </header>
+
+        <div class="desarrollador-rejilla">
+            <form id="editor-tema" class="panel-desarrollador">
+                <h2>Variables principales</h2>
+
+                <label class="control-tema">
+                    <span>Tono <output data-salida-tema="tono"></output></span>
+                    <input type="range" name="tono" min="0" max="360" step="1" data-variable-tema>
+                </label>
+
+                <label class="control-tema">
+                    <span>Saturación <output data-salida-tema="saturacion"></output></span>
+                    <input type="range" name="saturacion" min="0" max="100" step="1" data-variable-tema>
+                </label>
+
+                <label class="control-tema">
+                    <span>Brillo <output data-salida-tema="brillo"></output></span>
+                    <input type="range" name="brillo" min="35" max="60" step="1" data-variable-tema>
+                </label>
+
+                <label class="control-tema">
+                    <span>Tamaño del texto <output data-salida-tema="texto"></output></span>
+                    <input type="range" name="texto" min="12" max="18" step="1" data-variable-tema>
+                </label>
+
+                <div class="acciones-desarrollador">
+                    <button class="boton" type="submit">Guardar configuración</button>
+                    <button class="boton boton-secundario" id="restablecer-tema" type="button">Restablecer</button>
+                </div>
+
+                <p id="estado-tema" class="estado-desarrollador" role="status" aria-live="polite">Tema cargado</p>
+            </form>
+
+            <section class="panel-desarrollador" aria-labelledby="titulo-vista-previa">
+                <h2 id="titulo-vista-previa">Vista previa</h2>
+                <article class="vista-previa-tema">
+                    <div class="marca">
+                        <span class="logotipo">ER<span class="letra-identidad">I</span>N</span>
+                        <small>Interfaz de ejemplo</small>
+                    </div>
+                    <h3>Componente de interfaz</h3>
+                    <p>Los cambios se aplican en directo para que el desarrollador pueda revisar el resultado.</p>
+                    <button class="boton" type="button">Acción principal</button>
+                </article>
+
+                <label class="codigo-tema">
+                    <span>Variables CSS resultantes</span>
+                    <textarea id="css-generado" rows="7" readonly></textarea>
+                </label>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

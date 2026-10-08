@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERIN | Modal y panel lateral</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="js/preferencias-tema.js"></script>
+    <script src="js/componentes.js" defer></script>
+    <script src="js/interacciones.js" defer></script>
+</head>
+<body class="erin pagina-modal-paneles">
+    <header>
+        <div class="marca">
+            <a class="logotipo" href="index.html" aria-label="ERIN, inicio">ER<span class="letra-identidad">I</span>N</a>
+            <small>Ecosistema de Recursos,<br>Información y Negocio</small>
+        </div>
+        <div class="herramientas">
+            <label for="buscar">Buscar</label>
+            <input class="buscador" id="buscar" type="search" placeholder="Buscar...">
+            <a class="boton" href="index.html">Aplicación</a>
+        </div>
+        <div class="usuario" data-source="data/usuario.json"></div>
+    </header>
+
+    <main>
+        <nav class="navegacion" data-source="data/menu.json" aria-label="Áreas de gestión"></nav>
+        <div class="separador" role="separator" aria-orientation="vertical" aria-label="Redimensionar navegación" data-minimo="150" data-maximo="300"></div>
+
+        <section class="elementos" data-source="data/modal-paneles.json" aria-label="Componentes"></section>
+        <div class="separador" role="separator" aria-orientation="vertical" aria-label="Redimensionar elementos" data-minimo="180" data-maximo="360"></div>
+
+        <section class="escenario escenario-mejora" aria-labelledby="titulo-modal-paneles">
+            <article class="panel-mejora">
+                <div class="cabecera-panel">
+                    <div>
+                        <h1 id="titulo-modal-paneles">Modal y panel lateral</h1>
+                        <p>Dos formas de mostrar acciones sin cambiar de página</p>
+                    </div>
+                </div>
+
+                <div class="muestrario-modal-paneles">
+                    <section aria-labelledby="titulo-modal-demo">
+                        <h2 id="titulo-modal-demo">Ventana modal</h2>
+                        <p>Centra una decisión y bloquea temporalmente el resto de la interfaz.</p>
+                        <button class="boton" id="abrir-modal" type="button">Abrir modal</button>
+                    </section>
+                    <section aria-labelledby="titulo-panel-demo">
+                        <h2 id="titulo-panel-demo">Panel lateral</h2>
+                        <p>Permite editar una vista previa manteniendo visible el contexto.</p>
+                        <button class="boton" id="abrir-panel" type="button">Abrir panel</button>
+                    </section>
+                </div>
+
+                <div class="vista-previa-panel" aria-labelledby="titulo-vista-previa">
+                    <h2 id="titulo-vista-previa">Vista previa</h2>
+                    <p id="descripcion-vista-previa">Este contenido puede cambiarse desde el panel lateral.</p>
+                </div>
+                <p id="resultado-modal-paneles" role="status" aria-live="polite"></p>
+            </article>
+        </section>
+    </main>
+
+    <dialog class="modal-erin" id="modal-ejemplo" aria-labelledby="titulo-modal-ejemplo" aria-describedby="descripcion-modal-ejemplo">
+        <div class="cabecera-dialogo">
+            <h2 id="titulo-modal-ejemplo">Confirmar acción</h2>
+            <button class="boton boton-secundario cerrar-dialogo" type="button" data-cerrar-dialogo aria-label="Cerrar modal">×</button>
+        </div>
+        <p id="descripcion-modal-ejemplo">Confirma para ver cómo responde la interfaz a una decisión.</p>
+        <div class="acciones-dialogo">
+            <button class="boton" id="confirmar-modal" type="button">Confirmar</button>
+            <button class="boton boton-secundario" type="button" data-cerrar-dialogo>Cancelar</button>
+        </div>
+    </dialog>
+
+    <dialog class="panel-lateral-erin" id="panel-ejemplo" aria-labelledby="titulo-panel-ejemplo">
+        <div class="redimensionar-panel" id="redimensionar-panel" role="separator" aria-orientation="vertical" aria-label="Redimensionar panel lateral" aria-valuemin="320" aria-valuemax="720" aria-valuenow="440" tabindex="0"></div>
+        <div class="cabecera-dialogo">
+            <div>
+                <small>VISTA PREVIA</small>
+                <h2 id="titulo-panel-ejemplo">Editar contenido</h2>
+            </div>
+            <button class="boton boton-secundario cerrar-dialogo" type="button" data-cerrar-dialogo aria-label="Cerrar panel lateral">×</button>
+        </div>
+        <form id="formulario-panel" class="formulario-panel">
+            <label for="nombre-vista-previa">Título</label>
+            <input id="nombre-vista-previa" name="titulo" type="text" required>
+            <label for="texto-vista-previa">Descripción</label>
+            <textarea id="texto-vista-previa" name="descripcion" rows="5" required></textarea>
+            <div class="acciones-dialogo">
+                <button class="boton" type="submit">Aplicar</button>
+                <button class="boton boton-secundario" type="button" data-cerrar-dialogo>Cancelar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <div id="templates" hidden></div>
+</body>
+</html>
