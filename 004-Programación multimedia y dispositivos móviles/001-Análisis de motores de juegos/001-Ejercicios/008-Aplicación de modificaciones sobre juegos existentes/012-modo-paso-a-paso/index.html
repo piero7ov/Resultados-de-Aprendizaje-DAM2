@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Producto en Marcha</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script type="module" src="js/escena.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Producto en Marcha</h1>
+        <p>Recorre el proceso de un producto, desde su recepción hasta la salida del paquete.</p>
+      </header>
+
+      <div class="explorador" id="explorador">
+      <div class="visor" aria-label="Vista 3D interactiva de la línea de producto">
+        <a-scene embedded renderer="antialias: true; colorManagement: true" shadow="type: pcfsoft" vr-mode-ui="enabled: false" loading-screen="enabled: false" background="color: #dceaf1">
+          <a-assets>
+            <a-asset-item id="operario" src="modelos/operario.glb"></a-asset-item>
+          </a-assets>
+          <a-entity id="camara" camera="active: true; fov: 40" position="3 14.5 21" rotation="-32 0 0" look-controls="enabled: false" wasd-controls="enabled: false"></a-entity>
+          <a-entity light="type: ambient; color: #ffffff; intensity: 1.5"></a-entity>
+          <a-entity light="type: directional; color: #ffffff; intensity: 1.7; castShadow: true; shadowMapWidth: 2048; shadowMapHeight: 2048; shadowCameraLeft: -45; shadowCameraRight: 45; shadowCameraTop: 45; shadowCameraBottom: -45; shadowCameraNear: .5; shadowCameraFar: 160; shadowBias: -0.0002" position="-25 65 40"></a-entity>
+          <a-sky color="#dceaf1"></a-sky>
+          <a-entity id="mundo"></a-entity>
+          <a-entity id="entorno" shadow="cast: true; receive: true"></a-entity>
+          <a-entity id="avatares"></a-entity>
+          <a-entity id="marcadores"></a-entity>
+        </a-scene>
+        <p class="estado" id="estado" aria-live="polite">Cargando la maqueta 3D…</p>
+      </div>
+      <div class="contenedor-panel">
+      <aside class="panel-estacion" id="panel-estacion" aria-labelledby="titulo-estacion" hidden>
+        <div class="cabecera-panel">
+          <p class="numero-estacion" id="numero-estacion"></p>
+          <button type="button" id="cerrar-panel" aria-label="Cerrar detalle y volver a la vista general" title="Volver a la vista general">×</button>
+        </div>
+        <h2 id="titulo-estacion"></h2>
+        <p class="resumen-estacion" id="resumen-estacion"></p>
+        <h3>Qué se hace aquí</h3>
+        <ol class="tareas-estacion" id="tareas-estacion"></ol>
+        <dl class="flujo-estacion">
+          <div><dt>Entrada</dt><dd id="entrada-estacion"></dd></div>
+          <div><dt>Salida</dt><dd id="salida-estacion"></dd></div>
+        </dl>
+      </aside>
+      </div>
+      </div>
+
+      <nav class="controles" aria-label="Acercamiento a las estaciones">
+        <button type="button" data-vista="general" aria-pressed="true">Vista general</button>
+        <button type="button" data-estacion="recepcion" aria-pressed="false">01 · Recepción</button>
+        <button type="button" data-estacion="calidad" aria-pressed="false">02 · Calidad</button>
+        <button type="button" data-estacion="embalaje" aria-pressed="false">03 · Embalaje</button>
+        <button type="button" data-estacion="expedicion" aria-pressed="false">04 · Expedición</button>
+      </nav>
+      <section class="simulacion" id="simulacion" aria-label="Recorrido del producto">
+        <div class="selector-modo">
+          <label for="modo-recorrido">Modo</label>
+          <select id="modo-recorrido" aria-describedby="aviso-modo">
+            <option value="automatico">Automático</option>
+            <option value="guiado">Pruébalo tú</option>
+          </select>
+          <small id="aviso-modo">Cambiar de modo reinicia el lote.</small>
+        </div>
+        <div class="cabecera-simulacion">
+          <div>
+            <h2 id="numero-paquete">Lote de 6 paquetes</h2>
+          </div>
+          <div class="contadores">
+            <span><strong id="total-entregados">0</strong> preparados</span>
+            <span><strong id="total-descartados">0</strong> descartados</span>
+          </div>
+        </div>
+        <p id="mensaje-recorrido" role="status">Cargando la demostración…</p>
+        <progress id="avance-paquete" max="1" value="0" aria-label="Avance del paquete actual"></progress>
+        <div class="acciones-recorrido">
+          <button id="accion-recorrido" type="button" hidden disabled>Recibir</button>
+          <button id="iniciar-recorrido" type="button" aria-label="Iniciar" title="Iniciar" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+          </button>
+          <button id="pausar-recorrido" type="button" aria-label="Pausar" title="Pausar" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z" fill="currentColor"/></svg>
+          </button>
+          <button id="reiniciar-recorrido" type="button" aria-label="Reiniciar" title="Reiniciar" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1 7M4 4v6h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <label><input id="seguir-paquete" type="checkbox" checked> Seguir cámara</label>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

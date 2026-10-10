@@ -1,0 +1,78 @@
+@font-face {
+  font-family: Coolvetica;
+  src: url("../fuentes/Coolvetica-Rg.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --crema: #f8f1e5;
+  --arena: #eee4d5;
+  --papel: #fffaf2;
+  --salmon: #f5aa91;
+  --salmon-suave: #f8dfd2;
+  --terracota: #bd573e;
+  --tinta: #382d29;
+  --texto-secundario: #716057;
+  --borde-erin: #ddd0bf;
+  --metal-salmon: linear-gradient(120deg, #f6baa1 0%, #ed977e 48%, #dc7d65 100%);
+  --metal-crema: linear-gradient(120deg, var(--papel), #e5d9c9);
+  --esquinas-erin: 14px 0 14px 0;
+  --control-erin: 9px 0 9px 0;
+  --sombra-metal: inset 0 1px 0 #fff9ee, 0 2px 3px #59362610;
+}
+
+body { background: var(--crema); color: var(--tinta); }
+main { padding: 26px; }
+header { display: flex; align-items: center; gap: 24px; margin-bottom: 22px; }
+.logotipo-erin { display: inline-flex; align-items: baseline; flex-shrink: 0; font: 40px/1 Coolvetica, Arial, sans-serif; color: var(--tinta); }
+.letra-i { position: relative; margin: 0 3px; color: var(--terracota); }
+.letra-i::before { content: ""; position: absolute; top: -8px; left: 50%; width: 7px; height: 7px; transform: translateX(-50%); border-radius: 3px; background: currentColor; box-shadow: 0 0 12px #f5aa91aa; }
+.titulo-proyecto { padding-left: 24px; border-left: 1px solid var(--borde-erin); }
+h1 { font: clamp(27px, 3vw, 38px)/1.15 Coolvetica, Arial, sans-serif; margin: 0 0 5px; }
+.titulo-proyecto p { margin: 0; color: var(--texto-secundario); line-height: 1.5; font-size: 14px; }
+.visor { border-color: var(--borde-erin); border-radius: var(--esquinas-erin); }
+.estado { color: var(--tinta); background: #fffaf2ed; border-left: 3px solid var(--terracota); border-radius: 6px 0 6px 0; }
+.panel-estacion { border-color: var(--borde-erin); border-top-color: var(--color-estacion); border-radius: var(--esquinas-erin); background: var(--papel); box-shadow: 0 4px 16px #59362610; }
+.panel-estacion h2 { font-family: Coolvetica, Arial, sans-serif; font-size: 28px; font-weight: 400; }
+.numero-estacion, .resumen-estacion, .tareas-estacion, .flujo-estacion dt { color: var(--texto-secundario); }
+.tareas-estacion li::marker { color: var(--terracota); }
+.flujo-estacion { background: var(--arena); border-radius: var(--control-erin); }
+#cerrar-panel { border-color: #b9aa97; border-radius: var(--control-erin); background: var(--metal-crema); box-shadow: var(--sombra-metal); color: var(--tinta); }
+#cerrar-panel:hover { background: var(--salmon-suave); }
+.controles { gap: 9px; }
+.controles button { padding: 11px 15px; border: 0; border-radius: var(--control-erin); background: var(--metal-crema); box-shadow: var(--sombra-metal); color: var(--tinta); font: 16px Coolvetica, Arial, sans-serif; transition: background-color 180ms ease, filter 180ms ease; }
+.controles button:hover { filter: brightness(.98); }
+.controles button[aria-pressed="true"] { border: 0; background: var(--metal-salmon); color: #4b291f; }
+.simulacion { border-color: var(--borde-erin); border-radius: var(--esquinas-erin); background: var(--papel); box-shadow: 0 3px 12px #59362608; }
+.simulacion h2 { font: 21px Coolvetica, Arial, sans-serif; }
+.contadores, #mensaje-recorrido { color: var(--texto-secundario); }
+.contadores strong { color: var(--tinta); }
+#total-descartados { color: #a14635; }
+.selector-modo { color: var(--texto-secundario); }
+.selector-modo select { border: 0; border-radius: var(--control-erin); background: var(--metal-crema); color: var(--tinta); box-shadow: var(--sombra-metal); }
+.selector-modo small { color: var(--texto-secundario); }
+#avance-paquete { accent-color: var(--terracota); }
+#avance-paquete::-webkit-progress-bar { background: var(--arena); }
+#avance-paquete::-webkit-progress-value { background: var(--terracota); }
+#avance-paquete::-moz-progress-bar { background: var(--terracota); }
+.acciones-recorrido button { border: 0; border-radius: var(--control-erin); background: var(--metal-crema); color: var(--tinta); box-shadow: var(--sombra-metal); }
+.acciones-recorrido #iniciar-recorrido, .acciones-recorrido #accion-recorrido { border: 0; border-radius: var(--control-erin); background: var(--metal-salmon); color: #4b291f; }
+.acciones-recorrido #accion-recorrido { font-family: Coolvetica, Arial, sans-serif; font-size: 17px; letter-spacing: .025em; }
+.acciones-recorrido button:not(:disabled):hover { background: var(--salmon-suave); }
+.acciones-recorrido label { color: var(--texto-secundario); }
+.acciones-recorrido input { accent-color: var(--terracota); }
+.controles button:focus-visible, .acciones-recorrido button:focus-visible, .selector-modo select:focus-visible { outline: 0; background: var(--salmon-suave); filter: brightness(.97); }
+#cerrar-panel:focus-visible, .acciones-recorrido input:focus-visible { outline: 2px solid var(--terracota); outline-offset: 3px; }
+@media (max-width: 600px) {
+  main { padding: 14px; }
+  header { align-items: flex-start; flex-direction: column; gap: 16px; margin-bottom: 18px; }
+  .logotipo-erin { font-size: 30px; }
+  .titulo-proyecto { padding-left: 0; border-left: 0; }
+  .titulo-proyecto p { font-size: 13px; }
+  .controles button { min-height: 44px; font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .controles button { transition: none; }
+}

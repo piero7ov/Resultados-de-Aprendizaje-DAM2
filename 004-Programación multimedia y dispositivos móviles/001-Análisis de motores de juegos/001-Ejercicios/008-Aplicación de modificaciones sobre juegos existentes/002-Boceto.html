@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Producto en Marcha — Boceto de Recepción</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #edf0f2;
+        color: #263440;
+        font-family: Arial, sans-serif;
+      }
+      main { max-width: 960px; margin: auto; }
+      h1 { margin-bottom: 8px; }
+      p { line-height: 1.5; }
+      canvas {
+        display: block;
+        width: 100%;
+        height: auto;
+        background: white;
+        border: 1px solid #b6c0c8;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Producto en Marcha</h1>
+      <p>002 · Boceto de la estación de Recepción</p>
+      <canvas width="960" height="560" aria-label="Boceto de recepción: una caja sobre una cinta transportadora y un operario con chaleco azul junto a una mesa de identificación.">
+        Estación de Recepción. El producto llega por una cinta y el operario comprueba su identificación antes de enviarlo a Calidad.
+      </canvas>
+      <p><strong>Recepción:</strong> llega el producto y se comprueba su identificación antes de continuar hacia Control de calidad.</p>
+    </main>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+
+      function rectangulo(x, y, ancho, alto, color) {
+        contexto.fillStyle = color;
+        contexto.fillRect(x, y, ancho, alto);
+      }
+
+      function linea(x1, y1, x2, y2, color, grosor = 2) {
+        contexto.strokeStyle = color;
+        contexto.lineWidth = grosor;
+        contexto.beginPath();
+        contexto.moveTo(x1, y1);
+        contexto.lineTo(x2, y2);
+        contexto.stroke();
+      }
+
+      function circulo(x, y, radio, color) {
+        contexto.fillStyle = color;
+        contexto.beginPath();
+        contexto.arc(x, y, radio, 0, Math.PI * 2);
+        contexto.fill();
+      }
+
+      function texto(contenido, x, y, tamano = 18, color = "#263440") {
+        contexto.fillStyle = color;
+        contexto.font = tamano + "px Arial";
+        contexto.fillText(contenido, x, y);
+      }
+
+      // Pared, suelo y señal de la estación.
+      rectangulo(0, 0, 960, 345, "#f5f7f8");
+      rectangulo(0, 345, 960, 215, "#dfe5e9");
+      linea(0, 345, 960, 345, "#b6c0c8");
+      rectangulo(36, 30, 300, 62, "#28688c");
+      texto("01 · RECEPCIÓN", 56, 70, 26, "white");
+      texto("Entrada e identificación del producto", 36, 122, 18);
+
+      // Cinta: patas, cuerpo y rodillos.
+      rectangulo(90, 345, 18, 128, "#71818c");
+      rectangulo(410, 345, 18, 128, "#71818c");
+      rectangulo(75, 465, 48, 12, "#4b5e6b");
+      rectangulo(395, 465, 48, 12, "#4b5e6b");
+      rectangulo(40, 302, 450, 48, "#576b78");
+      for (let x = 62; x < 480; x += 30) {
+        circulo(x, 326, 14, "#b6c4cd");
+        circulo(x, 326, 4, "#71818c");
+      }
+      linea(40, 301, 490, 301, "#354a59", 6);
+
+      // Caja de producto con etiqueta, sin datos reales.
+      rectangulo(205, 220, 112, 78, "#cfa16b");
+      rectangulo(250, 220, 20, 78, "#e9c89b");
+      rectangulo(219, 244, 29, 28, "#ffffff");
+      for (let x = 225; x < 244; x += 4) {
+        linea(x, 249, x, 267, "#263440", 2);
+      }
+      texto("Producto", 207, 199, 17);
+
+      // Mesa y lector para identificar el producto.
+      rectangulo(560, 303, 285, 18, "#8a9aa5");
+      rectangulo(580, 321, 14, 155, "#71818c");
+      rectangulo(810, 321, 14, 155, "#71818c");
+      rectangulo(704, 214, 102, 68, "#354a59");
+      rectangulo(712, 222, 86, 50, "#d3e9ef");
+      texto("Producto", 720, 242, 13);
+      texto("recibido", 720, 260, 13);
+      rectangulo(747, 282, 14, 20, "#354a59");
+      rectangulo(729, 296, 50, 7, "#354a59");
+      rectangulo(635, 275, 17, 27, "#354a59");
+      rectangulo(627, 261, 38, 18, "#4e6473");
+
+      // Operario esquemático con chaleco azul y bandas reflectantes.
+      rectangulo(529, 397, 22, 75, "#354a59");
+      rectangulo(566, 397, 22, 75, "#354a59");
+      rectangulo(519, 467, 32, 13, "#263440");
+      rectangulo(566, 467, 34, 13, "#263440");
+      linea(528, 310, 510, 365, "#647985", 18);
+      linea(586, 310, 610, 338, "#647985", 18);
+      linea(610, 338, 641, 300, "#647985", 16);
+      circulo(641, 299, 9, "#e7ba94");
+      circulo(509, 367, 9, "#e7ba94");
+      rectangulo(525, 294, 65, 110, "#3485b3");
+      rectangulo(535, 301, 7, 86, "#e6edbd");
+      rectangulo(574, 301, 7, 86, "#e6edbd");
+      rectangulo(525, 365, 65, 9, "#e6edbd");
+      rectangulo(550, 278, 17, 17, "#e7ba94");
+      circulo(558, 259, 27, "#e7ba94");
+      rectangulo(528, 237, 60, 12, "#f1c64b");
+      rectangulo(538, 224, 40, 15, "#f1c64b");
+
+      texto("Cinta de entrada", 111, 515, 18);
+      texto("Comprobación de identificación", 560, 515, 18);
+
+      // Flecha del recorrido hacia la siguiente estación.
+      linea(353, 250, 463, 250, "#28688c", 3);
+      linea(449, 239, 463, 250, "#28688c", 3);
+      linea(449, 261, 463, 250, "#28688c", 3);
+      texto("Hacia Calidad →", 756, 70, 18, "#28688c");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      canvas{border:1px solid black;background:#101820;}
+    </style>
+  </head>
+  <body>
+    <canvas width="400" height="400">
+    </canvas>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+      let x = 40;
+      let y = 40;
+      let angulo = 0;
+      let temporizador = setTimeout("bucle()",1000); // Llamo al bucle por primera vez
+      function bucle(){ // Este es el bucle
+        contexto.clearRect(0,0,400,400); // Borramos el canvas
+        angulo += (Math.random()-0.5)*0.8; // Giro aleatorio entre -0.4 y 0.4 radianes.
+        x += Math.cos(angulo); // Coseno: componente horizontal del movimiento.
+        y += Math.sin(angulo); // Seno: componente vertical del movimiento.
+
+        // Si sale por un borde, aparece por el opuesto.
+        if (x > lienzo.width){ x = 0; }
+        if (x < 0){ x = lienzo.width; }
+        if (y > lienzo.height){ y = 0; }
+        if (y < 0){ y = lienzo.height; }
+
+        contexto.fillStyle = "yellow";
+        contexto.beginPath();
+        contexto.arc(x,y,5,0,Math.PI*2); // 2 PI radianes forman un círculo completo.
+        contexto.fill();
+        clearTimeout(temporizador); // Elimino el temporizador
+        temporizador = setTimeout("bucle()",20); // Vuelvo a ejecutar el bucle
+      }
+    </script>
+  </body>
+</html>

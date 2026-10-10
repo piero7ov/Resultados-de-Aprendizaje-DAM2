@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Barco en vista cenital</title>
+    <link rel="stylesheet" href="css/estilo.css">
+  </head>
+  <body>
+    <header>
+      <h1>Barco en vista cenital</h1>
+      <p>← → Girar · ↑ Acelerar · ↓ Frenar · Entra despacio en el puerto.</p>
+      <p id="estado" aria-live="polite">Navega entre las islas hasta el puerto.</p>
+      <p><span id="velocidad">Velocidad: 0%</span> <button id="reiniciar" type="button">Reiniciar</button></p>
+    </header>
+    <canvas id="escenario" tabindex="0" aria-label="Barco, islas y puerto vistos desde arriba"></canvas>
+    <script src="js/motor/Entrada.js"></script>
+    <script src="js/motor/Actor.js"></script>
+    <script src="js/motor/Jugador.js"></script>
+    <script src="js/motor/Escena.js"></script>
+    <script src="js/motor/Motor.js"></script>
+    <script src="js/juego/navegacion.js"></script>
+    <script src="js/juego/actores.js"></script>
+    <script src="js/juego/juego-barco.js"></script>
+  </body>
+</html>

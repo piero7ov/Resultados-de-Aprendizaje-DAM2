@@ -1,0 +1,85 @@
+// Coche controlado por el jugador: dibuja el sprite, resuelve sus impactos
+// y conserva la energía y el uso de escudo disponibles en el nivel actual.
+class Coche extends Entidad {
+  constructor(x, y, angulo, velocidad, energia, usosescudo) {
+    super(x, y, angulo, velocidad);
+    this.direccion = angulo;
+    this.escudo = null;
+    this.energia = energia;
+    this.usosescudo = usosescudo;
+    this.protegidohasta = 0;
+  }
+
+  pintar(){
+    // La imagen contiene arriba, derecha, abajo e izquierda en una cuadrícula de 2 × 2.
+    const ancho = imagen_coche.naturalWidth / 2;
+    const alto = imagen_coche.naturalHeight / 2;
+    const columna = this.direccion % 2;
+    const fila = Math.floor(this.direccion / 2);
+
+    contexto.imageSmoothingEnabled = false;
+    contexto.drawImage(
+      imagen_coche,
+      columna * ancho, fila * alto, ancho, alto,
+      this.x, this.y, 80, 80
+    );
+  }
+
+  mover(x, y){
+    // La dirección del desplazamiento selecciona el cuadro correcto del sprite.
+    const direccionAnterior = this.direccion;
+    if (y < 0) {
+      this.direccion = 0;
+    } else if (x > 0) {
+      this.direccion = 1;
+    } else if (y > 0) {
+      this.direccion = 2;
+    } else if (x < 0) {
+      this.direccion = 3;
+    }
+
+    // Girar cambia el rectángulo: rechazamos el giro si invadiría otro objeto.
+    const contacto = buscarContacto(this);
+    if (contacto !== null) {
+      this.direccion = direccionAnterior;
+      this.recibirChoque(contacto);
+    }
+    moverJugador(this, x, y);
+  }
+
+  rectangulo(){
+    // Excluimos los márgenes transparentes del cuadro de 80 × 80.
+    if (this.direccion === 1 || this.direccion === 3) {
+      return { x: this.x + 15, y: this.y + 27, ancho: 50, alto: 30 };
+    }
+    return { x: this.x + 26, y: this.y + 17, ancho: 30, alto: 48 };
+  }
+
+  recibirChoque(objeto){
+    // El escudo frena al objeto un segundo y evita ese empuje.
+    // Las colisiones siguen siendo sólidas, también mientras el objeto está parado.
+    if (this.escudo !== null && this.escudo.activo()) {
+      objeto.detenidohasta = performance.now() + duracionfrenado;
+      return true;
+    }
+    this.danio();
+    return false;
+  }
+
+  danio(){
+    // La protección temporal impide descontar energía varias veces por un mismo contacto.
+    const ahora = performance.now();
+    if (ahora >= this.protegidohasta) {
+      this.energia = Math.max(0, this.energia - daniocolision);
+      this.protegidohasta = ahora + duracionproteccion;
+    }
+  }
+
+  activarEscudo(){
+    // Cada activación consume un uso. No se puede renovar mientras siga activo.
+    if (this.usosescudo > 0 && (this.escudo === null || !this.escudo.activo())) {
+      this.usosescudo--;
+      this.escudo = new Escudo(this.x, this.y, duracionescudo);
+    }
+  }
+}

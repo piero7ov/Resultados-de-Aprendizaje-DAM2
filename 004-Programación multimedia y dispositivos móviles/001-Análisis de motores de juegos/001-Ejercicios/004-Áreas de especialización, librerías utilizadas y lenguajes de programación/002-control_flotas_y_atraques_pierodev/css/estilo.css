@@ -1,0 +1,48 @@
+:root { font-family: Arial, Helvetica, sans-serif; color: #173047; background: #edf3f5; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.aplicacion { max-width: 1500px; margin: auto; padding: 30px; }
+.cabecera, .titulo-panel { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.cabecera { margin-bottom: 24px; }
+h1, h2, h3, p { margin-top: 0; }
+h1 { margin-bottom: 6px; font-size: 2rem; }
+h2 { margin-bottom: 0; font-size: 1.25rem; }
+h3 { margin-bottom: 8px; }
+.cabecera p:last-child { margin-bottom: 0; color: #5b7180; }
+.sobretitulo { margin-bottom: 8px; color: #317682; font-size: .72rem; font-weight: bold; letter-spacing: .12em; }
+.aviso { padding: 11px 15px; border: 1px solid #d6aa5b; border-radius: 8px; background: #fff3d8; color: #765014; font-size: .85rem; font-weight: bold; }
+.resumen { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+.resumen div, .panel { background: white; border: 1px solid #dce6eb; border-radius: 12px; box-shadow: 0 3px 12px #18384b08; }
+.resumen div { padding: 16px 20px; }
+.resumen span { display: block; color: #617887; font-size: .84rem; }
+.resumen strong { display: block; margin-top: 8px; font-size: 1.7rem; }
+.columnas { display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(280px, 1fr); gap: 18px; align-items: start; }
+.panel { padding: 20px; }
+.titulo-panel { margin-bottom: 16px; }
+.leyenda, .nota, footer { color: #667d8b; font-size: .8rem; }
+canvas { display: block; width: 100%; height: auto; border: 1px solid #bbd7de; border-radius: 8px; background: #a6d6df; image-rendering: pixelated; }
+.nota { margin: 10px 0 0; }
+.operaciones label { display: block; margin: 19px 0 7px; font-size: .83rem; font-weight: bold; }
+select, button { width: 100%; padding: 11px 12px; border-radius: 7px; font: inherit; }
+select { border: 1px solid #bfcfd7; background: white; color: #173047; }
+button { margin-top: 16px; border: 1px solid #14627b; background: #14627b; color: white; font-weight: bold; cursor: pointer; }
+button:hover { background: #0d4d63; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+button.secundario { border-color: #b9cbd2; background: #f3f8f9; color: #17526a; }
+button.secundario:hover { background: #e2f0f2; }
+.mensaje { min-height: 38px; margin: 12px 0; color: #386276; font-size: .87rem; line-height: 1.4; }
+.separador { margin: 20px 0; border-top: 1px solid #e2ebee; }
+.operaciones > p:not(.sobretitulo):not(.mensaje) { color: #5b7180; font-size: .87rem; line-height: 1.5; }
+.ayuda { margin: 12px 0 0; color: #17526a !important; font-weight: bold; }
+.tabla-panel { margin-top: 18px; }
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: .9rem; }
+th, td { padding: 12px; border-bottom: 1px solid #e5ecef; white-space: nowrap; }
+th { color: #617887; font-size: .76rem; text-transform: uppercase; letter-spacing: .05em; }
+tr:last-child td { border-bottom: 0; }
+.tabla-contenedor { overflow-x: auto; }
+.estado { display: inline-block; padding: 5px 9px; border-radius: 20px; background: #e7f2f5; color: #176479; font-size: .78rem; font-weight: bold; }
+.estado.atracado { background: #e7f4e9; color: #2f7544; }
+.estado.practica { background: #fff0d2; color: #895b0c; }
+footer { padding: 18px 2px; }
+@media (max-width: 950px) { .columnas { grid-template-columns: 1fr; } .resumen { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .aplicacion { padding: 14px; } .cabecera, .titulo-panel { align-items: flex-start; flex-direction: column; } .resumen { gap: 8px; } .resumen div, .panel { padding: 14px; } }

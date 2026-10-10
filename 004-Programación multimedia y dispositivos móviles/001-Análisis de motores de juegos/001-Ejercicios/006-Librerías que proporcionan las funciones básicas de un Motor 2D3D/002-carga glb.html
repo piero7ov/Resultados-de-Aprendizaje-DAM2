@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GLB - Three.js</title>
+
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+
+<script type="module">
+
+    import * as THREE
+        from 'three';
+
+    import { GLTFLoader }
+        from 'three/addons/loaders/GLTFLoader.js';
+
+
+    // Scene
+    const scene = new THREE.Scene();
+
+    scene.background = new THREE.Color(0xeeeeee);
+
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(
+        50,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    );
+
+    camera.position.set(0, 0, 5);
+    camera.lookAt(0, 0, 0);
+
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    document.body.appendChild(renderer.domElement);
+
+
+    // Light
+    const light = new THREE.DirectionalLight(
+        0xffffff,
+        3
+    );
+
+    light.position.set(5, 10, 5);
+
+    scene.add(light);
+
+
+    // GLB
+    const loader = new GLTFLoader();
+    let mono = null;
+
+    loader.load(
+        'mono.glb',
+
+        function (gltf) {
+
+            const centro = new THREE.Box3()
+                .setFromObject(gltf.scene)
+                .getCenter(new THREE.Vector3());
+
+            gltf.scene.position.sub(centro);
+
+            mono = new THREE.Group();
+            mono.add(gltf.scene);
+            scene.add(mono);
+
+        }
+    );
+
+
+    const reloj = new THREE.Clock();
+
+
+    // Render loop
+    function animate() {
+
+        requestAnimationFrame(animate);
+
+        const delta = reloj.getDelta();
+
+        if (mono) {
+            mono.rotation.y += delta * 0.6;
+        }
+
+        renderer.render(
+            scene,
+            camera
+        );
+    }
+
+    animate();
+
+</script>
+
+</body>
+</html>

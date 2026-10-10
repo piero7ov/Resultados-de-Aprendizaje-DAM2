@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Producto en Marcha — Plano 2D</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #edf0f2;
+        color: #263440;
+        font-family: Arial, sans-serif;
+      }
+      main { max-width: 1200px; margin: auto; }
+      h1 { margin-bottom: 8px; }
+      p { line-height: 1.5; }
+      .plano { overflow-x: auto; border: 1px solid #b6c0c8; }
+      canvas { display: block; width: 100%; min-width: 900px; height: auto; }
+      .estaciones { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px; }
+      article { flex: 1 1 240px; }
+      h2 { margin: 0; font-size: 18px; }
+      article p { margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Producto en Marcha</h1>
+      <p>003 · Plano 2D del recorrido completo, visto desde arriba. En pantallas pequeñas puedes desplazar el plano horizontalmente.</p>
+      <div class="plano" tabindex="0" role="region" aria-label="Plano desplazable de las cuatro estaciones">
+        <canvas width="1200" height="650" aria-label="Plano de recepción, calidad, embalaje y expedición, conectadas de izquierda a derecha por una cinta transportadora. Cada estación tiene una mesa y un operario. Calidad incluye una zona de revisión.">
+          El producto entra por Recepción, pasa por Control de calidad, se embala y sale por Expedición. Si no supera el control de calidad, se aparta para su revisión.
+        </canvas>
+      </div>
+      <div class="estaciones">
+        <article><h2>01 · Recepción</h2><p>Llega el producto y se comprueba su identificación.</p></article>
+        <article><h2>02 · Control de calidad</h2><p>Se inspecciona el producto y se decide si continúa o se aparta para revisión.</p></article>
+        <article><h2>03 · Embalaje</h2><p>Se coloca la protección, se introduce el producto en su caja y se cierra.</p></article>
+        <article><h2>04 · Expedición</h2><p>Se verifica la etiqueta del paquete y se registra su salida.</p></article>
+      </div>
+    </main>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+
+      function rectangulo(x, y, ancho, alto, color) {
+        contexto.fillStyle = color;
+        contexto.fillRect(x, y, ancho, alto);
+      }
+
+      function linea(x1, y1, x2, y2, color, grosor = 2) {
+        contexto.strokeStyle = color;
+        contexto.lineWidth = grosor;
+        contexto.beginPath();
+        contexto.moveTo(x1, y1);
+        contexto.lineTo(x2, y2);
+        contexto.stroke();
+      }
+
+      function circulo(x, y, radio, color) {
+        contexto.fillStyle = color;
+        contexto.beginPath();
+        contexto.arc(x, y, radio, 0, Math.PI * 2);
+        contexto.fill();
+      }
+
+      function texto(contenido, x, y, tamano = 16, color = "#263440") {
+        contexto.fillStyle = color;
+        contexto.font = tamano + "px Arial";
+        contexto.fillText(contenido, x, y);
+      }
+
+      function flecha(x, y, longitud, color = "#28688c") {
+        linea(x, y, x + longitud, y, color, 3);
+        linea(x + longitud - 10, y - 8, x + longitud, y, color, 3);
+        linea(x + longitud - 10, y + 8, x + longitud, y, color, 3);
+      }
+
+      function caja(x, y, tamano = 36) {
+        rectangulo(x, y, tamano, tamano, "#bf8f5b");
+        rectangulo(x + 3, y + 3, tamano - 6, tamano - 6, "#e2bd8b");
+        rectangulo(x + tamano / 2 - 4, y + 3, 8, tamano - 6, "#f2dab7");
+      }
+
+      function operario(x, y, color) {
+        // Vista superior: hombros y chaleco, casco y brazos hacia la mesa.
+        linea(x - 20, y - 3, x - 25, y - 28, "#75848e", 10);
+        linea(x + 20, y - 3, x + 25, y - 28, "#75848e", 10);
+        circulo(x - 25, y - 29, 6, "#e5b88e");
+        circulo(x + 25, y - 29, 6, "#e5b88e");
+        rectangulo(x - 19, y - 8, 38, 29, color);
+        rectangulo(x - 13, y - 8, 5, 29, "#f4efc1");
+        rectangulo(x + 8, y - 8, 5, 29, "#f4efc1");
+        circulo(x, y - 6, 13, "#f1ce64");
+        linea(x - 11, y - 6, x + 11, y - 6, "#cfaa43");
+      }
+
+      function estacion(x, numero, nombre, color) {
+        rectangulo(x, 45, 260, 280, "#ffffff");
+        rectangulo(x, 45, 260, 48, color);
+        texto(numero + " · " + nombre, x + 14, 76, 20, "white");
+        rectangulo(x + 30, 167, 200, 73, "#acbbc4");
+        rectangulo(x + 36, 173, 188, 61, "#e6ecef");
+        operario(x + 130, 277, color);
+      }
+
+      // Suelo cuadriculado y límite de la nave.
+      rectangulo(0, 0, 1200, 650, "#f1f4f5");
+      for (let x = 20; x < 1200; x += 40) {
+        linea(x, 20, x, 580, "#e3e8eb", 1);
+      }
+      for (let y = 20; y < 580; y += 40) {
+        linea(20, y, 1180, y, "#e3e8eb", 1);
+      }
+      contexto.strokeStyle = "#b6c0c8";
+      contexto.lineWidth = 2;
+      contexto.strokeRect(20, 20, 1160, 560);
+
+      estacion(40, "01", "RECEPCIÓN", "#28688c");
+      estacion(325, "02", "CALIDAD", "#947116");
+      estacion(610, "03", "EMBALAJE", "#b75a2c");
+      estacion(895, "04", "EXPEDICIÓN", "#36745d");
+
+      // Herramientas de Recepción: lector y pantalla.
+      texto("Identificación", 70, 132);
+      rectangulo(80, 185, 64, 36, "#354a59");
+      rectangulo(85, 190, 54, 26, "#c9e5ed");
+      rectangulo(212, 194, 14, 31, "#354a59");
+      rectangulo(205, 186, 28, 15, "#28688c");
+
+      // Mesa de inspección y producto pendiente de comprobar.
+      texto("Mesa de inspección", 355, 132);
+      rectangulo(372, 184, 71, 42, "#ffffff");
+      rectangulo(392, 192, 28, 26, "#c1cbd1");
+      circulo(507, 200, 13, "#f4df8d");
+      linea(516, 210, 529, 223, "#647985", 5);
+
+      // Caja abierta y protección interior en Embalaje.
+      texto("Caja y protección", 640, 132);
+      rectangulo(652, 188, 55, 34, "#f0e8d7");
+      rectangulo(741, 179, 70, 53, "#c8945b");
+      rectangulo(751, 188, 50, 34, "#f2dab7");
+      rectangulo(732, 179, 9, 53, "#e2bd8b");
+      rectangulo(811, 179, 9, 53, "#e2bd8b");
+
+      // Impresora y paquete etiquetado en Expedición.
+      texto("Etiqueta y salida", 925, 132);
+      rectangulo(937, 182, 58, 44, "#647985");
+      rectangulo(948, 207, 36, 24, "white");
+      caja(1050, 182, 43);
+      rectangulo(1055, 194, 19, 14, "white");
+
+      // Cinta común: conecta las cuatro estaciones de izquierda a derecha.
+      rectangulo(40, 344, 1115, 63, "#71818c");
+      rectangulo(40, 350, 1115, 51, "#c0cbd2");
+      for (let x = 48; x < 1150; x += 15) {
+        linea(x, 352, x, 399, "#8fa0ab", 3);
+      }
+      caja(138, 356, 38);
+      flecha(244, 375, 52);
+      flecha(533, 375, 52);
+      flecha(819, 375, 52);
+      caja(1051, 356, 38);
+      rectangulo(1057, 363, 15, 12, "white");
+      texto("ENTRADA", 55, 438, 14, "#28688c");
+      texto("SALIDA", 1090, 438, 14, "#36745d");
+
+      // Zona donde se aparta un producto que no supera el control.
+      linea(455, 407, 455, 470, "#b75c53", 3);
+      linea(447, 459, 455, 470, "#b75c53", 3);
+      linea(463, 459, 455, 470, "#b75c53", 3);
+      rectangulo(364, 478, 184, 72, "#f1dfdc");
+      texto("REVISIÓN", 413, 503, 17, "#97483f");
+      texto("Producto no aprobado", 376, 529, 14, "#97483f");
+
+      // Palés de entrada y salida, vistos desde arriba.
+      for (let x of [75, 1005]) {
+        rectangulo(x, 469, 112, 77, "#b58b60");
+        for (let y = 476; y < 540; y += 16) {
+          rectangulo(x + 5, y, 102, 9, "#dac09c");
+        }
+        caja(x + 12, 482, 32);
+        caja(x + 59, 497, 32);
+      }
+      texto("Palé de entrada", 75, 566, 14);
+      texto("Paquetes preparados", 984, 566, 14);
+
+      texto("VISTA SUPERIOR · Distribución de estaciones", 40, 615, 17);
+      flecha(787, 610, 35);
+      texto("Sentido del producto", 835, 615, 16);
+    </script>
+  </body>
+</html>

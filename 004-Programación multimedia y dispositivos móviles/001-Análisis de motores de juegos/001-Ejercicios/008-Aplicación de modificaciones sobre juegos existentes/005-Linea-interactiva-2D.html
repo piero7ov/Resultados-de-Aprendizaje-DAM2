@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Producto en Marcha — Línea interactiva 2D</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #f3f5f5; color: #26363e; font-family: Arial, sans-serif; }
+      main { max-width: 1450px; margin: auto; padding: 18px; }
+      h1 { margin: 0 0 4px; font-size: 28px; }
+      .introduccion { margin: 0 0 14px; color: #5c6c73; line-height: 1.5; }
+      .marco { overflow-x: auto; background: #fff; border: 1px solid #d7e0e1; border-radius: 7px; }
+      canvas { display: block; width: 100%; min-width: 960px; height: auto; cursor: grab; touch-action: none; }
+      canvas.arrastrando { cursor: grabbing; }
+      .controles { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 12px 0; }
+      button { border: 1px solid #bbccce; border-radius: 5px; background: white; padding: 9px 12px; color: #26363e; font: inherit; cursor: pointer; }
+      button:hover, button:focus-visible { background: #e4f1f1; border-color: #6c9da3; }
+      .espacio { flex: 1; }
+      .ficha { display: flex; gap: 14px; align-items: start; padding: 16px; border: 1px solid #d7e0e1; border-left: 5px solid #4387a2; background: white; border-radius: 5px; }
+      .numero { display: grid; place-items: center; width: 39px; height: 39px; flex: 0 0 39px; border-radius: 50%; color: white; font-weight: bold; background: #4387a2; }
+      .ficha h2 { margin: 0 0 5px; font-size: 19px; }
+      .ficha p { margin: 0; line-height: 1.5; }
+      .nota { margin-bottom: 0; color: #66767d; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Producto en Marcha</h1>
+      <p class="introduccion">005 · Línea completa en vista elevada. Pulsa una estación para acercarte; arrastra para mover la cámara y vuelve a la vista general cuando quieras.</p>
+      <div class="marco" role="region" aria-label="Línea de trabajo desplazable" tabindex="0">
+        <canvas width="1400" height="620" aria-label="Línea 2D isométrica de Recepción, Control de calidad, Embalaje y Expedición, conectadas por una cinta transportadora.">
+          El producto recorre Recepción, Control de calidad, Embalaje y Expedición.
+        </canvas>
+      </div>
+      <div class="controles" aria-label="Controles de la línea">
+        <button type="button" id="general">Vista general</button>
+        <button type="button" data-mover="izquierda" aria-label="Mover cámara a la izquierda">←</button>
+        <button type="button" data-mover="arriba" aria-label="Mover cámara hacia arriba">↑</button>
+        <button type="button" data-mover="abajo" aria-label="Mover cámara hacia abajo">↓</button>
+        <button type="button" data-mover="derecha" aria-label="Mover cámara a la derecha">→</button>
+        <button type="button" data-zoom="acercar" aria-label="Acercar">＋</button>
+        <button type="button" data-zoom="alejar" aria-label="Alejar">－</button>
+        <span class="espacio"></span>
+        <button type="button" data-estacion="0">1 · Recepción</button>
+        <button type="button" data-estacion="1">2 · Calidad</button>
+        <button type="button" data-estacion="2">3 · Embalaje</button>
+        <button type="button" data-estacion="3">4 · Expedición</button>
+      </div>
+      <section class="ficha" aria-live="polite">
+        <span class="numero" id="numero">•</span>
+        <div><h2 id="titulo">El recorrido del producto</h2><p id="descripcion">El producto entra por Recepción, se inspecciona en Calidad, se protege en Embalaje y se prepara para salir en Expedición. Selecciona una estación para verla de cerca.</p></div>
+      </section>
+      <p class="nota">Boceto en Canvas 2D: la línea y el acercamiento son una simulación visual; los datos del proceso son descriptivos.</p>
+    </main>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+      const camara = { x: 0, y: 0, zoom: 1 };
+      const estaciones = [
+        { nombre: "Recepción", color: "#4ca37c", centro: 2.2, detalle: "Llega un palé con el producto. Un operario con chaleco verde comprueba la identificación y lo coloca en la cinta que conduce a Calidad." },
+        { nombre: "Control de calidad", color: "#c8a13c", centro: 6.6, detalle: "El operario inspecciona el producto en una mesa con iluminación y pantalla. Si no supera el control, lo aparta a la zona de revisión." },
+        { nombre: "Embalaje", color: "#d47c4e", centro: 11, detalle: "El operario protege el producto, lo introduce en una caja y prepara el cierre y la etiqueta antes de devolverlo a la cinta." },
+        { nombre: "Expedición", color: "#4e87ac", centro: 15.4, detalle: "Se verifica la etiqueta, se agrupan los paquetes en un palé y se prepara el registro de salida." }
+      ];
+      let activa = -1;
+      let arrastre = null;
+      let animacion = null;
+
+      function punto(x, y, z = 0) {
+        return { x: 340 + (x - y) * 54, y: 235 + (x + y) * 13 - z * 42 };
+      }
+
+      function poligono(puntos, color, borde = null, grosor = 1) {
+        contexto.beginPath();
+        contexto.moveTo(puntos[0].x, puntos[0].y);
+        for (let i = 1; i < puntos.length; i++) contexto.lineTo(puntos[i].x, puntos[i].y);
+        contexto.closePath();
+        contexto.fillStyle = color;
+        contexto.fill();
+        if (borde) { contexto.strokeStyle = borde; contexto.lineWidth = grosor; contexto.stroke(); }
+      }
+
+      function linea(a, b, color, grosor = 1) {
+        contexto.beginPath();
+        contexto.moveTo(a.x, a.y);
+        contexto.lineTo(b.x, b.y);
+        contexto.strokeStyle = color;
+        contexto.lineWidth = grosor;
+        contexto.stroke();
+      }
+
+      function circulo(x, y, radio, color) {
+        contexto.beginPath();
+        contexto.arc(x, y, radio, 0, Math.PI * 2);
+        contexto.fillStyle = color;
+        contexto.fill();
+      }
+
+      function texto(contenido, x, y, tamano = 14, color = "#26363e", negrita = false) {
+        contexto.fillStyle = color;
+        contexto.font = (negrita ? "bold " : "") + tamano + "px Arial";
+        contexto.fillText(contenido, x, y);
+      }
+
+      function prisma(x, y, z, ancho, fondo, alto, colores) {
+        const a = punto(x, y, z), b = punto(x + ancho, y, z);
+        const c = punto(x + ancho, y + fondo, z), d = punto(x, y + fondo, z);
+        const a2 = punto(x, y, z + alto), b2 = punto(x + ancho, y, z + alto);
+        const c2 = punto(x + ancho, y + fondo, z + alto), d2 = punto(x, y + fondo, z + alto);
+        poligono([b, c, c2, b2], colores.lado, colores.borde);
+        poligono([d, c, c2, d2], colores.frente, colores.borde);
+        poligono([a2, b2, c2, d2], colores.tapa, colores.borde);
+      }
+
+      function caja(x, y, z, escala = 1) {
+        prisma(x, y, z, .57 * escala, .5 * escala, .48 * escala,
+          { tapa: "#efd0a0", frente: "#d3a878", lado: "#bb8d60", borde: "#a3794e" });
+        linea(punto(x + .28 * escala, y, z + .48 * escala),
+          punto(x + .28 * escala, y + .5 * escala, z + .48 * escala), "#f7e5c4", 2);
+      }
+
+      function persona(x, y, color) {
+        const p = punto(x, y);
+        contexto.save();
+        contexto.translate(p.x, p.y);
+        contexto.beginPath(); contexto.ellipse(0, 2, 21, 6, 0, 0, Math.PI * 2);
+        contexto.fillStyle = "#5d717b40"; contexto.fill();
+        linea({ x: -6, y: -14 }, { x: -9, y: -2 }, "#364751", 7);
+        linea({ x: 7, y: -14 }, { x: 11, y: -2 }, "#364751", 7);
+        linea({ x: -10, y: -2 }, { x: -3, y: -2 }, "#26363e", 5);
+        linea({ x: 8, y: -2 }, { x: 16, y: -2 }, "#26363e", 5);
+        linea({ x: -10, y: -43 }, { x: -18, y: -26 }, "#617681", 7);
+        linea({ x: 10, y: -43 }, { x: 19, y: -27 }, "#617681", 7);
+        circulo(-18, -26, 4, "#d7aa87");
+        circulo(19, -27, 4, "#d7aa87");
+        poligono([{ x: -11, y: -48 }, { x: 11, y: -48 }, { x: 12, y: -15 }, { x: -12, y: -15 }], color, "#596e73");
+        linea({ x: -6, y: -45 }, { x: -6, y: -21 }, "#f2e9c9", 3);
+        linea({ x: 6, y: -45 }, { x: 6, y: -21 }, "#f2e9c9", 3);
+        linea({ x: -10, y: -27 }, { x: 10, y: -27 }, "#f2e9c9", 2);
+        circulo(0, -59, 9, "#d7aa87");
+        poligono([{ x: -10, y: -65 }, { x: -7, y: -72 }, { x: 7, y: -72 }, { x: 10, y: -65 }], "#e6bd4b");
+        linea({ x: -13, y: -65 }, { x: 14, y: -65 }, "#d5a738", 3);
+        contexto.restore();
+      }
+
+      function mesa(x, y, color = "#e8efed") {
+        for (let xx of [x + .13, x + 1.5]) for (let yy of [y + .08, y + .85])
+          prisma(xx, yy, 0, .09, .09, .68, { tapa: "#a2b4b6", frente: "#758d92", lado: "#718b90" });
+        prisma(x, y, .68, 1.75, 1.02, .1, { tapa: color, frente: "#9db2b5", lado: "#89a1a6", borde: "#728f93" });
+      }
+
+      function pantalla(x, y, z, contenido) {
+        prisma(x, y, z, .52, .15, .45, { tapa: "#597983", frente: "#d5eceb", lado: "#49646f", borde: "#607d83" });
+        const p = punto(x + .05, y + .16, z + .29);
+        texto(contenido, p.x - 4, p.y, 9, "#35515c", true);
+      }
+
+      function suelo() {
+        poligono([punto(0, 0), punto(17.6, 0), punto(17.6, 4.4), punto(0, 4.4)], "#d8e0df", "#94aeb0", 2);
+        poligono([punto(0, 4.4), punto(17.6, 4.4), punto(17.6, 4.4, -.23), punto(0, 4.4, -.23)], "#8ba3a4");
+        for (let x = 1; x < 17.6; x++) linea(punto(x, 0), punto(x, 4.4), "#c5d1d1");
+        for (let y = 1; y < 4.4; y++) linea(punto(0, y), punto(17.6, y), "#c5d1d1");
+        for (let i = 0; i < 4; i++) {
+          contexto.save();
+          contexto.globalAlpha = activa === i ? .25 : .11;
+          const x = i * 4.4;
+          poligono([punto(x + .08, .08), punto(x + 4.32, .08), punto(x + 4.32, 4.3), punto(x + .08, 4.3)], estaciones[i].color);
+          contexto.restore();
+          linea(punto(x, 4.4), punto(x + 4.4, 4.4), estaciones[i].color, 5);
+        }
+      }
+
+      function estructura() {
+        for (let x of [0, 4.4, 8.8, 13.2, 17.6]) {
+          linea(punto(x, .08, 0), punto(x, .08, 2.4), "#9badb0", 5);
+          linea(punto(x, 4.35, 0), punto(x, 4.35, 1.8), "#9badb0", 4);
+          linea(punto(x, .08, 2.4), punto(x, 4.35, 1.8), "#a8babc", 3);
+        }
+        linea(punto(0, .08, 2.4), punto(17.6, .08, 2.4), "#b3c3c4", 4);
+        // Paneles transparentes de separación entre módulos.
+        for (let x of [4.4, 8.8, 13.2]) {
+          contexto.save(); contexto.globalAlpha = .3;
+          poligono([punto(x, 2.8, .1), punto(x, 4.3, .1), punto(x, 4.3, 1.75), punto(x, 2.8, 1.75)], "#e9f3f1", "#8ca5a7", 2);
+          contexto.restore();
+        }
+      }
+
+      function cinta() {
+        for (let x of [1, 3.9, 6.4, 9.2, 11.8, 14.6, 16.4])
+          prisma(x, 2.09, 0, .14, .55, .65, { tapa: "#91a4a7", frente: "#738b90", lado: "#738b90" });
+        prisma(.65, 1.95, .65, 16.3, .84, .14,
+          { tapa: "#303e44", frente: "#526b72", lado: "#4d666d", borde: "#31474d" });
+        for (let x = .8; x < 16.85; x += .36)
+          linea(punto(x, 2.02, .8), punto(x, 2.72, .8), "#9bafb1", 2);
+        linea(punto(.65, 1.94, .82), punto(16.95, 1.94, .82), "#e9f0ed", 3);
+        linea(punto(.65, 2.8, .82), punto(16.95, 2.8, .82), "#e9f0ed", 3);
+        caja(1.4, 2.08, .8, .68);
+        caja(5.5, 2.08, .8, .68);
+        caja(10.1, 2.08, .8, .68);
+        caja(14.5, 2.08, .8, .68);
+      }
+
+      function recepcion() {
+        prisma(.44, 3.28, 0, 1.1, .7, .14, { tapa: "#ac865f", frente: "#876748", lado: "#906e4d" });
+        caja(.55, 3.36, .14, .66);
+        caja(1.09, 3.37, .14, .58);
+        mesa(1.15, .52);
+        pantalla(2.1, .77, .78, "ID");
+        prisma(2.66, .8, .78, .28, .16, .15, { tapa: "#506e77", frente: "#42616d", lado: "#42616d" });
+        persona(2.85, 3.85, estaciones[0].color);
+        texto("ENTRADA", punto(.15, 3.75).x - 10, punto(.15, 3.75).y + 22, 13, "#53886e", true);
+      }
+
+      function calidad() {
+        mesa(5.04, .55, "#e6f1ec");
+        prisma(5.42, .73, .78, .68, .46, .22, { tapa: "#bdcbd0", frente: "#879ca3", lado: "#7c929a" });
+        pantalla(6.55, .79, .78, "OK");
+        // Marco de inspección sobre la mesa.
+        for (let x of [5.06, 6.71]) linea(punto(x, .55, .78), punto(x, .55, 1.92), "#9db0b3", 4);
+        linea(punto(5.06, .55, 1.92), punto(6.71, .55, 1.92), "#aebfc1", 4);
+        prisma(5.02, 3.58, 0, .95, .5, .05, { tapa: "#e4b9af", frente: "#b98e87", lado: "#b98e87" });
+        texto("REVISIÓN", punto(5.14, 4.02).x - 10, punto(5.14, 4.02).y + 20, 10, "#a4695c", true);
+        persona(6.95, 3.89, estaciones[1].color);
+      }
+
+      function embalaje() {
+        mesa(9.48, .55, "#f0e9db");
+        prisma(9.75, .75, .78, .68, .5, .33, { tapa: "#f1d6ad", frente: "#cd9e6b", lado: "#ba8758", borde: "#a77d52" });
+        poligono([punto(9.7, .72, 1.11), punto(10.49, .72, 1.11), punto(10.37, .59, 1.24), punto(9.79, .59, 1.24)], "#e1b785");
+        prisma(10.62, .88, .78, .36, .19, .16, { tapa: "#d07749", frente: "#b56842", lado: "#b56842" });
+        pantalla(11.04, .67, .78, "ETIQ");
+        persona(11.43, 3.9, estaciones[2].color);
+      }
+
+      function expedicion() {
+        mesa(13.85, .55, "#e7eef1");
+        caja(14.05, .7, .78, .65);
+        pantalla(15.05, .75, .78, "SAL");
+        prisma(16.08, 3.37, 0, 1.04, .64, .14, { tapa: "#b18a60", frente: "#8b6b4b", lado: "#967350" });
+        caja(16.17, 3.45, .14, .65);
+        caja(16.66, 3.46, .14, .54);
+        persona(15.55, 3.92, estaciones[3].color);
+        texto("SALIDA", punto(16.75, 3.3).x + 7, punto(16.75, 3.3).y + 17, 13, "#4e87ac", true);
+      }
+
+      function marcador(indice) {
+        const estacion = estaciones[indice];
+        const p = punto(estacion.centro, 1.65, 2.55);
+        circulo(p.x, p.y, 18, "#ffffff");
+        circulo(p.x, p.y, 15, estacion.color);
+        texto(String(indice + 1), p.x - 5, p.y + 5, 16, "#ffffff", true);
+        if (indice === activa) {
+          contexto.beginPath(); contexto.arc(p.x, p.y, 23, 0, Math.PI * 2);
+          contexto.strokeStyle = estacion.color; contexto.lineWidth = 2; contexto.stroke();
+        }
+      }
+
+      function dibujar() {
+        contexto.clearRect(0, 0, lienzo.width, lienzo.height);
+        contexto.fillStyle = "#ffffff";
+        contexto.fillRect(0, 0, lienzo.width, lienzo.height);
+        contexto.save();
+        contexto.translate(lienzo.width / 2 + camara.x, lienzo.height / 2 + camara.y);
+        contexto.scale(camara.zoom, camara.zoom);
+        contexto.translate(-lienzo.width / 2, -lienzo.height / 2);
+        suelo();
+        estructura();
+        recepcion(); calidad(); embalaje(); expedicion();
+        cinta();
+        for (let i = 0; i < estaciones.length; i++) marcador(i);
+        contexto.restore();
+      }
+
+      function animarCamara(destinoX, destinoY, destinoZoom) {
+        if (animacion) cancelAnimationFrame(animacion);
+        const inicio = { x: camara.x, y: camara.y, zoom: camara.zoom };
+        const tiempoInicio = performance.now();
+        function paso(ahora) {
+          const avance = Math.min(1, (ahora - tiempoInicio) / 480);
+          const suave = 1 - Math.pow(1 - avance, 3);
+          camara.x = inicio.x + (destinoX - inicio.x) * suave;
+          camara.y = inicio.y + (destinoY - inicio.y) * suave;
+          camara.zoom = inicio.zoom + (destinoZoom - inicio.zoom) * suave;
+          dibujar();
+          if (avance < 1) animacion = requestAnimationFrame(paso);
+          else animacion = null;
+        }
+        animacion = requestAnimationFrame(paso);
+      }
+
+      function seleccionar(indice) {
+        activa = indice;
+        const estacion = estaciones[indice];
+        document.querySelector("#numero").textContent = String(indice + 1);
+        document.querySelector("#numero").style.background = estacion.color;
+        document.querySelector(".ficha").style.borderLeftColor = estacion.color;
+        document.querySelector("#titulo").textContent = estacion.nombre;
+        document.querySelector("#descripcion").textContent = estacion.detalle;
+        const centro = punto(estacion.centro, 2.3, .55);
+        const aumento = 1.72;
+        animarCamara((lienzo.width / 2 - centro.x) * aumento,
+          (lienzo.height / 2 - centro.y) * aumento, aumento);
+      }
+
+      function vistaGeneral() {
+        activa = -1;
+        document.querySelector("#numero").textContent = "•";
+        document.querySelector("#numero").style.background = "#4387a2";
+        document.querySelector(".ficha").style.borderLeftColor = "#4387a2";
+        document.querySelector("#titulo").textContent = "El recorrido del producto";
+        document.querySelector("#descripcion").textContent = "El producto entra por Recepción, se inspecciona en Calidad, se protege en Embalaje y se prepara para salir en Expedición. Selecciona una estación para verla de cerca.";
+        animarCamara(0, 0, 1);
+      }
+
+      function mover(direccion) {
+        if (animacion) cancelAnimationFrame(animacion);
+        animacion = null;
+        if (direccion === "izquierda") camara.x += 60;
+        if (direccion === "derecha") camara.x -= 60;
+        if (direccion === "arriba") camara.y += 50;
+        if (direccion === "abajo") camara.y -= 50;
+        dibujar();
+      }
+
+      function cambiarZoom(direccion) {
+        if (animacion) cancelAnimationFrame(animacion);
+        animacion = null;
+        camara.zoom += direccion === "acercar" ? .13 : -.13;
+        camara.zoom = Math.max(.65, Math.min(2.4, camara.zoom));
+        dibujar();
+      }
+
+      function coordenadas(evento) {
+        const cajaLienzo = lienzo.getBoundingClientRect();
+        return { x: (evento.clientX - cajaLienzo.left) * lienzo.width / cajaLienzo.width,
+          y: (evento.clientY - cajaLienzo.top) * lienzo.height / cajaLienzo.height };
+      }
+
+      lienzo.addEventListener("pointerdown", function (evento) {
+        if (animacion) cancelAnimationFrame(animacion);
+        animacion = null;
+        const p = coordenadas(evento);
+        arrastre = { x: p.x, y: p.y, camaraX: camara.x, camaraY: camara.y, movido: false };
+        lienzo.setPointerCapture(evento.pointerId);
+        lienzo.classList.add("arrastrando");
+      });
+      lienzo.addEventListener("pointermove", function (evento) {
+        if (!arrastre) return;
+        const p = coordenadas(evento);
+        if (Math.abs(p.x - arrastre.x) + Math.abs(p.y - arrastre.y) > 7) arrastre.movido = true;
+        if (arrastre.movido) {
+          camara.x = arrastre.camaraX + p.x - arrastre.x;
+          camara.y = arrastre.camaraY + p.y - arrastre.y;
+          dibujar();
+        }
+      });
+      lienzo.addEventListener("pointerup", function (evento) {
+        if (!arrastre) return;
+        if (!arrastre.movido) {
+          const p = coordenadas(evento);
+          const x = (p.x - lienzo.width / 2 - camara.x) / camara.zoom + lienzo.width / 2;
+          const y = (p.y - lienzo.height / 2 - camara.y) / camara.zoom + lienzo.height / 2;
+          for (let i = 0; i < estaciones.length; i++) {
+            const m = punto(estaciones[i].centro, 1.65, 2.55);
+            if (Math.hypot(x - m.x, y - m.y) < 25) seleccionar(i);
+          }
+        }
+        arrastre = null;
+        lienzo.classList.remove("arrastrando");
+      });
+      lienzo.addEventListener("pointercancel", function () { arrastre = null; lienzo.classList.remove("arrastrando"); });
+      document.querySelector("#general").addEventListener("click", vistaGeneral);
+      document.querySelectorAll("[data-estacion]").forEach(function (boton) {
+        boton.addEventListener("click", function () { seleccionar(Number(boton.dataset.estacion)); });
+      });
+      document.querySelectorAll("[data-mover]").forEach(function (boton) {
+        boton.addEventListener("click", function () { mover(boton.dataset.mover); });
+      });
+      document.querySelectorAll("[data-zoom]").forEach(function (boton) {
+        boton.addEventListener("click", function () { cambiarZoom(boton.dataset.zoom); });
+      });
+      window.addEventListener("keydown", function (evento) {
+        const teclas = { ArrowLeft: "izquierda", a: "izquierda", A: "izquierda", ArrowRight: "derecha", d: "derecha", D: "derecha", ArrowUp: "arriba", w: "arriba", W: "arriba", ArrowDown: "abajo", s: "abajo", S: "abajo" };
+        if (teclas[evento.key] && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+          evento.preventDefault(); mover(teclas[evento.key]);
+        }
+        if (evento.key === "Escape" && activa !== -1) vistaGeneral();
+      });
+      dibujar();
+    </script>
+  </body>
+</html>

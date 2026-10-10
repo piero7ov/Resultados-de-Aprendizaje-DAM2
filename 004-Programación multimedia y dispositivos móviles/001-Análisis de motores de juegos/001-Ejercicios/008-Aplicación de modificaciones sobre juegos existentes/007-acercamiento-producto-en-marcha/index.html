@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Producto en Marcha — Acercamiento a estaciones</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script type="module" src="js/escena.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="version">Producto en Marcha · 007-Acercamiento</p>
+        <h1>Una línea, cuatro estaciones</h1>
+        <p>Selecciona una estación para acercar la cámara y observar el trabajo de cada puesto.</p>
+      </header>
+
+      <div class="visor" aria-label="Vista 3D interactiva de la línea de producto">
+        <a-scene embedded renderer="antialias: true; colorManagement: true" vr-mode-ui="enabled: false" loading-screen="enabled: false" background="color: #f4f7f7">
+          <a-assets>
+            <a-asset-item id="avatar" src="modelos/avatar.glb"></a-asset-item>
+          </a-assets>
+          <a-entity id="camara" camera="active: true; fov: 40" position="0 11 16" rotation="-34 0 0" look-controls="enabled: false" wasd-controls="enabled: false"></a-entity>
+          <a-entity light="type: ambient; color: #ffffff; intensity: 1.5"></a-entity>
+          <a-entity light="type: directional; color: #ffffff; intensity: 1.7" position="-5 13 8"></a-entity>
+          <a-entity id="mundo"></a-entity>
+          <a-entity id="avatares"></a-entity>
+          <a-entity id="marcadores"></a-entity>
+        </a-scene>
+        <p class="estado" id="estado">Cargando la maqueta 3D…</p>
+      </div>
+
+      <nav class="controles" aria-label="Acercamiento a las estaciones">
+        <button type="button" data-vista="general" aria-pressed="true">Vista general</button>
+        <button type="button" data-estacion="recepcion" aria-pressed="false">01 · Recepción</button>
+        <button type="button" data-estacion="calidad" aria-pressed="false">02 · Calidad</button>
+        <button type="button" data-estacion="embalaje" aria-pressed="false">03 · Embalaje</button>
+        <button type="button" data-estacion="expedicion" aria-pressed="false">04 · Expedición</button>
+      </nav>
+      <p class="detalle" id="detalle" aria-live="polite">Pulsa un botón o un marcador de color en la escena para ver una estación de cerca.</p>
+
+      <section class="estaciones" aria-label="Estaciones del recorrido">
+        <article class="recepcion"><span>01</span><h2>Recepción</h2><p>Llega el producto y se comprueba su identificación.</p></article>
+        <article class="calidad"><span>02</span><h2>Control de calidad</h2><p>Se inspecciona. Si no supera el control, pasa a revisión.</p></article>
+        <article class="embalaje"><span>03</span><h2>Embalaje</h2><p>Se protege, se introduce en una caja y se etiqueta.</p></article>
+        <article class="expedicion"><span>04</span><h2>Expedición</h2><p>Se verifica el paquete y se prepara su salida.</p></article>
+      </section>
+    </main>
+  </body>
+</html>

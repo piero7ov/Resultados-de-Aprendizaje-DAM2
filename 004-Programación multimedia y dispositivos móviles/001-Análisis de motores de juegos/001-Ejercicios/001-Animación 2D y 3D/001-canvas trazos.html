@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      canvas{border:1px solid black;}
+    </style>
+  </head>
+  <body>
+    <canvas width=400px height=400px>
+    </canvas>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+      contexto.strokeStyle = "red";
+      contexto.lineWidth = 15; // Corrected from "5px" to "5"
+      contexto.lineCap = "butt"; // Extremos planos.
+      contexto.lineJoin = "miter"; // Uniones en punta entre segmentos.
+      contexto.beginPath();
+      contexto.moveTo(50,60);
+      contexto.lineTo(150,100);
+      contexto.lineTo(250,60);
+      contexto.lineTo(350,100);
+      contexto.stroke();
+
+      contexto.strokeStyle = "blue";
+      contexto.lineCap = "round"; // Extremos redondeados.
+      contexto.lineJoin = "round"; // Uniones redondeadas entre segmentos.
+      contexto.beginPath();
+      contexto.moveTo(50,170);
+      contexto.lineTo(150,210);
+      contexto.lineTo(250,170);
+      contexto.lineTo(350,210);
+      contexto.stroke();
+
+      contexto.strokeStyle = "green";
+      contexto.lineCap = "butt"; // Extremos planos.
+      contexto.lineJoin = "miter"; // Uniones en punta entre segmentos.
+      contexto.setLineDash([20,10]); // Repite 20 píxeles de línea y 10 de espacio.
+      contexto.beginPath();
+      contexto.moveTo(50,280);
+      contexto.lineTo(150,320);
+      contexto.lineTo(250,280);
+      contexto.lineTo(350,320);
+      contexto.stroke();
+    </script>
+  </body>
+</html>

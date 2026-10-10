@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Juego de coches</title>
+  </head>
+  <body>
+    <main>
+      <canvas id="escenario"></canvas>
+      <div id="iu"></div>
+    </main>
+    <script>
+      // Condiciones iniciales
+      var anchura = window.innerWidth;
+      var altura = window.innerHeight;
+
+      // Declaraciones de clases
+      class Coche {
+        constructor(x, y, angulo, velocidad) {
+          this.x = x;
+          this.y = y;
+          this.a = angulo;
+          this.v = velocidad;
+        }
+      }
+
+      // Representa los otros coches que el jugador deberá esquivar.
+      class Enemigo {
+        constructor(x, y, angulo, velocidad) {
+          this.x = x;
+          this.y = y;
+          this.a = angulo;
+          this.v = velocidad;
+        }
+      }
+
+      // Función ganar
+
+      // Función perder
+
+      // Entrada
+
+      // Funcion de inicio
+
+      // Función de bucle
+    </script>
+  </body>
+</html>

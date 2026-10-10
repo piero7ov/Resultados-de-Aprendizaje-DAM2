@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      canvas{border:1px solid black;}
+    </style>
+  </head>
+  <body>
+    <canvas width=400px height=400px>
+    </canvas>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+      let x = 40;
+      let y = 40;
+      const ancho = 100;
+      const alto = 60;
+      let velocidadX = 2;
+      let velocidadY = 2;
+      const colores = ["blue", "red", "green", "purple", "darkorange"];
+      let color = 0;
+      let temporizador = setTimeout("bucle()",1000) // Llamo al bucle por primera vez
+      function bucle(){	// Este es el bucle
+        contexto.clearRect(0,0,400,400)							// Borramos el canvas
+        x += velocidadX; // El signo de la velocidad indica la dirección.
+        y += velocidadY;
+        let rebote = false;
+
+        // Restamos el tamaño del logo para que rebote sin salirse del lienzo.
+        if (x <= 0 || x + ancho >= lienzo.width){
+          velocidadX = -velocidadX;
+          x = Math.max(0, Math.min(x, lienzo.width - ancho));
+          rebote = true;
+        }
+        if (y <= 0 || y + alto >= lienzo.height){
+          velocidadY = -velocidadY;
+          y = Math.max(0, Math.min(y, lienzo.height - alto));
+          rebote = true;
+        }
+        if (rebote){
+          color = (color + 1) % colores.length; // Cambia de color en cada choque.
+        }
+
+        // El texto y el óvalo se desplazan juntos usando la misma x e y.
+        contexto.fillStyle = colores[color];
+        contexto.font = "bold italic 36px Arial";
+        contexto.textAlign = "center";
+        contexto.fillText("DVD", x + ancho / 2, y + 35, ancho - 10);
+        contexto.beginPath();
+        contexto.ellipse(x + ancho / 2, y + 50, ancho / 2, 10, 0, 0, Math.PI * 2);
+        contexto.fill();
+        clearTimeout(temporizador)									// Elimino el temporizador
+        temporizador = setTimeout("bucle()",20)		// Vuelvo a ejecutar el bucle
+      }
+      
+    </script>
+  </body>
+</html>

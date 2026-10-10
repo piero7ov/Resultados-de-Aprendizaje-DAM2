@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      canvas{border:3px solid turquoise;background:#182748;}
+    </style>
+  </head>
+  <body>
+    <canvas width="400" height="400">
+    </canvas>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+      let x = 40;
+      let y = 40;
+      const radio = 15;
+      let velocidadX = 3;
+      let velocidadY = 2;
+      let temporizador = setTimeout("bucle()",1000); // Llamo al bucle por primera vez
+      function bucle(){ // Este es el bucle
+        contexto.clearRect(0,0,400,400); // Borramos el canvas
+        x += velocidadX;
+        y += velocidadY;
+
+        // Comprobamos el borde de la pelota, no solo su centro.
+        if (x + radio >= lienzo.width || x - radio <= 0){
+          velocidadX = -velocidadX; // Invertimos la dirección horizontal.
+          x = Math.max(radio, Math.min(x, lienzo.width - radio)); // La dejamos dentro.
+        }
+        if (y + radio >= lienzo.height || y - radio <= 0){
+          velocidadY = -velocidadY; // Invertimos la dirección vertical.
+          y = Math.max(radio, Math.min(y, lienzo.height - radio));
+        }
+
+        contexto.fillStyle = "coral";
+        contexto.beginPath();
+        contexto.arc(x,y,radio,0,Math.PI*2);
+        contexto.fill();
+        clearTimeout(temporizador); // Elimino el temporizador
+        temporizador = setTimeout("bucle()",20); // Vuelvo a ejecutar el bucle
+      }
+    </script>
+  </body>
+</html>

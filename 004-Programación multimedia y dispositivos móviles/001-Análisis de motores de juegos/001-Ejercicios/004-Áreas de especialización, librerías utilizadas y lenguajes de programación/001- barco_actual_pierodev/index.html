@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rumbo al puerto</title>
+    <link rel="stylesheet" href="css/estilo.css">
+  </head>
+  <body>
+    <main>
+      <canvas id="escenario" tabindex="0" aria-label="Navegación entre islas hasta el puerto"></canvas>
+      <header id="interfaz" hidden>
+        <div class="titulo">RUMBO AL PUERTO <span>VISTA CENITAL</span></div>
+        <p id="estado" aria-live="polite">Navega entre las islas hasta el puerto.</p>
+        <div class="velocimetro">
+          <label for="barra_velocidad">VELOCIDAD</label>
+          <progress id="barra_velocidad" value="0" max="100"></progress>
+          <span id="velocidad">0%</span>
+        </div>
+      </header>
+      <div id="controles_partida" hidden>
+        <p>← → GIRAR &nbsp; ↑ ACELERAR &nbsp; ↓ FRENAR</p>
+        <button id="reiniciar" type="button">REINICIAR</button>
+        <button id="volver_menu" type="button">MENÚ</button>
+      </div>
+      <section id="pantalla_inicio" aria-labelledby="titulo_inicio">
+        <div class="tarjeta">
+          <h1 id="titulo_inicio">RUMBO<br>AL PUERTO</h1>
+          <p class="descripcion">Busca tu ruta entre las islas y entra despacio en el puerto.</p>
+          <p class="ayuda">← → Girar &nbsp; ↑ Acelerar &nbsp; ↓ Frenar<br>El barco conserva su inercia: frena con tiempo.</p>
+          <div class="control_volumen">
+            <label for="volumen_musica">MÚSICA</label>
+            <input id="volumen_musica" type="range" min="0" max="100" value="30">
+            <output id="valor_volumen" for="volumen_musica">30%</output>
+          </div>
+          <button id="jugar" type="button" disabled>JUGAR</button>
+          <p id="estado_recursos" role="status">Cargando el puerto…</p>
+        </div>
+      </section>
+      <section id="resultado" aria-labelledby="titulo_resultado" hidden>
+        <div class="tarjeta">
+          <p class="etiqueta">DESTINO ALCANZADO</p>
+          <h2 id="titulo_resultado">¡BUEN ATRAQUE!</h2>
+          <p>Has llegado al puerto y reducido la velocidad para atracar.</p>
+          <button id="jugar_otra_vez" type="button">VOLVER A NAVEGAR</button>
+          <button id="menu_resultado" type="button" class="secundario">VOLVER AL MENÚ</button>
+        </div>
+      </section>
+      <audio id="musica_juego" src="recursos/audio/maquina_rapida_chill_loop.ogg" loop preload="auto"></audio>
+    </main>
+    <script src="js/motor/Entrada.js"></script>
+    <script src="js/motor/Actor.js"></script>
+    <script src="js/motor/Jugador.js"></script>
+    <script src="js/motor/Escena.js"></script>
+    <script src="js/motor/Motor.js"></script>
+    <script src="js/juego/recursos.js"></script>
+    <script src="js/juego/navegacion.js"></script>
+    <script src="js/juego/actores.js"></script>
+    <script src="js/juego/juego-barco.js"></script>
+    <script src="js/juego/menu.js"></script>
+  </body>
+</html>

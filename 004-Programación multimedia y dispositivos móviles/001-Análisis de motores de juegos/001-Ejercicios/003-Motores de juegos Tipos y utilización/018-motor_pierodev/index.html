@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Plantilla del motor</title>
+    <link rel="stylesheet" href="css/estilo.css">
+  </head>
+  <body>
+    <header>
+      <p>Flechas: mover · Espacio: escudo · Cruza de SALIDA a META.</p>
+      <p id="estado"></p>
+      <p><span id="mensaje"></span> <button id="continuar" type="button" hidden>Continuar</button></p>
+    </header>
+    <canvas id="escenario" tabindex="0" aria-label="Cruce con un jugador cuadrado y obstáculos descendentes"></canvas>
+    <script src="js/motor/Entrada.js"></script>
+    <script src="js/motor/Actor.js"></script>
+    <script src="js/motor/Jugador.js"></script>
+    <script src="js/motor/Escena.js"></script>
+    <script src="js/motor/Motor.js"></script>
+    <script src="js/juego/actores.js"></script>
+    <script src="js/juego/colisiones.js"></script>
+    <script src="js/juego/plantilla.js"></script>
+  </body>
+</html>

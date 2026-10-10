@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Juego de coches</title>
+    <link rel="stylesheet" href="css/estilo.css">
+  </head>
+  <body>
+    <main>
+      <canvas id="escenario" tabindex="0" aria-label="Juego de coches"></canvas>
+      <div id="iu">
+        <div class="indicador">
+          <span>Meta</span>
+          <progress id="barra_progreso" value="0" max="100" aria-label="Progreso hasta la meta"></progress>
+          <span id="numero_progreso">0%</span>
+        </div>
+        <div class="indicador">
+          <span>Escudo</span>
+          <progress id="barra_escudo" value="100" max="100" aria-label="Tiempo de escudo"></progress>
+          <span id="numero_escudo">Listo</span>
+        </div>
+        <div class="indicador">
+          <span>Energía</span>
+          <progress id="barra_energia" value="100" max="100" aria-label="Energía del coche"></progress>
+          <span id="numero_energia">100</span>
+        </div>
+        <p class="ayuda">Flechas: mover · Espacio: escudo</p>
+      </div>
+      <div id="resultado" hidden>
+        <section aria-labelledby="titulo_resultado">
+          <h1 id="titulo_resultado">¡Recorrido completado!</h1>
+          <p id="mensaje_resultado">Has llegado al otro lado de la carretera.</p>
+          <button id="reiniciar" type="button">Volver a jugar</button>
+        </section>
+      </div>
+    </main>
+    <script src="js/util/colisiones.js"></script>
+    <script src="js/nucleo/condicionesiniciales.js"></script>
+    <script src="js/nucleo/recursos.js"></script>
+    <script src="js/nucleo/entrada.js"></script>
+    <script src="js/clases/Entidad.js"></script>
+    <script src="js/clases/MarcaVial.js"></script>
+    <script src="js/clases/Escudo.js"></script>
+    <script src="js/clases/Coche.js"></script>
+    <script src="js/clases/Enemigo.js"></script>
+    <script src="js/clases/Obstaculo.js"></script>
+    <script src="js/nucleo/inicio.js"></script>
+    <script src="js/nucleo/ganar.js"></script>
+    <script src="js/nucleo/perder.js"></script>
+    <script src="js/nucleo/bucle.js"></script>
+    <script>
+      // Función ganar
+
+      // Función perder
+
+      inicio();
+    </script>
+  </body>
+</html>

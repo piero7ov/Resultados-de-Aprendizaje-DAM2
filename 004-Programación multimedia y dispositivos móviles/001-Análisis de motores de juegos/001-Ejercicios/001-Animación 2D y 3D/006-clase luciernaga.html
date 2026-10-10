@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      canvas{border:1px solid black;background:#101820;}
+    </style>
+  </head>
+  <body>
+    <canvas width="400" height="400"></canvas>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+
+      class Particula{
+        // El constructor recibe los valores iniciales de cada objeto.
+        constructor(x,y,angulo,color){
+          this.x = x; // this se refiere al objeto que estamos utilizando.
+          this.y = y;
+          this.angulo = angulo;
+          this.color = color;
+        }
+
+        gira(){
+          this.angulo += (Math.random()-0.5)*0.8; // Giro aleatorio entre -0.4 y 0.4 radianes.
+        }
+
+        mueve(){
+          this.x += Math.cos(this.angulo); // Coseno: componente horizontal del movimiento.
+          this.y += Math.sin(this.angulo); // Seno: componente vertical del movimiento.
+
+          // Si sale por un borde, aparece por el opuesto.
+          if (this.x > lienzo.width){ this.x = 0; }
+          if (this.x < 0){ this.x = lienzo.width; }
+          if (this.y > lienzo.height){ this.y = 0; }
+          if (this.y < 0){ this.y = lienzo.height; }
+        }
+
+        pinta(){
+          contexto.fillStyle = this.color;
+          contexto.beginPath();
+          contexto.arc(this.x,this.y,5,0,Math.PI*2); // 2 PI radianes forman un círculo completo.
+          contexto.fill();
+        }
+      }
+
+      // new crea una partícula y llama a su constructor.
+      const particula = new Particula(40,40,0,"yellow");
+      let temporizador = setTimeout(bucle,1000); // Llamo al bucle por primera vez
+
+      function bucle(){ // Este es el bucle
+        contexto.clearRect(0,0,400,400); // Borramos el canvas
+        particula.gira();
+        particula.mueve();
+        particula.pinta();
+        clearTimeout(temporizador); // Elimino el temporizador
+        temporizador = setTimeout(bucle,20); // Vuelvo a ejecutar el bucle
+      }
+    </script>
+  </body>
+</html>

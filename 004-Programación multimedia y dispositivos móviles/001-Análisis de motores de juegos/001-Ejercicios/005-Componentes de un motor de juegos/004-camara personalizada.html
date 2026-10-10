@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cámara personalizada - A-Frame</title>
+
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+</head>
+
+<body>
+
+    <a-scene>
+
+        <a-assets>
+            <a-asset-item id="avatar" src="avatar_detallado.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Avatar -->
+        <a-entity gltf-model="#avatar" position="0 0.95 -4" rotation="0 0 0" scale="1 1 1">
+        </a-entity>
+
+        <!-- Suelo y muro detrás del avatar -->
+        <a-plane position="0 0 -4" rotation="-90 0 0" width="20" height="20" color="#343942">
+        </a-plane>
+        <a-plane position="0 2 -5" width="12" height="4" color="#252B35">
+        </a-plane>
+
+        <!-- Cámara manual: podemos mirar alrededor y movernos con WASD -->
+        <a-entity id="camera" camera position="0 1.2 0" look-controls wasd-controls="acceleration: 20">
+        </a-entity>
+
+        <!-- Cielo oscuro -->
+        <a-sky color="#20252D"></a-sky>
+
+    </a-scene>
+
+</body>
+</html>

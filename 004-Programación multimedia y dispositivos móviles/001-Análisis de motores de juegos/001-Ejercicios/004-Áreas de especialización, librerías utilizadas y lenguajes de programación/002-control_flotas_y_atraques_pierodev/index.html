@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Control portuario · empresarial</title>
+    <link rel="stylesheet" href="css/estilo.css">
+  </head>
+  <body>
+    <main class="aplicacion">
+      <header class="cabecera">
+        <div><h1>Control portuario</h1><p>Supervisión de flota y asignación de atraques</p></div>
+      </header>
+      <section class="resumen" aria-label="Resumen de operaciones">
+        <div><span>Barcos supervisados</span><strong id="total_barcos">3</strong></div>
+        <div><span>En tránsito</span><strong id="barcos_transito">0</strong></div>
+        <div><span>Atracados</span><strong id="barcos_atracados">0</strong></div>
+        <div><span>Muelles disponibles</span><strong id="muelles_disponibles">3</strong></div>
+      </section>
+      <div class="columnas">
+        <section class="panel mapa" aria-labelledby="titulo_mapa">
+          <div class="titulo-panel"><div><h2 id="titulo_mapa">Plano operativo</h2></div><span class="leyenda">● Ruta asignada &nbsp; ● Muelle</span></div>
+          <canvas id="escenario" width="1000" height="620" aria-label="Plano simulado del puerto con barcos, islas y tres muelles"></canvas>
+          <p class="nota">Cada barco transmite una posición GPS simulada sobre este plano.</p>
+        </section>
+        <aside class="panel operaciones" aria-labelledby="titulo_operaciones">
+          <p class="sobretitulo">OPERACIONES</p><h2 id="titulo_operaciones">Asignar atraque</h2>
+          <label for="barco_seleccionado">Barco</label><select id="barco_seleccionado"></select>
+          <label for="muelle_seleccionado">Muelle disponible</label><select id="muelle_seleccionado"></select>
+          <button id="asignar" type="button">Asignar muelle y trazar ruta</button>
+          <p id="mensaje" class="mensaje" role="status">Selecciona un barco y un muelle disponible.</p>
+          <div class="separador"></div>
+          <p class="sobretitulo">FORMACIÓN</p><h3>Practicar maniobra</h3>
+          <p>Selecciona un barco con muelle asignado. Durante la práctica, tú lo gobiernas y los demás siguen su ruta.</p>
+          <button id="practicar" type="button" class="secundario">Tomar el control</button>
+          <button id="terminar_practica" type="button" class="secundario" hidden>Terminar práctica</button>
+          <p id="ayuda" class="ayuda" hidden>↑ Acelerar · ↓ Frenar · ← → Girar. Entra despacio en el muelle asignado.</p>
+        </aside>
+      </div>
+      <section class="panel tabla-panel" aria-labelledby="titulo_flota">
+        <div class="titulo-panel"><div><p class="sobretitulo">SEGUIMIENTO</p><h2 id="titulo_flota">Flota</h2></div><span id="hora_actualizacion"></span></div>
+        <div class="tabla-contenedor"><table><thead><tr><th>Barco</th><th>GPS simulado (lat., lon.)</th><th>Muelle</th><th>Estado</th><th>Última señal</th></tr></thead><tbody id="tabla_flota"></tbody></table></div>
+      </section>
+      <footer>Los barcos, las señales GPS y las operaciones son ficticios. Ejemplo didáctico de supervisión y entrenamiento.</footer>
+    </main>
+    <script src="js/motor/Entrada.js"></script>
+    <script src="js/motor/Actor.js"></script>
+    <script src="js/motor/Jugador.js"></script>
+    <script src="js/motor/Escena.js"></script>
+    <script src="js/motor/Motor.js"></script>
+    <script src="js/juego/control-portuario.js"></script>
+  </body>
+</html>

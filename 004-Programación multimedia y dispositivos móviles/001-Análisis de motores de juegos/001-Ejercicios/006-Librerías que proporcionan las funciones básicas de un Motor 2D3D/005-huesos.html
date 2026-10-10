@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Three.js - Animación aleatoria de huesos</title>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #controles {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+
+            width: 300px;
+            padding: 20px;
+
+            background: rgba(255, 255, 255, 0.9);
+
+            border-radius: 10px;
+
+            z-index: 10;
+        }
+
+        .control {
+            margin-bottom: 20px;
+        }
+
+        .control:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .valor {
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+
+<body>
+
+    <div id="controles">
+
+        <div class="control">
+
+            <label>
+                Ángulo máximo:
+                <span
+                    id="anguloValor"
+                    class="valor"
+                >
+                    15°
+                </span>
+            </label>
+
+            <input
+                id="angulo"
+                type="range"
+                min="0"
+                max="90"
+                step="1"
+                value="15"
+            >
+
+        </div>
+
+
+        <div class="control">
+
+            <label>
+                Frecuencia:
+                <span
+                    id="frecuenciaValor"
+                    class="valor"
+                >
+                    1.0 Hz
+                </span>
+            </label>
+
+            <input
+                id="frecuencia"
+                type="range"
+                min="0.1"
+                max="10"
+                step="0.1"
+                value="1"
+            >
+
+        </div>
+
+    </div>
+
+
+<script type="module">
+
+    import * as THREE from 'three';
+
+    import {
+        GLTFLoader
+    } from 'three/addons/loaders/GLTFLoader.js';
+
+
+    // ============================================================
+    // ESCENA
+    // ============================================================
+
+    const scene = new THREE.Scene();
+
+    scene.background =
+        new THREE.Color(
+            0x111111
+        );
+
+
+    // ============================================================
+    // CÁMARA
+    // ============================================================
+
+    const camera =
+        new THREE.PerspectiveCamera(
+            20,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+
+    camera.position.set(
+        0,
+        0,
+        7
+    );
+    camera.lookAt(0, 0, 0);
+
+
+    // ============================================================
+    // RENDERER
+    // ============================================================
+
+    const renderer =
+        new THREE.WebGLRenderer({
+            antialias: true
+        });
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    renderer.setPixelRatio(
+        Math.min(
+            window.devicePixelRatio,
+            2
+        )
+    );
+
+    document.body.appendChild(
+        renderer.domElement
+    );
+
+
+    // ============================================================
+    // LUCES
+    // ============================================================
+
+    const light =
+        new THREE.DirectionalLight(
+            0xffffff,
+            3
+        );
+
+    light.position.set(
+        5,
+        10,
+        5
+    );
+
+    scene.add(
+        light
+    );
+
+
+    const ambient =
+        new THREE.AmbientLight(
+            0xffffff,
+            0.45
+        );
+
+    scene.add(
+        ambient
+    );
+
+
+    const luzRelleno = new THREE.DirectionalLight(0x9aa8bb, 0.6);
+    luzRelleno.position.set(-3, 1, 3);
+    scene.add(luzRelleno);
+
+    // Muro detrás del avatar.
+    const geometriaMuro = new THREE.PlaneGeometry(8, 6);
+    const materialMuro = new THREE.MeshStandardMaterial({
+        color: 0x17191d,
+        roughness: 1,
+        metalness: 0
+    });
+    const muro = new THREE.Mesh(geometriaMuro, materialMuro);
+    muro.position.set(0, 0, -1.5);
+    scene.add(muro);
+
+
+    // ============================================================
+    // INTERFAZ
+    // ============================================================
+
+    const anguloSlider =
+        document.getElementById(
+            "angulo"
+        );
+
+    const frecuenciaSlider =
+        document.getElementById(
+            "frecuencia"
+        );
+
+
+    const anguloValor =
+        document.getElementById(
+            "anguloValor"
+        );
+
+    const frecuenciaValor =
+        document.getElementById(
+            "frecuenciaValor"
+        );
+
+
+    let anguloMaximo =
+        Number(
+            anguloSlider.value
+        );
+
+
+    let frecuencia =
+        Number(
+            frecuenciaSlider.value
+        );
+
+
+    anguloSlider.addEventListener(
+        "input",
+        function() {
+
+            anguloMaximo =
+                Number(
+                    this.value
+                );
+
+            anguloValor.textContent =
+                anguloMaximo + "°";
+
+        }
+    );
+
+
+    frecuenciaSlider.addEventListener(
+        "input",
+        function() {
+
+            frecuencia =
+                Number(
+                    this.value
+                );
+
+            frecuenciaValor.textContent =
+                frecuencia.toFixed(1) +
+                " Hz";
+
+        }
+    );
+
+
+    // ============================================================
+    // HUESOS
+    // ============================================================
+
+    const huesos = [];
+    const morphMeshes = [];
+
+
+    // ============================================================
+    // CARGAR GLB
+    // ============================================================
+
+    const loader =
+        new GLTFLoader();
+
+
+    loader.load(
+
+        "avatar_combinado.glb",
+
+        function(gltf) {
+
+            scene.add(
+                gltf.scene
+            );
+
+
+            console.log(
+                "GLB cargado"
+            );
+
+
+            gltf.scene.traverse(
+
+                function(object) {
+
+                    if (
+                        object.isMesh &&
+                        object.morphTargetDictionary &&
+                        object.morphTargetInfluences
+                    ) {
+                        morphMeshes.push(object);
+                    }
+
+                    if (!object.isBone) {
+
+                        return;
+
+                    }
+
+
+                    console.log(
+                        "Hueso detectado:",
+                        object.name
+                    );
+
+
+                    // Guardamos la rotación
+                    // original del hueso.
+
+                    const original =
+                        object.quaternion.clone();
+
+
+                    huesos.push({
+
+                        bone: object,
+
+                        original: original,
+
+                        target:
+                            original.clone()
+
+                    });
+
+                }
+
+            );
+
+
+            console.log(
+                "Número total de huesos:",
+                huesos.length
+            );
+
+
+            console.table(
+
+                huesos.map(
+
+                    function(item, index) {
+
+                        return {
+
+                            index: index,
+
+                            nombre:
+                                item.bone.name
+
+                        };
+
+                    }
+
+                )
+
+            );
+
+
+            // Primera postura aleatoria
+
+            generarNuevaPostura();
+
+        },
+
+        undefined,
+
+        function(error) {
+
+            console.error(
+                "Error cargando GLB:",
+                error
+            );
+
+        }
+
+    );
+
+
+    // Expresiones faciales del ejemplo 004.
+    function setMorph(name, value) {
+
+        morphMeshes.forEach(function(mesh) {
+
+            const index =
+                mesh.morphTargetDictionary[name];
+
+            if (index !== undefined) {
+
+                mesh.morphTargetInfluences[index] = value;
+
+            }
+
+        });
+
+    }
+
+
+    // ============================================================
+    // BLINK SYSTEM
+    // ============================================================
+
+    let blinking = false;
+
+    let blinkStart = 0;
+
+    let nextBlink =
+        performance.now() +
+        randomBlinkDelay();
+
+
+    function randomBlinkDelay() {
+
+        // Between 1.5 and 5 seconds
+        return 1500 + Math.random() * 3500;
+
+    }
+
+
+    function updateBlink(now) {
+
+        if (!blinking) {
+
+            if (now >= nextBlink) {
+
+                blinking = true;
+
+                blinkStart = now;
+
+            }
+
+            return;
+
+        }
+
+
+        const elapsed = now - blinkStart;
+
+
+        // Blink duration: 200 ms
+        const duration = 200;
+
+        const progress =
+            elapsed / duration;
+
+
+        if (progress >= 1) {
+
+            setMorph(
+                'ojos',
+                0
+            );
+
+            blinking = false;
+
+            nextBlink =
+                now +
+                randomBlinkDelay();
+
+            return;
+
+        }
+
+
+        // 0 → 1 → 0
+
+        let value;
+
+        if (progress < 0.5) {
+
+            value =
+                progress * 2;
+
+        } else {
+
+            value =
+                (1 - progress) * 2;
+
+        }
+
+
+        setMorph(
+            'ojos',
+            value
+        );
+
+    }
+
+
+    // ============================================================
+    // GENERAR ROTACIÓN ALEATORIA
+    // ============================================================
+
+    function generarRotacionAleatoria() {
+
+        const maximo =
+            THREE.MathUtils.degToRad(
+                anguloMaximo
+            );
+
+
+        const x =
+            THREE.MathUtils.randFloat(
+                -maximo,
+                maximo
+            );
+
+
+        const y =
+            THREE.MathUtils.randFloat(
+                -maximo,
+                maximo
+            );
+
+
+        const z =
+            THREE.MathUtils.randFloat(
+                -maximo,
+                maximo
+            );
+
+
+        const euler =
+            new THREE.Euler(
+                x,
+                y,
+                z
+            );
+
+
+        const quaternion =
+            new THREE.Quaternion();
+
+
+        quaternion.setFromEuler(
+            euler
+        );
+
+
+        return quaternion;
+
+    }
+
+
+    // ============================================================
+    // NUEVA POSTURA
+    // ============================================================
+
+    function generarNuevaPostura() {
+
+        huesos.forEach(
+
+            function(item) {
+
+                // Rotación aleatoria RELATIVA
+                // a la posición original.
+
+                const randomRotation =
+                    generarRotacionAleatoria();
+
+
+                item.target
+                    .copy(
+                        item.original
+                    )
+                    .multiply(
+                        randomRotation
+                    );
+
+            }
+
+        );
+
+    }
+
+
+    // ============================================================
+    // TEMPORIZADOR
+    // ============================================================
+
+    let tiempoDesdeUltimoCambio = 0;
+
+
+    // ============================================================
+    // CLOCK
+    // ============================================================
+
+    const clock =
+        new THREE.Clock();
+
+
+    // ============================================================
+    // ANIMACIÓN
+    // ============================================================
+
+    function animate() {
+
+        requestAnimationFrame(
+            animate
+        );
+
+
+        const delta =
+            clock.getDelta();
+
+        const tiempo = clock.elapsedTime;
+        const valorBoca = (Math.sin(tiempo * 4) + 1) / 2;
+        setMorph('a', valorBoca);
+        updateBlink(performance.now());
+
+
+        tiempoDesdeUltimoCambio +=
+            delta;
+
+
+        // --------------------------------------------------------
+        // GENERAR NUEVA POSTURA
+        // --------------------------------------------------------
+
+        const intervalo =
+            1 / frecuencia;
+
+
+        if (
+            tiempoDesdeUltimoCambio
+            >= intervalo
+        ) {
+
+            generarNuevaPostura();
+
+            tiempoDesdeUltimoCambio =
+                0;
+
+        }
+
+
+        // --------------------------------------------------------
+        // INTERPOLACIÓN
+        // --------------------------------------------------------
+
+        huesos.forEach(
+
+            function(item) {
+
+                item.bone.quaternion.slerp(
+                    item.target,
+                    Math.min(
+                        delta * 5,
+                        1
+                    )
+                );
+
+            }
+
+        );
+
+
+        // --------------------------------------------------------
+        // RENDER
+        // --------------------------------------------------------
+
+        renderer.render(
+            scene,
+            camera
+        );
+
+    }
+
+
+    animate();
+
+
+    // ============================================================
+    // RESIZE
+    // ============================================================
+
+    window.addEventListener(
+
+        "resize",
+
+        function() {
+
+            camera.aspect =
+                window.innerWidth /
+                window.innerHeight;
+
+
+            camera.updateProjectionMatrix();
+
+
+            renderer.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+
+        }
+
+    );
+
+</script>
+
+</body>
+</html>

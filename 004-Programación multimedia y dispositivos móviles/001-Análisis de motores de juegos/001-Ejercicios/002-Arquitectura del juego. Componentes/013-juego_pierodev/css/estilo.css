@@ -1,0 +1,63 @@
+body, html {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+main, #escenario {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+#escenario {
+  background: #3C3E3D;
+}
+
+#iu {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(430px, calc(100% - 32px));
+  padding: 8px 12px;
+  border-radius: 0 0 8px 8px;
+  background: rgba(23, 28, 26, 0.88);
+  color: #F5F3E9;
+  pointer-events: none;
+}
+
+.indicador {
+  display: grid;
+  grid-template-columns: 56px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.indicador progress { width: 100%; height: 10px; }
+#barra_progreso { accent-color: #C9DD82; }
+#barra_escudo { accent-color: #79C6E8; }
+#barra_energia { accent-color: #F0A45D; }
+#numero_progreso, #numero_escudo, #numero_energia { text-align: right; }
+#iu .ayuda { margin: 2px 0 0; color: #CED2CD; font-size: 11px; text-align: center; }
+
+#resultado {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.65);
+  color: #F5F3E9;
+}
+#resultado[hidden] { display: none; }
+#resultado section { max-width: 360px; margin: 20px; padding: 28px; border-radius: 12px; background: #1C2520; text-align: center; }
+#resultado h1 { font-size: 26px; }
+#reiniciar { padding: 12px 20px; border: 0; border-radius: 6px; background: #BFE19A; color: #172015; font-size: 16px; cursor: pointer; }
+#reiniciar:focus-visible { outline: 3px solid #BAE6FD; outline-offset: 4px; }

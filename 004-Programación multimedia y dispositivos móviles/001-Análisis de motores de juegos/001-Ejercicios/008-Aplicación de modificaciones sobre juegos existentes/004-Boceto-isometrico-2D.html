@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Producto en Marcha — Boceto isométrico 2D</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #f3f5f4; color: #24343b; font-family: Arial, sans-serif; }
+      main { max-width: 1280px; margin: auto; padding: 20px; }
+      h1 { margin: 0 0 5px; font-size: 28px; }
+      .intro { margin: 0 0 14px; line-height: 1.45; color: #52646c; }
+      .escena { overflow: auto; background: #fff; border: 1px solid #c9d5d6; border-radius: 8px; }
+      canvas { display: block; width: 100%; min-width: 850px; height: auto; cursor: grab; touch-action: none; }
+      canvas.arrastrando { cursor: grabbing; }
+      .controles { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; margin: 12px 0; }
+      button { border: 1px solid #b8c9ca; border-radius: 6px; background: white; color: #24343b; padding: 9px 12px; font: inherit; cursor: pointer; }
+      button:hover, button:focus-visible { background: #e2eff0; border-color: #5a929a; }
+      .separador { flex: 1; }
+      .ficha { display: flex; gap: 15px; align-items: flex-start; padding: 15px 18px; background: white; border: 1px solid #d4dfdf; border-radius: 7px; }
+      .numero { flex: 0 0 39px; width: 39px; height: 39px; display: grid; place-items: center; border-radius: 50%; background: #38788b; color: white; font-weight: bold; }
+      .ficha h2 { margin: 0 0 5px; font-size: 18px; }
+      .ficha p { margin: 0; line-height: 1.45; }
+      .nota { color: #6b797d; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Producto en Marcha</h1>
+      <p class="intro">005 · Boceto de nave isométrica en Canvas 2D. Las cuatro estaciones comparten un recorrido; arrastra para mover la vista y pulsa sus marcadores para explorarlas.</p>
+      <div class="escena" role="region" aria-label="Boceto isométrico desplazable" tabindex="0">
+        <canvas width="1220" height="760" aria-label="Nave isométrica con estanterías, operarios, cinta y las estaciones de Recepción, Calidad, Embalaje y Expedición.">
+          El producto entra por Recepción, pasa por Control de calidad, se embala y se prepara para Expedición.
+        </canvas>
+      </div>
+      <div class="controles" aria-label="Controles del boceto">
+        <button type="button" data-mover="izquierda" aria-label="Mover vista a la izquierda">←</button>
+        <button type="button" data-mover="arriba" aria-label="Mover vista hacia arriba">↑</button>
+        <button type="button" data-mover="abajo" aria-label="Mover vista hacia abajo">↓</button>
+        <button type="button" data-mover="derecha" aria-label="Mover vista a la derecha">→</button>
+        <button type="button" data-zoom="acercar" aria-label="Acercar">＋</button>
+        <button type="button" data-zoom="alejar" aria-label="Alejar">－</button>
+        <button type="button" id="restablecer">Restablecer vista</button>
+        <span class="separador"></span>
+        <button type="button" data-estacion="0">1 · Recepción</button>
+        <button type="button" data-estacion="1">2 · Calidad</button>
+        <button type="button" data-estacion="2">3 · Embalaje</button>
+        <button type="button" data-estacion="3">4 · Expedición</button>
+      </div>
+      <section class="ficha" aria-live="polite">
+        <span class="numero" id="numero">1</span>
+        <div><h2 id="titulo">Recepción</h2><p id="descripcion">El producto llega en un palé. El operario comprueba la identificación antes de colocarlo en la cinta.</p></div>
+      </section>
+      <p class="nota">Boceto visual e interactivo: todos los objetos están dibujados en 2D y la navegación simula el movimiento de una cámara elevada.</p>
+    </main>
+    <script>
+      const lienzo = document.querySelector("canvas");
+      const contexto = lienzo.getContext("2d");
+      const camara = { x: 0, y: 0, zoom: 1 };
+      const estaciones = [
+        { nombre: "Recepción", color: "#3f9f75", x: 2.6, y: 4.7, descripcion: "El producto llega en un palé. El operario comprueba la identificación antes de colocarlo en la cinta." },
+        { nombre: "Control de calidad", color: "#d3a53b", x: 5.3, y: 4.7, descripcion: "En la mesa se inspecciona el producto. Si no supera el control, se aparta a la zona de revisión." },
+        { nombre: "Embalaje", color: "#d7804c", x: 8.1, y: 4.7, descripcion: "El producto recibe protección y se introduce en una caja que después se cierra y se etiqueta." },
+        { nombre: "Expedición", color: "#4b83a7", x: 10.7, y: 4.7, descripcion: "Se verifica la etiqueta y el paquete se coloca en un palé para preparar su salida." }
+      ];
+      let estacionActiva = 0;
+      let arrastre = null;
+
+      function punto(x, y, z = 0) {
+        return { x: 610 + (x - y) * 43, y: 235 + (x + y) * 20 - z * 42 };
+      }
+
+      function poligono(puntos, relleno, borde = null, grosor = 1) {
+        contexto.beginPath();
+        contexto.moveTo(puntos[0].x, puntos[0].y);
+        for (let i = 1; i < puntos.length; i++) contexto.lineTo(puntos[i].x, puntos[i].y);
+        contexto.closePath();
+        contexto.fillStyle = relleno;
+        contexto.fill();
+        if (borde) { contexto.lineWidth = grosor; contexto.strokeStyle = borde; contexto.stroke(); }
+      }
+
+      function linea(a, b, color, grosor = 1) {
+        contexto.beginPath();
+        contexto.moveTo(a.x, a.y);
+        contexto.lineTo(b.x, b.y);
+        contexto.strokeStyle = color;
+        contexto.lineWidth = grosor;
+        contexto.stroke();
+      }
+
+      function circulo(x, y, radio, color) {
+        contexto.beginPath();
+        contexto.arc(x, y, radio, 0, Math.PI * 2);
+        contexto.fillStyle = color;
+        contexto.fill();
+      }
+
+      function texto(contenido, x, y, tamano = 14, color = "#24343b", negrita = false) {
+        contexto.fillStyle = color;
+        contexto.font = (negrita ? "bold " : "") + tamano + "px Arial";
+        contexto.fillText(contenido, x, y);
+      }
+
+      function prisma(x, y, z, ancho, fondo, alto, colores) {
+        const a = punto(x, y, z), b = punto(x + ancho, y, z);
+        const c = punto(x + ancho, y + fondo, z), d = punto(x, y + fondo, z);
+        const a2 = punto(x, y, z + alto), b2 = punto(x + ancho, y, z + alto);
+        const c2 = punto(x + ancho, y + fondo, z + alto), d2 = punto(x, y + fondo, z + alto);
+        poligono([b, c, c2, b2], colores.lado, colores.borde);
+        poligono([d, c, c2, d2], colores.frente, colores.borde);
+        poligono([a2, b2, c2, d2], colores.tapa, colores.borde);
+      }
+
+      function sueloYParedes() {
+        const a = punto(0, 0), b = punto(12, 0), c = punto(12, 8.5), d = punto(0, 8.5);
+        const c2 = punto(12, 8.5, -.35), d2 = punto(0, 8.5, -.35);
+        poligono([d, c, c2, d2], "#819d9e");
+        poligono([b, c, c2, punto(12, 0, -.35)], "#688889");
+        poligono([a, b, c, d], "#d6e7e5", "#9ab7b7", 2);
+        for (let x = 1; x < 12; x++) linea(punto(x, 0), punto(x, 8.5), "#c4d9d7");
+        for (let y = 1; y < 8.5; y++) linea(punto(0, y), punto(12, y), "#c4d9d7");
+        // Paredes traseras abiertas hacia el espectador.
+        poligono([punto(0, 0), punto(0, 8.5), punto(0, 8.5, 3.1), punto(0, 0, 3.1)], "#60aabc", "#4f93a5", 2);
+        poligono([punto(0, 0), punto(12, 0), punto(12, 0, 3.1), punto(0, 0, 3.1)], "#75bac7", "#4f93a5", 2);
+        // Ventanas altas de la pared izquierda.
+        for (let y of [1, 3.6, 6.2]) {
+          poligono([punto(.01, y, 2), punto(.01, y + 1.7, 2), punto(.01, y + 1.7, 2.55), punto(.01, y, 2.55)], "#b9d9db", "#d9edec", 2);
+          linea(punto(.02, y + .85, 2), punto(.02, y + .85, 2.55), "#e4f1ef");
+        }
+        // Persiana de salida en la pared derecha.
+        poligono([punto(9.2, .01, 0), punto(11.15, .01, 0), punto(11.15, .01, 2.35), punto(9.2, .01, 2.35)], "#e6ecec", "#567e87", 3);
+        for (let z = .25; z < 2.35; z += .22) linea(punto(9.2, .02, z), punto(11.15, .02, z), "#b2c8c9", 2);
+        texto("SALIDA", 935, 275, 15, "#ffffff", true);
+      }
+
+      function zona(indice, x1, x2) {
+        contexto.save();
+        contexto.globalAlpha = indice === estacionActiva ? .27 : .13;
+        poligono([punto(x1, 2.7), punto(x2, 2.7), punto(x2, 8.05), punto(x1, 8.05)], estaciones[indice].color);
+        contexto.restore();
+      }
+
+      function caja(x, y, z, escala = 1) {
+        prisma(x, y, z, .62 * escala, .52 * escala, .58 * escala,
+          { tapa: "#f3cd91", frente: "#d3a16c", lado: "#bd8957", borde: "#a97748" });
+        linea(punto(x + .31 * escala, y, z + .58 * escala), punto(x + .31 * escala, y + .52 * escala, z + .58 * escala), "#f8e2ba", 3);
+      }
+
+      function estanteria(x, y) {
+        const rojo = "#b85e4d";
+        for (let xx of [x, x + 1.65]) for (let yy of [y, y + .58])
+          linea(punto(xx, yy, 0), punto(xx, yy, 2.35), rojo, 5);
+        for (let z of [.48, 1.15, 1.83, 2.34])
+          prisma(x, y, z, 1.65, .58, .07, { tapa: "#f3f5ed", frente: "#cad2cf", lado: "#b9c6c4", borde: "#8fa5a5" });
+        linea(punto(x, y + .58, .1), punto(x + 1.65, y + .58, 2.28), rojo, 2);
+        linea(punto(x + 1.65, y + .58, .1), punto(x, y + .58, 2.28), rojo, 2);
+        caja(x + .2, y + .08, .56, .75);
+        caja(x + 1.02, y + .05, 1.22, .7);
+        caja(x + .31, y + .08, 1.91, .55);
+      }
+
+      function mesa(x, y, color) {
+        for (let xx of [x + .12, x + 1.55]) for (let yy of [y + .12, y + .89])
+          prisma(xx, yy, 0, .1, .1, .68, { tapa: "#9db5b7", frente: "#78979a", lado: "#698a8d" });
+        prisma(x, y, .68, 1.77, 1.07, .12, { tapa: color, frente: "#829da0", lado: "#789396", borde: "#66898c" });
+      }
+
+      function cinta() {
+        for (let x of [2.1, 4.3, 6.6, 9.2, 10.4])
+          prisma(x, 3.72, 0, .15, .65, .69, { tapa: "#738a8d", frente: "#526e74", lado: "#526e74" });
+        prisma(1.55, 3.55, .7, 9.25, .9, .16, { tapa: "#313f43", frente: "#4a676c", lado: "#405a60", borde: "#26383c" });
+        for (let x = 1.73; x < 10.7; x += .4) linea(punto(x, 3.63, .87), punto(x, 4.36, .87), "#9baeb0", 3);
+        linea(punto(1.55, 3.53, .91), punto(10.8, 3.53, .91), "#d5e0df", 3);
+        linea(punto(1.55, 4.47, .91), punto(10.8, 4.47, .91), "#d5e0df", 3);
+        caja(2.6, 3.67, .86, .62);
+        caja(5.55, 3.67, .86, .62);
+        caja(8.55, 3.67, .86, .62);
+      }
+
+      function operario(x, y, color, brazo = 1) {
+        const p = punto(x, y);
+        contexto.save();
+        contexto.translate(p.x, p.y);
+        contexto.beginPath(); contexto.ellipse(0, 3, 23, 8, 0, 0, Math.PI * 2);
+        contexto.fillStyle = "#56747444"; contexto.fill();
+        linea({ x: -7, y: -14 }, { x: -10, y: -3 }, "#34444c", 8);
+        linea({ x: 7, y: -14 }, { x: 10, y: -3 }, "#34444c", 8);
+        linea({ x: -13, y: -3 }, { x: -5, y: -3 }, "#27343a", 6);
+        linea({ x: 7, y: -3 }, { x: 16, y: -3 }, "#27343a", 6);
+        linea({ x: -11, y: -48 }, { x: -20, y: -27 }, "#5d7480", 8);
+        linea({ x: 11, y: -48 }, { x: 19 * brazo, y: -29 }, "#5d7480", 8);
+        circulo(-20, -27, 4, "#d8a77f");
+        circulo(19 * brazo, -29, 4, "#d8a77f");
+        poligono([{ x: -12, y: -52 }, { x: 12, y: -52 }, { x: 13, y: -16 }, { x: -13, y: -16 }], color, "#5f7071");
+        linea({ x: -7, y: -48 }, { x: -7, y: -21 }, "#eef0c4", 3);
+        linea({ x: 7, y: -48 }, { x: 7, y: -21 }, "#eef0c4", 3);
+        linea({ x: -11, y: -29 }, { x: 11, y: -29 }, "#eef0c4", 3);
+        circulo(0, -64, 10, "#d8a77f");
+        poligono([{ x: -12, y: -69 }, { x: -8, y: -77 }, { x: 8, y: -77 }, { x: 12, y: -69 }], "#f0c84b");
+        linea({ x: -14, y: -69 }, { x: 15, y: -69 }, "#ddae35", 4);
+        contexto.restore();
+      }
+
+      function detallesEstaciones() {
+        // Recepción: estanterías, palé de entrada y operario verde.
+        estanteria(.42, .85);
+        estanteria(.42, 3.15);
+        prisma(1.4, 6.45, 0, 1.25, .9, .12, { tapa: "#a57b53", frente: "#7f5d41", lado: "#906947" });
+        caja(1.55, 6.55, .12, .82);
+        caja(2.16, 6.5, .12, .6);
+        operario(2.7, 5.65, estaciones[0].color);
+
+        // Calidad: mesa de inspección, lupa y producto apartado.
+        mesa(4.5, 5.12, "#e8f0ed");
+        caja(4.85, 5.3, .8, .45);
+        const lupa = punto(5.45, 5.55, 1.13);
+        circulo(lupa.x, lupa.y, 10, "#afc8c8");
+        circulo(lupa.x, lupa.y, 6, "#d6eded");
+        linea({ x: lupa.x + 8, y: lupa.y + 8 }, { x: lupa.x + 17, y: lupa.y + 18 }, "#52777b", 4);
+        prisma(4.1, 7.25, 0, 1.2, .72, .06, { tapa: "#dfb4aa", frente: "#bc8880", lado: "#bc8880" });
+        texto("REVISIÓN", punto(4.05, 7.55).x - 19, punto(4.05, 7.55).y + 20, 11, "#a25d55", true);
+        operario(6.15, 6.22, estaciones[1].color, -1);
+
+        // Embalaje: mesa con caja abierta, relleno y precintadora.
+        mesa(7.1, 5.15, "#f0e7d7");
+        prisma(7.38, 5.35, .8, .67, .57, .38, { tapa: "#f0d3ab", frente: "#cc9d6f", lado: "#ba885e", borde: "#9c704d" });
+        poligono([punto(7.33, 5.32, 1.18), punto(8.1, 5.32, 1.18), punto(7.98, 5.2, 1.35), punto(7.4, 5.2, 1.35)], "#e2b980");
+        prisma(8.17, 5.5, .8, .28, .18, .1, { tapa: "#d67c4c", frente: "#b7613d", lado: "#b7613d" });
+        operario(8.95, 6.5, estaciones[2].color, -1);
+
+        // Expedición: etiquetas, palé de salida y persiana.
+        mesa(9.75, 5.32, "#e7eef2");
+        caja(10.0, 5.52, .8, .62);
+        prisma(10.85, 5.62, .8, .42, .37, .26, { tapa: "#576e7a", frente: "#3f5964", lado: "#425a65" });
+        prisma(10.1, 7.03, 0, 1.3, .84, .13, { tapa: "#ad855d", frente: "#876747", lado: "#8e6d4c" });
+        caja(10.2, 7.1, .13, .75);
+        caja(10.87, 7.12, .13, .58);
+        operario(11.6, 6.13, estaciones[3].color, -1);
+      }
+
+      function marcador(indice) {
+        const estacion = estaciones[indice];
+        const p = punto(estacion.x, estacion.y, 2.65);
+        circulo(p.x, p.y, 19, "#ffffff");
+        circulo(p.x, p.y, 16, estacion.color);
+        texto(String(indice + 1), p.x - 5, p.y + 6, 17, "#ffffff", true);
+        if (indice === estacionActiva) {
+          contexto.beginPath(); contexto.arc(p.x, p.y, 24, 0, Math.PI * 2);
+          contexto.strokeStyle = estacion.color; contexto.lineWidth = 2; contexto.stroke();
+        }
+      }
+
+      function dibujar() {
+        contexto.clearRect(0, 0, lienzo.width, lienzo.height);
+        contexto.fillStyle = "#ffffff";
+        contexto.fillRect(0, 0, lienzo.width, lienzo.height);
+        contexto.save();
+        contexto.translate(lienzo.width / 2 + camara.x, lienzo.height / 2 + camara.y);
+        contexto.scale(camara.zoom, camara.zoom);
+        contexto.translate(-lienzo.width / 2, -lienzo.height / 2);
+        sueloYParedes();
+        zona(0, .45, 3.25);
+        zona(1, 3.35, 6.2);
+        zona(2, 6.3, 9.1);
+        zona(3, 9.2, 11.8);
+        detallesEstaciones();
+        cinta();
+        for (let i = 0; i < 4; i++) marcador(i);
+        contexto.restore();
+      }
+
+      function seleccionar(indice) {
+        estacionActiva = indice;
+        document.querySelector("#numero").textContent = String(indice + 1);
+        document.querySelector("#numero").style.background = estaciones[indice].color;
+        document.querySelector("#titulo").textContent = estaciones[indice].nombre;
+        document.querySelector("#descripcion").textContent = estaciones[indice].descripcion;
+        dibujar();
+      }
+
+      function mover(direccion) {
+        if (direccion === "izquierda") camara.x += 55;
+        if (direccion === "derecha") camara.x -= 55;
+        if (direccion === "arriba") camara.y += 45;
+        if (direccion === "abajo") camara.y -= 45;
+        dibujar();
+      }
+
+      function zoom(direccion) {
+        camara.zoom += direccion === "acercar" ? .1 : -.1;
+        camara.zoom = Math.max(.7, Math.min(1.5, camara.zoom));
+        dibujar();
+      }
+
+      function coordenadas(evento) {
+        const rectangulo = lienzo.getBoundingClientRect();
+        return { x: (evento.clientX - rectangulo.left) * lienzo.width / rectangulo.width,
+          y: (evento.clientY - rectangulo.top) * lienzo.height / rectangulo.height };
+      }
+
+      lienzo.addEventListener("pointerdown", function (evento) {
+        const p = coordenadas(evento);
+        arrastre = { x: p.x, y: p.y, camaraX: camara.x, camaraY: camara.y, movido: false };
+        lienzo.setPointerCapture(evento.pointerId);
+        lienzo.classList.add("arrastrando");
+      });
+      lienzo.addEventListener("pointermove", function (evento) {
+        if (!arrastre) return;
+        const p = coordenadas(evento);
+        if (Math.abs(p.x - arrastre.x) + Math.abs(p.y - arrastre.y) > 7) arrastre.movido = true;
+        if (arrastre.movido) {
+          camara.x = arrastre.camaraX + p.x - arrastre.x;
+          camara.y = arrastre.camaraY + p.y - arrastre.y;
+          dibujar();
+        }
+      });
+      lienzo.addEventListener("pointerup", function (evento) {
+        if (!arrastre) return;
+        if (!arrastre.movido) {
+          const p = coordenadas(evento);
+          const x = (p.x - lienzo.width / 2 - camara.x) / camara.zoom + lienzo.width / 2;
+          const y = (p.y - lienzo.height / 2 - camara.y) / camara.zoom + lienzo.height / 2;
+          for (let i = 0; i < estaciones.length; i++) {
+            const marcador = punto(estaciones[i].x, estaciones[i].y, 2.65);
+            if (Math.hypot(x - marcador.x, y - marcador.y) < 27) seleccionar(i);
+          }
+        }
+        arrastre = null;
+        lienzo.classList.remove("arrastrando");
+      });
+      lienzo.addEventListener("pointercancel", function () { arrastre = null; lienzo.classList.remove("arrastrando"); });
+      document.querySelectorAll("[data-mover]").forEach(function (boton) {
+        boton.addEventListener("click", function () { mover(boton.dataset.mover); });
+      });
+      document.querySelectorAll("[data-zoom]").forEach(function (boton) {
+        boton.addEventListener("click", function () { zoom(boton.dataset.zoom); });
+      });
+      document.querySelectorAll("[data-estacion]").forEach(function (boton) {
+        boton.addEventListener("click", function () { seleccionar(Number(boton.dataset.estacion)); });
+      });
+      document.querySelector("#restablecer").addEventListener("click", function () {
+        camara.x = 0; camara.y = 0; camara.zoom = 1; dibujar();
+      });
+      window.addEventListener("keydown", function (evento) {
+        const teclas = { ArrowLeft: "izquierda", a: "izquierda", A: "izquierda", ArrowRight: "derecha", d: "derecha", D: "derecha", ArrowUp: "arriba", w: "arriba", W: "arriba", ArrowDown: "abajo", s: "abajo", S: "abajo" };
+        if (teclas[evento.key] && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+          evento.preventDefault(); mover(teclas[evento.key]);
+        }
+      });
+      dibujar();
+    </script>
+  </body>
+</html>
