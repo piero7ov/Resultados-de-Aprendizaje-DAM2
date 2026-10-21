@@ -1,0 +1,10 @@
+# Dependencias instalables y archivos del sistema
+**/node_modules/
+**/.DS_Store
+
+# Biblioteca y resultados locales de ERINWAVE
+**/audio/*.mp3
+**/datos/*.sqlite*
+**/letras/*.txt
+**/subtitulos/*.vtt
+**/subtitulos-brutos/*.vtt

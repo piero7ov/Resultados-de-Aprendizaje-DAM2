@@ -1,0 +1,35 @@
+1
+00:00:00,000 --> 00:00:03,900
+¿Quieres saber por qué Python es el mejor
+lenguaje de programación? Porque es tan
+
+2
+00:00:03,900 --> 00:00:09,120
+fácil que hasta una tortuga puede hacerlo.
+Code, code, code, code, code. ¿Quieres
+
+3
+00:00:09,120 --> 00:00:13,300
+imprimir hola mundo en Python? ¿Es tan
+fácil como decir cheese para una foto?
+
+4
+00:00:13,900 --> 00:00:18,780
+¡Toma! ¿Quieres sumar dos números en
+Python? Es más fácil que contar tus dedos.
+
+5
+00:00:20,180 --> 00:00:25,140
+Uno, dos, listo. ¿Y eso es todo? Fácil,
+¿no? ¿Quieres hacer una lista de tus
+
+6
+00:00:25,140 --> 00:00:29,660
+comidas favoritas en Python? Es más fácil
+que decidir qué comer para cenar. Pizza,
+
+7
+00:00:29,820 --> 00:00:34,520
+spaghetti, hamburguesa... ¡Listo! ¿Y eso
+es todo? Fácil, ¿verdad?
+

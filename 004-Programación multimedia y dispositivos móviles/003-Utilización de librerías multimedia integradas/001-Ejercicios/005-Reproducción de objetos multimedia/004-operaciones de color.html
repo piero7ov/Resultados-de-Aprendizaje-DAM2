@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Operaciones de color</title>
+</head>
+<body>
+  <video src="video/python-en-1-minuto.mp4" controls></video>
+
+  <p>
+    Brillo:
+    <input type="range" id="brillo" min="-100" max="100" value="0">
+    <span id="valorBrillo">0</span>
+  </p>
+
+  <p>
+    Contraste:
+    <input type="range" id="contraste" min="-100" max="100" value="0">
+    <span id="valorContraste">0</span>
+  </p>
+
+  <p>
+    Saturación:
+    <input type="range" id="saturacion" min="0" max="200" value="100">
+    <span id="valorSaturacion">100</span>%
+  </p>
+
+  <p>
+    Gamma:
+    <input type="range" id="gamma" min="10" max="300" value="100">
+    <span id="valorGamma">1.00</span>
+  </p>
+
+  <p>
+    Efecto de color:
+    <select id="efectoColor">
+      <option value="original">Original</option>
+      <option value="grises">Escala de grises</option>
+      <option value="negativo">Negativo</option>
+      <option value="sepia">Sepia</option>
+      <option value="umbral">Blanco y negro por umbral</option>
+      <option value="rojo">Canal rojo</option>
+      <option value="verde">Canal verde</option>
+      <option value="azul">Canal azul</option>
+    </select>
+  </p>
+
+  <canvas></canvas>
+
+  <script>
+    let video = document.querySelector("video")
+    let lienzo = document.querySelector("canvas")
+    let contexto = lienzo.getContext("2d")
+
+    let brillo = document.querySelector("#brillo")
+    let contraste = document.querySelector("#contraste")
+    let saturacion = document.querySelector("#saturacion")
+    let gamma = document.querySelector("#gamma")
+    let efectoColor = document.querySelector("#efectoColor")
+
+    let valorBrillo = document.querySelector("#valorBrillo")
+    let valorContraste = document.querySelector("#valorContraste")
+    let valorSaturacion = document.querySelector("#valorSaturacion")
+    let valorGamma = document.querySelector("#valorGamma")
+
+    brillo.oninput = function(){
+      valorBrillo.textContent = brillo.value
+    }
+
+    contraste.oninput = function(){
+      valorContraste.textContent = contraste.value
+    }
+
+    saturacion.oninput = function(){
+      valorSaturacion.textContent = saturacion.value
+    }
+
+    gamma.oninput = function(){
+      valorGamma.textContent = (gamma.value / 100).toFixed(2)
+    }
+
+    video.onloadedmetadata = function(){
+      lienzo.width = video.videoWidth
+      lienzo.height = video.videoHeight
+
+      function fotograma(){
+        contexto.drawImage(
+          video,
+          0,
+          0,
+          lienzo.width,
+          lienzo.height
+        )
+
+        let imagen = contexto.getImageData(
+          0,
+          0,
+          lienzo.width,
+          lienzo.height
+        )
+
+        let pixeles = imagen.data
+        let valorB = parseFloat(brillo.value)
+        let valorC = parseFloat(contraste.value)
+        let valorS = parseFloat(saturacion.value) / 100
+        let valorG = parseFloat(gamma.value) / 100
+        let efecto = efectoColor.value
+
+        let factorContraste =
+          (259 * (valorC + 255)) /
+          (255 * (259 - valorC))
+
+        for(let i = 0; i < pixeles.length; i += 4){
+          let rojo = pixeles[i]
+          let verde = pixeles[i + 1]
+          let azul = pixeles[i + 2]
+
+          rojo += valorB
+          verde += valorB
+          azul += valorB
+
+          rojo = factorContraste * (rojo - 128) + 128
+          verde = factorContraste * (verde - 128) + 128
+          azul = factorContraste * (azul - 128) + 128
+
+          let gris =
+            rojo * 0.299 +
+            verde * 0.587 +
+            azul * 0.114
+
+          rojo = gris + (rojo - gris) * valorS
+          verde = gris + (verde - gris) * valorS
+          azul = gris + (azul - gris) * valorS
+
+          rojo = Math.max(0, Math.min(255, rojo))
+          verde = Math.max(0, Math.min(255, verde))
+          azul = Math.max(0, Math.min(255, azul))
+
+          rojo = 255 * Math.pow(rojo / 255, 1 / valorG)
+          verde = 255 * Math.pow(verde / 255, 1 / valorG)
+          azul = 255 * Math.pow(azul / 255, 1 / valorG)
+
+          if(efecto === "grises"){
+            let gris = (rojo + verde + azul) / 3
+            rojo = gris
+            verde = gris
+            azul = gris
+          }
+
+          if(efecto === "negativo"){
+            rojo = 255 - rojo
+            verde = 255 - verde
+            azul = 255 - azul
+          }
+
+          if(efecto === "sepia"){
+            let rojoSepia = rojo * 0.393 + verde * 0.769 + azul * 0.189
+            let verdeSepia = rojo * 0.349 + verde * 0.686 + azul * 0.168
+            let azulSepia = rojo * 0.272 + verde * 0.534 + azul * 0.131
+
+            rojo = rojoSepia
+            verde = verdeSepia
+            azul = azulSepia
+          }
+
+          if(efecto === "umbral"){
+            let gris = (rojo + verde + azul) / 3
+            let valorUmbral = gris >= 128 ? 255 : 0
+            rojo = valorUmbral
+            verde = valorUmbral
+            azul = valorUmbral
+          }
+
+          if(efecto === "rojo"){
+            verde = 0
+            azul = 0
+          }
+
+          if(efecto === "verde"){
+            rojo = 0
+            azul = 0
+          }
+
+          if(efecto === "azul"){
+            rojo = 0
+            verde = 0
+          }
+
+          rojo = Math.max(0, Math.min(255, rojo))
+          verde = Math.max(0, Math.min(255, verde))
+          azul = Math.max(0, Math.min(255, azul))
+
+          pixeles[i] = rojo
+          pixeles[i + 1] = verde
+          pixeles[i + 2] = azul
+        }
+
+        contexto.putImageData(imagen, 0, 0)
+        requestAnimationFrame(fotograma)
+      }
+
+      fotograma()
+    }
+  </script>
+</body>
+</html>

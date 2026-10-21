@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <video src="002-python-en-1-minuto.webm" controls></video>
+    <script>
+      fetch("subtitulos/002-python-en-1-minuto.vtt")
+      .then(function(resultado){return resultado.text()})
+      .then(function(datos){
+        let partido = datos.replace(/\r\n/g, "\n").split("\n\n")
+        console.log(partido)
+      })
+    </script>
+  </body>
+</html>

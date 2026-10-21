@@ -1,0 +1,33 @@
+<audio src="audio/no_me_pidas_que_no_sea_un_incosciente.mp3" controls></audio>
+<canvas width="800" height="200"></canvas>
+
+<script>
+let lienzo = document.querySelector("canvas")
+let contextolienzo = lienzo.getContext("2d")
+
+fetch("audio/no_me_pidas_que_no_sea_un_incosciente.mp3")
+  .then(respuesta => respuesta.arrayBuffer())
+  .then(datos => {
+    let contexto = new AudioContext()
+
+    contexto.decodeAudioData(datos, function(buffer){
+      let samples = buffer.getChannelData(0)
+
+      let ancho = 800
+      let medio = 100
+      let salto = Math.floor(samples.length / ancho)
+
+      for(let x = 0; x < ancho; x++){
+        let i = x * salto
+        let valor = samples[i]
+
+        contextolienzo.fillRect(
+          x,
+          medio,
+          1,
+          valor * 100
+        )
+      }
+    })
+  })
+</script>

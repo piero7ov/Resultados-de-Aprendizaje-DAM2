@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Onda de audio</title>
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:32px 16px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#f2f2f2;
+      color:#222;
+      font-family:Arial,sans-serif;
+    }
+
+    .reproductor{
+      width:min(800px,100%);
+      padding:22px;
+      border:1px solid #e5e5e5;
+      border-radius:14px;
+      background:#fff;
+      box-shadow:0 12px 35px rgba(0,0,0,0.12);
+    }
+
+    h1{
+      margin:0 0 16px;
+      font-size:20px;
+      font-weight:600;
+    }
+
+    canvas{
+      display:block;
+      width:100%;
+      height:auto;
+      border-radius:8px;
+      background:#fff;
+    }
+
+    audio{
+      display:block;
+      width:100%;
+      margin-top:14px;
+      accent-color:#ff5500;
+    }
+  </style>
+</head>
+<body>
+  <main class="reproductor">
+    <h1>Reproductor de audio</h1>
+    <canvas width="800" height="200" aria-label="Onda de audio con progreso de reproducción"></canvas>
+    <audio src="audio/no_me_pidas_que_no_sea_un_incosciente.mp3" controls></audio>
+  </main>
+
+  <script>
+    let audio = document.querySelector("audio")
+    let lienzo = document.querySelector("canvas")
+    let ctx = lienzo.getContext("2d")
+
+    let alturas = []
+    let barras = 70
+
+    fetch(audio.src)
+      .then(respuesta => respuesta.arrayBuffer())
+      .then(datos => {
+        let contexto = new AudioContext()
+
+        contexto.decodeAudioData(datos, function(buffer){
+          let samples = buffer.getChannelData(0)
+          let salto = Math.max(1,Math.floor(samples.length / barras))
+
+          for(let x = 0; x < barras; x++){
+            let maximo = 0
+
+            for(let i = 0; i < salto; i++){
+              let valor = Math.abs(samples[x * salto + i] || 0)
+
+              if(valor > maximo){
+                maximo = valor
+              }
+            }
+
+            alturas.push(maximo)
+          }
+
+          dibujar(0)
+        })
+      })
+
+    function dibujar(progreso){
+      let ancho = lienzo.width
+      let alto = lienzo.height
+      let medio = alto / 2
+      let separacion = 5
+      let anchoBarra = (ancho - (barras - 1) * separacion) / barras
+
+      ctx.clearRect(0,0,ancho,alto)
+
+      for(let x = 0; x < alturas.length; x++){
+        let altura = Math.max(alturas[x] * medio * 0.85,4)
+        let posicionX = x * (anchoBarra + separacion)
+
+        ctx.fillStyle = x / barras < progreso ? "#ff5500" : "#d6d6d6"
+        ctx.beginPath()
+        ctx.roundRect(
+          posicionX,
+          medio - altura,
+          anchoBarra,
+          altura * 2,
+          anchoBarra / 2
+        )
+        ctx.fill()
+      }
+    }
+
+    audio.addEventListener("timeupdate", function(){
+      if(audio.duration && Number.isFinite(audio.duration)){
+        dibujar(audio.currentTime / audio.duration)
+      }
+    })
+  </script>
+</body>
+</html>

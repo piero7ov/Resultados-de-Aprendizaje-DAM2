@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Vídeo en escala de grises</title>
+</head>
+<body>
+  <video src="video/python-en-1-minuto.mp4" controls></video>
+  <canvas></canvas>
+
+  <script>
+    let video = document.querySelector("video")
+    let lienzo = document.querySelector("canvas")
+    let contexto = lienzo.getContext("2d")
+
+    video.onloadedmetadata = function(){
+      lienzo.width = video.videoWidth
+      lienzo.height = video.videoHeight
+
+      function fotograma(){
+        contexto.drawImage(
+          video,
+          0,
+          0,
+          lienzo.width,
+          lienzo.height
+        )
+
+        let imagen = contexto.getImageData(
+          0,
+          0,
+          lienzo.width,
+          lienzo.height
+        )
+
+        let pixeles = imagen.data
+
+        for(let i = 0; i < pixeles.length; i += 4){
+          let rojo = pixeles[i]
+          let verde = pixeles[i + 1]
+          let azul = pixeles[i + 2]
+          let gris = (rojo + verde + azul) / 3
+
+          pixeles[i] = gris
+          pixeles[i + 1] = gris
+          pixeles[i + 2] = gris
+        }
+
+        contexto.putImageData(imagen, 0, 0)
+        requestAnimationFrame(fotograma)
+      }
+
+      fotograma()
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reproductor de audio</title>
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:24px 16px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:#f2f2f2;
+      font-family:Arial,sans-serif;
+    }
+
+    .pierodevaudio{
+      width:min(900px,100%);
+      padding:18px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      overflow:hidden;
+      border:1px solid #e5e5e5;
+      border-radius:14px;
+      background:#fff;
+      box-shadow:0 12px 35px rgba(0,0,0,0.12);
+    }
+
+    .pierodevaudio audio{
+      display:none;
+    }
+
+    .boton{
+      order:0;
+      flex:0 0 44px;
+      width:44px;
+      height:44px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      border:0;
+      border-radius:50%;
+      background:#292929;
+      color:#fff;
+      font-size:18px;
+      cursor:pointer;
+      transition:transform 0.2s,background 0.2s;
+    }
+
+    .boton:hover{
+      transform:scale(1.08);
+      background:#444;
+    }
+
+    .boton svg{
+      display:block;
+      width:20px;
+      height:20px;
+    }
+
+    .boton:active{
+      transform:scale(0.95);
+    }
+
+    .boton.reproducir{
+      background:#ff5500;
+    }
+
+    .boton.reproducir:hover{
+      background:#e94e00;
+    }
+
+    .boton:focus-visible,
+    .volumen:focus-visible,
+    .waveform:focus-visible{
+      outline:2px solid #ff5500;
+      outline-offset:3px;
+    }
+
+    .tiempo{
+      order:1;
+      flex:0 0 42px;
+      width:42px;
+      color:#666;
+      font-size:12px;
+      text-align:center;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .waveform{
+      order:2;
+      flex:1 1 0;
+      width:0;
+      min-width:0;
+      height:80px;
+      display:block;
+      cursor:pointer;
+      touch-action:none;
+    }
+
+    .volumen{
+      order:3;
+      flex:0 0 80px;
+      width:80px;
+      height:4px;
+      appearance:none;
+      -webkit-appearance:none;
+      border-radius:10px;
+      background:#ddd;
+      cursor:pointer;
+    }
+
+    .volumen::-webkit-slider-thumb{
+      width:13px;
+      height:13px;
+      appearance:none;
+      -webkit-appearance:none;
+      border:0;
+      border-radius:50%;
+      background:#ff5500;
+    }
+
+    .volumen::-moz-range-thumb{
+      width:13px;
+      height:13px;
+      border:0;
+      border-radius:50%;
+      background:#ff5500;
+    }
+
+    @media(max-width:600px){
+      .pierodevaudio{
+        gap:8px;
+        padding:12px;
+      }
+
+      .boton{
+        flex-basis:36px;
+        width:36px;
+        height:36px;
+      }
+
+      .tiempo{
+        flex-basis:35px;
+        width:35px;
+        font-size:11px;
+      }
+
+      .volumen{
+        flex-basis:60px;
+        width:60px;
+      }
+
+      .waveform{
+        order:4;
+        flex:1 0 100%;
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio src="audio/no_me_pidas_que_no_sea_un_incosciente.mp3"></audio>
+
+  <script>
+    let audios = document.querySelectorAll("audio")
+
+    audios.forEach(function(audio){
+      let contenedor = document.createElement("div")
+      contenedor.classList.add("pierodevaudio")
+      audio.parentNode.insertBefore(contenedor,audio)
+      contenedor.appendChild(audio)
+
+      let atras = document.createElement("button")
+      atras.type = "button"
+      atras.classList.add("boton")
+      atras.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 11a8 8 0 1 1 2.5 6'/><path d='M4 5v6h6'/></svg>"
+      atras.title = "Retroceder 5 segundos"
+      atras.setAttribute("aria-label","Retroceder 5 segundos")
+      contenedor.appendChild(atras)
+
+      let reproducir = document.createElement("button")
+      reproducir.type = "button"
+      reproducir.classList.add("boton","reproducir")
+      let iconoReproducir = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M8 5.5 18 12 8 18.5Z' fill='currentColor'/></svg>"
+      let iconoPausar = "<svg viewBox='0 0 24 24' aria-hidden='true'><rect x='6' y='5' width='4' height='14' rx='1' fill='currentColor'/><rect x='14' y='5' width='4' height='14' rx='1' fill='currentColor'/></svg>"
+      reproducir.innerHTML = iconoReproducir
+      reproducir.title = "Reproducir"
+      reproducir.setAttribute("aria-label","Reproducir")
+      contenedor.appendChild(reproducir)
+
+      let adelante = document.createElement("button")
+      adelante.type = "button"
+      adelante.classList.add("boton")
+      adelante.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 11a8 8 0 1 0-2.5 6'/><path d='M20 5v6h-6'/></svg>"
+      adelante.title = "Avanzar 5 segundos"
+      adelante.setAttribute("aria-label","Avanzar 5 segundos")
+      contenedor.appendChild(adelante)
+
+      let tiempo = document.createElement("div")
+      tiempo.classList.add("tiempo")
+      tiempo.textContent = "0:00"
+      tiempo.setAttribute("aria-label","Tiempo reproducido")
+      contenedor.appendChild(tiempo)
+
+      let canvas = document.createElement("canvas")
+      canvas.height = 80
+      canvas.classList.add("waveform")
+      canvas.setAttribute("role","slider")
+      canvas.setAttribute("tabindex","0")
+      canvas.setAttribute("aria-label","Posición de reproducción")
+      contenedor.appendChild(canvas)
+
+      let ctx = canvas.getContext("2d")
+
+      let volumen = document.createElement("input")
+      volumen.type = "range"
+      volumen.min = 0
+      volumen.max = 1
+      volumen.step = 0.01
+      volumen.value = 1
+      volumen.classList.add("volumen")
+      volumen.setAttribute("aria-label","Volumen")
+      contenedor.appendChild(volumen)
+
+      let numeroBarras = 90
+      let canales = []
+      let esEstereo = false
+
+      fetch(audio.src)
+        .then(function(respuesta){
+          return respuesta.arrayBuffer()
+        })
+        .then(function(datos){
+          let contextoAudio = new AudioContext()
+
+          contextoAudio.decodeAudioData(datos,function(buffer){
+            esEstereo = buffer.numberOfChannels === 2
+            let numeroCanales = esEstereo ? 2 : 1
+
+            for(let canal = 0; canal < numeroCanales; canal++){
+              let samples = buffer.getChannelData(canal)
+              canales.push(calcularWaveform(samples))
+            }
+
+            dibujar()
+            contextoAudio.close()
+          })
+        })
+
+      function calcularWaveform(samples){
+        let alturas = []
+        let salto = Math.floor(samples.length / numeroBarras)
+
+        for(let barra = 0; barra < numeroBarras; barra++){
+          let maximo = 0
+          let inicio = barra * salto
+          let final = Math.min(inicio + salto,samples.length)
+          let subSalto = Math.max(1,Math.floor(salto / 100))
+
+          for(let i = inicio; i < final; i += subSalto){
+            let valor = Math.abs(samples[i])
+
+            if(valor > maximo){
+              maximo = valor
+            }
+          }
+
+          alturas.push(maximo)
+        }
+
+        return alturas
+      }
+
+      function dibujar(){
+        if(canales.length === 0){
+          return
+        }
+
+        let anchoReal = Math.floor(canvas.clientWidth)
+
+        if(anchoReal <= 0){
+          return
+        }
+
+        if(canvas.width !== anchoReal){
+          canvas.width = anchoReal
+        }
+
+        let ancho = canvas.width
+        let alto = canvas.height
+        let separacion = 3
+        let anchoBarra = (ancho - separacion * (numeroBarras - 1)) / numeroBarras
+
+        if(anchoBarra < 1){
+          separacion = 1
+          anchoBarra = (ancho - separacion * (numeroBarras - 1)) / numeroBarras
+        }
+
+        ctx.clearRect(0,0,ancho,alto)
+
+        let progreso = 0
+
+        if(audio.duration && Number.isFinite(audio.duration)){
+          progreso = audio.currentTime / audio.duration
+        }
+
+        let barraActual = progreso * (numeroBarras - 1)
+
+        if(!esEstereo){
+          dibujarMono(canales[0],anchoBarra,separacion,barraActual)
+        }else{
+          let separacionCentral = 4
+          let altoCanal = (alto - separacionCentral) / 2
+
+          dibujarCanal(
+            canales[0],
+            altoCanal / 2,
+            altoCanal,
+            anchoBarra,
+            separacion,
+            barraActual
+          )
+
+          dibujarCanal(
+            canales[1],
+            altoCanal + separacionCentral + altoCanal / 2,
+            altoCanal,
+            anchoBarra,
+            separacion,
+            barraActual
+          )
+        }
+      }
+
+      function dibujarMono(alturas,anchoBarra,separacion,barraActual){
+        let medio = canvas.height / 2
+
+        for(let i = 0; i < alturas.length; i++){
+          let altura = Math.max(alturas[i] * medio * 0.85,3)
+          let x = i * (anchoBarra + separacion)
+
+          ctx.fillStyle = obtenerColor(i,barraActual)
+          ctx.beginPath()
+          ctx.roundRect(
+            x,
+            medio - altura,
+            Math.max(1,anchoBarra),
+            altura * 2,
+            Math.max(1,anchoBarra) / 2
+          )
+          ctx.fill()
+        }
+      }
+
+      function dibujarCanal(alturas,centro,altoCanal,anchoBarra,separacion,barraActual){
+        for(let i = 0; i < alturas.length; i++){
+          let altura = Math.max(alturas[i] * altoCanal * 0.4,2)
+          let x = i * (anchoBarra + separacion)
+
+          ctx.fillStyle = obtenerColor(i,barraActual)
+          ctx.beginPath()
+          ctx.roundRect(
+            x,
+            centro - altura,
+            Math.max(1,anchoBarra),
+            altura * 2,
+            Math.max(1,anchoBarra) / 2
+          )
+          ctx.fill()
+        }
+      }
+
+      function obtenerColor(barra,barraActual){
+        return barra <= barraActual ? "#ff5500" : "#cccccc"
+      }
+
+      reproducir.onclick = function(){
+        if(audio.paused){
+          audio.play()
+        }else{
+          audio.pause()
+        }
+      }
+
+      audio.onplay = function(){
+        reproducir.innerHTML = iconoPausar
+        reproducir.title = "Pausar"
+        reproducir.setAttribute("aria-label","Pausar")
+      }
+
+      audio.onpause = function(){
+        reproducir.innerHTML = iconoReproducir
+        reproducir.title = "Reproducir"
+        reproducir.setAttribute("aria-label","Reproducir")
+      }
+
+      audio.onended = function(){
+        reproducir.innerHTML = iconoReproducir
+        reproducir.title = "Reproducir"
+        reproducir.setAttribute("aria-label","Reproducir")
+      }
+
+      adelante.onclick = function(){
+        if(Number.isFinite(audio.duration)){
+          audio.currentTime = Math.min(audio.currentTime + 5,audio.duration)
+        }
+      }
+
+      atras.onclick = function(){
+        audio.currentTime = Math.max(audio.currentTime - 5,0)
+      }
+
+      volumen.oninput = function(){
+        audio.volume = this.value
+      }
+
+      audio.ontimeupdate = function(){
+        dibujar()
+        tiempo.textContent = formatearTiempo(audio.currentTime)
+      }
+
+      canvas.onclick = function(evento){
+        cambiarPosicion(evento)
+      }
+
+      let arrastrando = false
+
+      canvas.onmousedown = function(evento){
+        arrastrando = true
+        cambiarPosicion(evento)
+      }
+
+      window.addEventListener("mousemove",function(evento){
+        if(arrastrando){
+          cambiarPosicion(evento)
+        }
+      })
+
+      window.addEventListener("mouseup",function(){
+        arrastrando = false
+      })
+
+      function cambiarPosicion(evento){
+        if(!audio.duration || !Number.isFinite(audio.duration)){
+          return
+        }
+
+        let rect = canvas.getBoundingClientRect()
+
+        if(rect.width <= 0){
+          return
+        }
+
+        let x = Math.max(0,Math.min(evento.clientX - rect.left,rect.width))
+        let porcentaje = x / rect.width
+        audio.currentTime = porcentaje * audio.duration
+        dibujar()
+      }
+
+      function formatearTiempo(segundos){
+        if(!Number.isFinite(segundos)){
+          return "0:00"
+        }
+
+        let minutos = Math.floor(segundos / 60)
+        let resto = Math.floor(segundos % 60)
+
+        if(resto < 10){
+          resto = "0" + resto
+        }
+
+        return minutos + ":" + resto
+      }
+
+      window.addEventListener("resize",function(){
+        dibujar()
+      })
+    })
+  </script>
+</body>
+</html>

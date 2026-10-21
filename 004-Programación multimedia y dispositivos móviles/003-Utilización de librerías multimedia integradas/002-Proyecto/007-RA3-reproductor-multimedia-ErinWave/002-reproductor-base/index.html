@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ERINWAVE · Reproductor base</title>
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    :root{
+      color-scheme:light;
+      --azul-pantalla:#79eeff;
+      --azul-profundo:#041d32;
+      --azul-medio:#07557a;
+      --metal-claro:#f8fbfc;
+      --metal-medio:#b9c5cd;
+      --metal-oscuro:#68747d;
+      --turquesa:#0aa6bb;
+      --texto:#17232b;
+    }
+
+    body{
+      min-height:100vh;
+      margin:0;
+      padding:28px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow-x:hidden;
+      background:
+        radial-gradient(circle at 18% 18%,rgba(255,255,255,0.95) 0 5%,transparent 18%),
+        radial-gradient(circle at 82% 12%,rgba(255,255,255,0.7) 0 4%,transparent 15%),
+        linear-gradient(180deg,#58bdec 0%,#a9e9fb 47%,#eafcff 48%,#78c784 69%,#17824e 100%);
+      color:var(--texto);
+      font-family:Verdana,Arial,sans-serif;
+    }
+
+    body::before,
+    body::after{
+      content:"";
+      position:fixed;
+      z-index:-1;
+      border-radius:50%;
+      filter:blur(2px);
+      pointer-events:none;
+    }
+
+    body::before{
+      width:420px;
+      height:420px;
+      left:-180px;
+      bottom:-220px;
+      background:radial-gradient(circle at 65% 25%,#ecff86 0 6%,#49bd65 35%,#087244 72%);
+      box-shadow:0 0 90px rgba(255,255,255,0.55);
+    }
+
+    body::after{
+      width:520px;
+      height:220px;
+      right:-160px;
+      bottom:-85px;
+      background:radial-gradient(ellipse at center,#c9fa91 0%,#4ebf70 48%,#067247 100%);
+      transform:rotate(-8deg);
+    }
+
+    button,
+    input,
+    select{
+      font:inherit;
+    }
+
+    .reproductor{
+      position:relative;
+      width:min(780px,100%);
+      padding:20px;
+      overflow:hidden;
+      border:1px solid #5b6871;
+      border-radius:30px 30px 24px 24px;
+      background:
+        linear-gradient(115deg,transparent 0 13%,rgba(255,255,255,0.72) 17%,transparent 24%),
+        linear-gradient(180deg,#ffffff 0%,#dce4e9 7%,#aeb9c0 49%,#eef3f5 52%,#98a5ae 100%);
+      box-shadow:
+        0 30px 80px rgba(3,42,57,0.4),
+        0 8px 18px rgba(3,42,57,0.35),
+        inset 0 2px 1px #fff,
+        inset 0 -4px 8px rgba(55,66,73,0.38);
+    }
+
+    .reproductor::before{
+      content:"";
+      position:absolute;
+      inset:7px;
+      border:1px solid rgba(255,255,255,0.78);
+      border-radius:23px 23px 18px 18px;
+      pointer-events:none;
+    }
+
+    .cabecera{
+      position:relative;
+      z-index:1;
+      min-height:38px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      padding:0 10px 12px;
+    }
+
+    .marca{
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      color:#25353f;
+      text-shadow:0 1px 0 #fff;
+    }
+
+    .marca strong{
+      font-size:18px;
+      letter-spacing:0.11em;
+    }
+
+    .acciones-cabecera{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .idiomas{
+      display:flex;
+      padding:2px;
+      border:1px solid #74818a;
+      border-radius:7px;
+      background:linear-gradient(180deg,#8f9ba3,#edf2f4);
+      box-shadow:inset 0 1px 2px rgba(29,43,51,0.35),0 1px 0 #fff;
+    }
+
+    .idioma{
+      min-width:29px;
+      height:23px;
+      padding:0 6px;
+      border:0;
+      border-radius:5px;
+      background:transparent;
+      color:#35434b;
+      font-size:9px;
+      font-weight:700;
+      letter-spacing:0.06em;
+      cursor:pointer;
+    }
+
+    .idioma.activo{
+      background:linear-gradient(180deg,#e9feff,#52c9d7);
+      color:#083c49;
+      box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(23,51,59,0.42);
+    }
+
+    .pantalla{
+      position:relative;
+      z-index:1;
+      min-height:210px;
+      padding:18px 20px 16px;
+      overflow:hidden;
+      border:4px solid #3c474e;
+      border-radius:14px;
+      background:
+        linear-gradient(180deg,rgba(124,237,255,0.12),transparent 24%),
+        repeating-linear-gradient(0deg,rgba(255,255,255,0.025) 0 1px,transparent 1px 4px),
+        radial-gradient(circle at 50% 110%,#08739b 0%,#063f63 44%,var(--azul-profundo) 100%);
+      color:var(--azul-pantalla);
+      box-shadow:
+        inset 0 0 24px rgba(0,0,0,0.8),
+        inset 0 2px 4px #010b13,
+        0 2px 1px rgba(255,255,255,0.8);
+      font-family:"Courier New",monospace;
+      text-shadow:0 0 8px rgba(121,238,255,0.7);
+    }
+
+    .pantalla::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg,rgba(255,255,255,0.19),transparent 24% 72%,rgba(255,255,255,0.05));
+      pointer-events:none;
+    }
+
+    .datos-superiores{
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      color:#9beeff;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:0.1em;
+      text-transform:uppercase;
+    }
+
+    .estado::before{
+      content:"";
+      display:inline-block;
+      width:7px;
+      height:7px;
+      margin-right:7px;
+      border-radius:50%;
+      background:currentColor;
+      box-shadow:0 0 8px currentColor;
+      vertical-align:1px;
+    }
+
+    .estado.error{
+      color:#ff9d95;
+    }
+
+    .informacion-pista{
+      position:relative;
+      z-index:1;
+      min-height:82px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      padding:14px 0 10px;
+    }
+
+    .titulo-pista{
+      overflow:hidden;
+      color:#e1fcff;
+      font-size:clamp(20px,4.5vw,32px);
+      font-weight:700;
+      line-height:1.15;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .artista-pista{
+      min-height:17px;
+      margin-top:6px;
+      color:#82cfe2;
+      font-size:12px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+    }
+
+    .fila-tiempo{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:52px minmax(0,1fr) 52px;
+      align-items:center;
+      gap:12px;
+      font-size:12px;
+      font-weight:700;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .fila-tiempo span:last-child{
+      text-align:right;
+    }
+
+    .progreso,
+    .volumen{
+      width:100%;
+      height:8px;
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid #00131f;
+      border-radius:999px;
+      background:linear-gradient(180deg,#00111e,#08718e);
+      box-shadow:inset 0 1px 3px #000,0 1px 0 rgba(255,255,255,0.24);
+      cursor:pointer;
+    }
+
+    .progreso::-webkit-slider-thumb,
+    .volumen::-webkit-slider-thumb{
+      width:17px;
+      height:17px;
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid #43515a;
+      border-radius:50%;
+      background:radial-gradient(circle at 38% 32%,#fff 0 12%,#dbe5e9 32%,#82919a 72%,#46535b 100%);
+      box-shadow:0 1px 4px #00131f;
+    }
+
+    .progreso::-moz-range-thumb,
+    .volumen::-moz-range-thumb{
+      width:17px;
+      height:17px;
+      border:1px solid #43515a;
+      border-radius:50%;
+      background:radial-gradient(circle at 38% 32%,#fff 0 12%,#dbe5e9 32%,#82919a 72%,#46535b 100%);
+      box-shadow:0 1px 4px #00131f;
+    }
+
+    .panel-controles{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+      align-items:center;
+      gap:20px;
+      padding:22px 8px 12px;
+    }
+
+    .bloque-biblioteca,
+    .bloque-volumen{
+      min-width:0;
+    }
+
+    .etiqueta{
+      display:block;
+      margin-bottom:7px;
+      color:#35434b;
+      font-size:9px;
+      font-weight:700;
+      letter-spacing:0.13em;
+      text-shadow:0 1px 0 #fff;
+      text-transform:uppercase;
+    }
+
+    .selector-pista{
+      width:100%;
+      min-height:38px;
+      padding:0 34px 0 11px;
+      overflow:hidden;
+      border:1px solid #69777f;
+      border-radius:8px;
+      outline:0;
+      background:linear-gradient(180deg,#f9fbfc,#c2ccd2);
+      color:#1c2b33;
+      font-size:12px;
+      text-overflow:ellipsis;
+      box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(0,0,0,0.25);
+    }
+
+    .selector-pista:focus-visible,
+    .progreso:focus-visible,
+    .volumen:focus-visible,
+    .boton:focus-visible,
+    .boton-karaoke:focus-visible,
+    .idioma:focus-visible{
+      outline:3px solid #72eaff;
+      outline-offset:3px;
+    }
+
+    .transporte{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .boton,
+    .boton-karaoke{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid #53616a;
+      color:#1b2b33;
+      cursor:pointer;
+      box-shadow:inset 0 2px 1px #fff,0 3px 5px rgba(25,39,47,0.38);
+      transition:transform 120ms ease,filter 120ms ease;
+    }
+
+    .boton{
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      background:radial-gradient(circle at 38% 30%,#fff 0 8%,#dce5e9 28%,#89969e 70%,#5b6972 100%);
+    }
+
+    .boton svg{
+      width:20px;
+      height:20px;
+    }
+
+    .boton-principal{
+      width:62px;
+      height:62px;
+      border-color:#036d7c;
+      background:radial-gradient(circle at 38% 30%,#f1ffff 0 8%,#64eff1 25%,#0aa6bb 60%,#04576f 100%);
+      color:#fff;
+      box-shadow:inset 0 2px 2px rgba(255,255,255,0.85),0 4px 8px rgba(6,75,87,0.5);
+      text-shadow:0 1px 1px #014957;
+    }
+
+    .boton:hover,
+    .boton-karaoke:hover{
+      filter:brightness(1.08);
+    }
+
+    .boton:active,
+    .boton-karaoke:active{
+      transform:translateY(2px);
+      box-shadow:inset 0 2px 5px rgba(31,45,53,0.42),0 1px 2px rgba(25,39,47,0.25);
+    }
+
+    .controles-derecha{
+      display:grid;
+      grid-template-columns:minmax(80px,1fr) auto;
+      align-items:end;
+      gap:13px;
+    }
+
+    .datos-volumen{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .valor-volumen{
+      color:#4a5962;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .volumen{
+      height:7px;
+      border-color:#52616a;
+      background:linear-gradient(180deg,#56646d,#dce4e8);
+    }
+
+    .boton-karaoke{
+      position:relative;
+      width:40px;
+      height:40px;
+      padding:0;
+      border-radius:11px;
+      background:radial-gradient(circle at 35% 28%,#7eeef3 0 8%,#128da5 44%,#064c66 100%);
+      color:#fff;
+    }
+
+    .boton-karaoke img{
+      width:22px;
+      height:22px;
+      object-fit:contain;
+    }
+
+    .boton-karaoke:disabled{
+      cursor:not-allowed;
+      filter:saturate(0.82);
+    }
+
+    .brillo-karaoke{
+      position:absolute;
+      top:1px;
+      right:2px;
+      color:#087e9b;
+      font-family:Arial,sans-serif;
+      font-size:14px;
+      font-weight:700;
+      line-height:1;
+      text-shadow:0 0 6px #77efff;
+    }
+
+    .brillo-karaoke.oculto{
+      display:none;
+    }
+
+    .audio-original{
+      display:none;
+    }
+
+    @media(max-width:680px){
+      body{
+        align-items:flex-start;
+        padding:14px 10px;
+      }
+
+      .reproductor{
+        padding:15px;
+        border-radius:23px;
+      }
+
+      .cabecera{
+        padding-inline:5px;
+      }
+
+      .acciones-cabecera{
+        gap:0;
+      }
+
+      .pantalla{
+        min-height:190px;
+        padding:16px 14px 14px;
+      }
+
+      .datos-superiores{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:6px;
+      }
+
+      .informacion-pista{
+        min-height:76px;
+      }
+
+      .fila-tiempo{
+        grid-template-columns:44px minmax(0,1fr) 44px;
+        gap:8px;
+      }
+
+      .panel-controles{
+        grid-template-columns:1fr;
+        gap:18px;
+        padding:18px 4px 10px;
+      }
+
+      .transporte{
+        grid-row:1;
+      }
+
+      .controles-derecha{
+        grid-template-columns:minmax(0,1fr) auto;
+      }
+
+    }
+  </style>
+</head>
+<body>
+  <main class="reproductor" aria-label="Reproductor ERINWAVE">
+    <header class="cabecera">
+      <div class="marca">
+        <strong>ERINWAVE</strong>
+      </div>
+      <div class="acciones-cabecera">
+        <div class="idiomas" role="group" aria-label="Idioma de la interfaz">
+          <button id="idiomaEs" class="idioma activo" type="button" aria-pressed="true">ES</button>
+          <button id="idiomaEn" class="idioma" type="button" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="pantalla" aria-live="polite">
+      <div class="datos-superiores">
+        <span id="estado" class="estado">Buscando canciones</span>
+      </div>
+
+      <div class="informacion-pista">
+        <div id="tituloPista" class="titulo-pista">Sin canciones</div>
+        <div id="artistaPista" class="artista-pista">Añade archivos MP3 a la carpeta audio</div>
+      </div>
+
+      <div class="fila-tiempo">
+        <span id="tiempoActual">0:00</span>
+        <input
+          id="progreso"
+          class="progreso"
+          type="range"
+          min="0"
+          max="0"
+          step="0.01"
+          value="0"
+          aria-label="Posición de reproducción"
+        >
+        <span id="duracion">0:00</span>
+      </div>
+    </section>
+
+    <section id="panelControles" class="panel-controles" aria-label="Controles del reproductor">
+      <div class="bloque-biblioteca">
+        <label id="etiquetaBiblioteca" class="etiqueta" for="selectorPista">Biblioteca automática</label>
+        <select id="selectorPista" class="selector-pista" disabled>
+          <option>No hay canciones disponibles</option>
+        </select>
+      </div>
+
+      <div class="transporte">
+        <button id="reiniciar" class="boton" type="button" aria-label="Volver al inicio" title="Volver al inicio">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 5v14M18 6.5 9.5 12l8.5 5.5Z" fill="currentColor"/>
+          </svg>
+        </button>
+
+        <button id="reproducir" class="boton boton-principal" type="button" aria-label="Reproducir" title="Reproducir">
+          <svg id="iconoReproducir" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 5.5 18 12 8 18.5Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="controles-derecha">
+        <div class="bloque-volumen">
+          <div class="datos-volumen">
+            <label id="etiquetaVolumen" class="etiqueta" for="volumen">Volumen</label>
+            <span id="valorVolumen" class="valor-volumen">80%</span>
+          </div>
+          <input
+            id="volumen"
+            class="volumen"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.8"
+            aria-label="Volumen"
+          >
+        </div>
+
+        <button id="botonKaraoke" class="boton-karaoke" type="button" aria-label="Generador de karaoke disponible en la versión 3" title="Generador de karaoke disponible en la versión 3" disabled>
+          <img src="iconos/microfono-blanco.png" alt="">
+          <span id="brilloKaraoke" class="brillo-karaoke" aria-hidden="true">✦</span>
+        </button>
+      </div>
+    </section>
+
+    <audio id="audio" class="audio-original" preload="metadata"></audio>
+  </main>
+
+  <script>
+    let reproductor = document.querySelector(".reproductor")
+    let grupoIdiomas = document.querySelector(".idiomas")
+    let idiomaEs = document.querySelector("#idiomaEs")
+    let idiomaEn = document.querySelector("#idiomaEn")
+    let panelControles = document.querySelector("#panelControles")
+    let audio = document.querySelector("#audio")
+    let estado = document.querySelector("#estado")
+    let tituloPista = document.querySelector("#tituloPista")
+    let artistaPista = document.querySelector("#artistaPista")
+    let etiquetaBiblioteca = document.querySelector("#etiquetaBiblioteca")
+    let selectorPista = document.querySelector("#selectorPista")
+    let reproducir = document.querySelector("#reproducir")
+    let reiniciar = document.querySelector("#reiniciar")
+    let progreso = document.querySelector("#progreso")
+    let tiempoActual = document.querySelector("#tiempoActual")
+    let duracion = document.querySelector("#duracion")
+    let etiquetaVolumen = document.querySelector("#etiquetaVolumen")
+    let volumen = document.querySelector("#volumen")
+    let valorVolumen = document.querySelector("#valorVolumen")
+    let botonKaraoke = document.querySelector("#botonKaraoke")
+    let brilloKaraoke = document.querySelector("#brilloKaraoke")
+
+    let traducciones = {
+      es:{
+        tituloDocumento:"ERINWAVE · Reproductor base",
+        etiquetaReproductor:"Reproductor ERINWAVE",
+        grupoIdiomas:"Idioma de la interfaz",
+        cambiarEs:"Cambiar la interfaz a español",
+        cambiarEn:"Cambiar la interfaz a inglés",
+        controles:"Controles del reproductor",
+        buscando:"Preparando tu música",
+        sinCanciones:"Tu biblioteca está vacía",
+        anadeMp3:"Añade canciones para empezar",
+        biblioteca:"Biblioteca",
+        sinDisponibles:"No hay canciones disponibles",
+        reiniciar:"Volver al inicio",
+        reproducir:"Reproducir",
+        pausar:"Pausar",
+        progreso:"Posición de reproducción",
+        volumen:"Volumen",
+        karaokeVersion3:"Generador de karaoke disponible en la versión 3",
+        karaokeDisponible:"Karaoke disponible",
+        carpetaVacia:"Sin canciones",
+        cargandoPista:"Cargando pista",
+        errorBiblioteca:"Error de biblioteca",
+        sinSeleccion:"No hay pista seleccionada",
+        noReproducir:"No se pudo reproducir",
+        karaokeV3:"Karaoke disponible · versión 3",
+        generadorV3:"Generador Whisper · versión 3",
+        preparado:"Preparado",
+        reproduciendo:"Reproduciendo",
+        enPausa:"En pausa",
+        finalizada:"Pista finalizada",
+        cargandoAudio:"Cargando audio",
+        errorPista:"Error al cargar la pista"
+      },
+      en:{
+        tituloDocumento:"ERINWAVE · Base player",
+        etiquetaReproductor:"ERINWAVE player",
+        grupoIdiomas:"Interface language",
+        cambiarEs:"Switch the interface to Spanish",
+        cambiarEn:"Switch the interface to English",
+        controles:"Player controls",
+        buscando:"Getting your music ready",
+        sinCanciones:"Your library is empty",
+        anadeMp3:"Add songs to get started",
+        biblioteca:"Library",
+        sinDisponibles:"No songs available",
+        reiniciar:"Restart track",
+        reproducir:"Play",
+        pausar:"Pause",
+        progreso:"Playback position",
+        volumen:"Volume",
+        karaokeVersion3:"Karaoke generator available in version 3",
+        karaokeDisponible:"Karaoke available",
+        carpetaVacia:"No songs",
+        cargandoPista:"Loading track",
+        errorBiblioteca:"Library error",
+        sinSeleccion:"No track selected",
+        noReproducir:"Playback failed",
+        karaokeV3:"Karaoke available · version 3",
+        generadorV3:"Whisper generator · version 3",
+        preparado:"Ready",
+        reproduciendo:"Playing",
+        enPausa:"Paused",
+        finalizada:"Track finished",
+        cargandoAudio:"Loading audio",
+        errorPista:"Track loading error"
+      }
+    }
+
+    let iconoReproducir = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M8 5.5 18 12 8 18.5Z' fill='currentColor'/></svg>"
+    let iconoPausar = "<svg viewBox='0 0 24 24' aria-hidden='true'><rect x='6' y='5' width='4' height='14' rx='1' fill='currentColor'/><rect x='14' y='5' width='4' height='14' rx='1' fill='currentColor'/></svg>"
+    let biblioteca = []
+    let archivoActual = ""
+    let firmaBiblioteca = ""
+    let consultandoBiblioteca = false
+    let idiomaActual = "es"
+    let claveEstado = "buscando"
+    let estadoEsError = false
+
+    try{
+      let idiomaGuardado = localStorage.getItem("erinwave-idioma")
+
+      if(idiomaGuardado === "es" || idiomaGuardado === "en"){
+        idiomaActual = idiomaGuardado
+      }
+    }catch(error){
+      console.warn("No se pudo leer la preferencia de idioma",error)
+    }
+
+    audio.volume = Number(volumen.value)
+
+    function traducir(clave){
+      return traducciones[idiomaActual][clave]
+    }
+
+    function cambiarEstado(clave,esError){
+      claveEstado = clave
+      estadoEsError = Boolean(esError)
+      estado.textContent = traducir(clave)
+      estado.classList.toggle("error",estadoEsError)
+    }
+
+    function formatearTiempo(segundos){
+      if(!Number.isFinite(segundos)){
+        return "0:00"
+      }
+
+      let minutos = Math.floor(segundos / 60)
+      let resto = Math.floor(segundos % 60)
+
+      if(resto < 10){
+        resto = "0" + resto
+      }
+
+      return minutos + ":" + resto
+    }
+
+    function obtenerPistaActual(){
+      return biblioteca.find(function(pista){
+        return pista.archivo === archivoActual
+      })
+    }
+
+    function humanizarTexto(texto){
+      let resultado = texto
+        .replace(/_+/g," ")
+        .replace(/\s+/g," ")
+        .trim()
+
+      if(resultado === ""){
+        return texto
+      }
+
+      return resultado.charAt(0).toLocaleUpperCase(idiomaActual) + resultado.slice(1)
+    }
+
+    function textoPista(pista){
+      if(pista.artista){
+        return humanizarTexto(pista.artista) + " — " + humanizarTexto(pista.titulo)
+      }
+
+      return humanizarTexto(pista.titulo)
+    }
+
+    function actualizarInformacionPista(){
+      let pista = obtenerPistaActual()
+
+      if(!pista){
+        tituloPista.textContent = traducir("sinCanciones")
+        artistaPista.textContent = traducir("anadeMp3")
+        return
+      }
+
+      tituloPista.textContent = humanizarTexto(pista.titulo)
+      artistaPista.textContent = pista.artista ? humanizarTexto(pista.artista) : ""
+    }
+
+    function actualizarBotonKaraoke(pista){
+      let tieneKaraoke = Boolean(pista && pista.tieneKaraoke)
+      let etiqueta = tieneKaraoke ? traducir("karaokeDisponible") : traducir("karaokeVersion3")
+      brilloKaraoke.classList.toggle("oculto",tieneKaraoke)
+      botonKaraoke.title = etiqueta
+      botonKaraoke.setAttribute("aria-label",etiqueta)
+    }
+
+    function dibujarBiblioteca(){
+      selectorPista.innerHTML = ""
+
+      if(biblioteca.length === 0){
+        let opcion = document.createElement("option")
+        opcion.textContent = traducir("sinDisponibles")
+        selectorPista.appendChild(opcion)
+        selectorPista.disabled = true
+        return
+      }
+
+      biblioteca.forEach(function(pista){
+        let opcion = document.createElement("option")
+        opcion.value = pista.archivo
+        opcion.textContent = textoPista(pista)
+        selectorPista.appendChild(opcion)
+      })
+
+      selectorPista.disabled = false
+      selectorPista.value = archivoActual
+    }
+
+    function aplicarIdioma(){
+      document.documentElement.lang = idiomaActual
+      document.title = traducir("tituloDocumento")
+      reproductor.setAttribute("aria-label",traducir("etiquetaReproductor"))
+      grupoIdiomas.setAttribute("aria-label",traducir("grupoIdiomas"))
+      idiomaEs.title = traducir("cambiarEs")
+      idiomaEs.setAttribute("aria-label",traducir("cambiarEs"))
+      idiomaEn.title = traducir("cambiarEn")
+      idiomaEn.setAttribute("aria-label",traducir("cambiarEn"))
+      idiomaEs.classList.toggle("activo",idiomaActual === "es")
+      idiomaEn.classList.toggle("activo",idiomaActual === "en")
+      idiomaEs.setAttribute("aria-pressed",String(idiomaActual === "es"))
+      idiomaEn.setAttribute("aria-pressed",String(idiomaActual === "en"))
+      panelControles.setAttribute("aria-label",traducir("controles"))
+      etiquetaBiblioteca.textContent = traducir("biblioteca")
+      etiquetaVolumen.textContent = traducir("volumen")
+      progreso.setAttribute("aria-label",traducir("progreso"))
+      volumen.setAttribute("aria-label",traducir("volumen"))
+      reiniciar.title = traducir("reiniciar")
+      reiniciar.setAttribute("aria-label",traducir("reiniciar"))
+      reproducir.title = audio.paused ? traducir("reproducir") : traducir("pausar")
+      reproducir.setAttribute("aria-label",reproducir.title)
+      estado.textContent = traducir(claveEstado)
+      estado.classList.toggle("error",estadoEsError)
+      dibujarBiblioteca()
+      actualizarInformacionPista()
+      actualizarBotonKaraoke(obtenerPistaActual())
+    }
+
+    function cambiarIdioma(nuevoIdioma){
+      if(nuevoIdioma !== "es" && nuevoIdioma !== "en"){
+        return
+      }
+
+      idiomaActual = nuevoIdioma
+
+      try{
+        localStorage.setItem("erinwave-idioma",idiomaActual)
+      }catch(error){
+        console.warn("No se pudo guardar la preferencia de idioma",error)
+      }
+
+      aplicarIdioma()
+    }
+
+    function vaciarReproductor(){
+      audio.pause()
+      audio.removeAttribute("src")
+      audio.load()
+      archivoActual = ""
+      progreso.max = 0
+      progreso.value = 0
+      tiempoActual.textContent = "0:00"
+      duracion.textContent = "0:00"
+      actualizarInformacionPista()
+      actualizarBotonKaraoke(null)
+      cambiarEstado("carpetaVacia",false)
+    }
+
+    function cargarPista(pista){
+      if(!pista){
+        vaciarReproductor()
+        return
+      }
+
+      audio.pause()
+      archivoActual = pista.archivo
+      selectorPista.value = archivoActual
+      progreso.max = 0
+      progreso.value = 0
+      tiempoActual.textContent = "0:00"
+      duracion.textContent = "0:00"
+      actualizarInformacionPista()
+      actualizarBotonKaraoke(pista)
+      cambiarEstado("cargandoPista",false)
+      audio.src = pista.url
+      audio.load()
+    }
+
+    async function cargarBiblioteca(){
+      if(consultandoBiblioteca){
+        return
+      }
+
+      consultandoBiblioteca = true
+
+      try{
+        let respuesta = await fetch("api/listar-audios.php?momento=" + Date.now())
+
+        if(!respuesta.ok){
+          throw new Error("El servidor no pudo explorar la carpeta")
+        }
+
+        let datos = await respuesta.json()
+
+        if(!Array.isArray(datos.canciones)){
+          throw new Error("La respuesta de la biblioteca no es válida")
+        }
+
+        let nuevaFirma = JSON.stringify(datos.canciones)
+        if(nuevaFirma === firmaBiblioteca){
+          return
+        }
+
+        let pistaAnterior = archivoActual
+        biblioteca = datos.canciones
+        firmaBiblioteca = nuevaFirma
+
+        let pistaConservada = biblioteca.find(function(pista){
+          return pista.archivo === pistaAnterior
+        })
+
+        if(pistaConservada){
+          archivoActual = pistaConservada.archivo
+          dibujarBiblioteca()
+          actualizarInformacionPista()
+          actualizarBotonKaraoke(pistaConservada)
+          return
+        }
+
+        if(biblioteca.length === 0){
+          dibujarBiblioteca()
+          vaciarReproductor()
+          return
+        }
+
+        archivoActual = biblioteca[0].archivo
+        dibujarBiblioteca()
+        cargarPista(biblioteca[0])
+      }catch(error){
+        cambiarEstado("errorBiblioteca",true)
+        console.error(error)
+      }finally{
+        consultandoBiblioteca = false
+      }
+    }
+
+    idiomaEs.onclick = function(){
+      cambiarIdioma("es")
+    }
+
+    idiomaEn.onclick = function(){
+      cambiarIdioma("en")
+    }
+
+    selectorPista.onchange = function(){
+      let pista = biblioteca.find(function(elemento){
+        return elemento.archivo === selectorPista.value
+      })
+      cargarPista(pista)
+    }
+
+    reproducir.onclick = function(){
+      if(!audio.getAttribute("src")){
+        cambiarEstado("sinSeleccion",true)
+        return
+      }
+
+      if(audio.paused){
+        audio.play().catch(function(error){
+          cambiarEstado("noReproducir",true)
+          console.error(error)
+        })
+      }else{
+        audio.pause()
+      }
+    }
+
+    reiniciar.onclick = function(){
+      audio.currentTime = 0
+      progreso.value = 0
+      tiempoActual.textContent = "0:00"
+    }
+
+    progreso.oninput = function(){
+      if(Number.isFinite(audio.duration)){
+        audio.currentTime = Number(progreso.value)
+      }
+    }
+
+    volumen.oninput = function(){
+      audio.volume = Number(volumen.value)
+      valorVolumen.textContent = Math.round(audio.volume * 100) + "%"
+    }
+
+    audio.onloadedmetadata = function(){
+      progreso.max = Number.isFinite(audio.duration) ? audio.duration : 0
+      duracion.textContent = formatearTiempo(audio.duration)
+      cambiarEstado("preparado",false)
+    }
+
+    audio.ontimeupdate = function(){
+      progreso.value = audio.currentTime
+      tiempoActual.textContent = formatearTiempo(audio.currentTime)
+    }
+
+    audio.onplay = function(){
+      reproducir.innerHTML = iconoPausar
+      reproducir.title = traducir("pausar")
+      reproducir.setAttribute("aria-label",traducir("pausar"))
+      cambiarEstado("reproduciendo",false)
+    }
+
+    audio.onpause = function(){
+      reproducir.innerHTML = iconoReproducir
+      reproducir.title = traducir("reproducir")
+      reproducir.setAttribute("aria-label",traducir("reproducir"))
+
+      if(audio.currentTime > 0 && audio.currentTime < audio.duration){
+        cambiarEstado("enPausa",false)
+      }
+    }
+
+    audio.onended = function(){
+      reproducir.innerHTML = iconoReproducir
+      reproducir.title = traducir("reproducir")
+      reproducir.setAttribute("aria-label",traducir("reproducir"))
+      cambiarEstado("finalizada",false)
+    }
+
+    audio.onwaiting = function(){
+      cambiarEstado("cargandoAudio",false)
+    }
+
+    audio.onerror = function(){
+      cambiarEstado("errorPista",true)
+    }
+
+    aplicarIdioma()
+    cargarBiblioteca()
+    setInterval(cargarBiblioteca,5000)
+  </script>
+</body>
+</html>

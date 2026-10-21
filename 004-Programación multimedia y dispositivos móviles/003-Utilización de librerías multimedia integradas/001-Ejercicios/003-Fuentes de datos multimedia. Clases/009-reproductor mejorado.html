@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:
+        radial-gradient(circle at 20% 10%,#183154 0,transparent 40%),
+        radial-gradient(circle at 85% 85%,#15253f 0,transparent 35%),
+        #090e19;
+      font-family:Arial,sans-serif;
+    }
+
+    .pierodevvideo{
+      width:min(880px,100%);
+      overflow:hidden;
+      border:1px solid #35445c;
+      border-radius:20px;
+      background:#111927;
+      box-shadow:0 32px 80px rgba(0,0,0,0.5);
+    }
+
+    .pierodevvideo video{
+      display:block;
+      width:100%;
+      aspect-ratio:16 / 9;
+      object-fit:contain;
+      background:#05080e;
+    }
+
+    .pantalla{
+      position:relative;
+      background:#05080e;
+    }
+
+    .pantalla::after{
+      position:absolute;
+      right:0;
+      bottom:0;
+      left:0;
+      height:25%;
+      background:linear-gradient(transparent,rgba(0,0,0,0.35));
+      content:"";
+      pointer-events:none;
+    }
+
+    .subtitulos{
+      position:absolute;
+      z-index:1;
+      bottom:22px;
+      left:50%;
+      width:max-content;
+      max-width:88%;
+      padding:8px 14px;
+      transform:translateX(-50%);
+      border-radius:10px;
+      background:rgba(4,8,15,0.78);
+      color:#fff;
+      font-size:clamp(15px,2.2vw,22px);
+      font-weight:600;
+      line-height:1.35;
+      text-align:center;
+      white-space:pre-line;
+      pointer-events:none;
+    }
+
+    .subtitulos:empty{
+      display:none;
+    }
+
+    .controles{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:14px 18px 18px;
+      border-top:1px solid #2b3950;
+      background:#111927;
+    }
+
+    .controles button{
+      display:grid;
+      width:40px;
+      height:40px;
+      flex:0 0 40px;
+      place-items:center;
+      padding:0;
+      border:1px solid #3b4b63;
+      border-radius:11px;
+      background:#1d2a3d;
+      color:#e9f3ff;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:background 0.2s,border-color 0.2s,transform 0.2s;
+    }
+
+    .controles button.principal{
+      border-color:#7dd3fc;
+      background:#38bdf8;
+      color:#082032;
+    }
+
+    .controles button svg{
+      display:block;
+      width:20px;
+      height:20px;
+    }
+
+    .controles button:hover{
+      border-color:#7292b4;
+      background:#2a3b53;
+      transform:translateY(-2px);
+    }
+
+    .controles button.principal:hover{
+      background:#7dd3fc;
+    }
+
+    .controles button.boton-subtitulos{
+      font-size:12px;
+    }
+
+    .controles button.boton-subtitulos.activo{
+      border-color:#7dd3fc;
+      background:#38bdf8;
+      color:#082032;
+    }
+
+    .controles button:focus-visible,
+    .controles input:focus-visible{
+      outline:2px solid #38bdf8;
+      outline-offset:3px;
+    }
+
+    .volumen{
+      width:110px;
+      margin-left:auto;
+    }
+
+    .progreso{
+      order:-1;
+      flex:0 0 100%;
+      width:100%;
+      margin:0 0 2px;
+    }
+
+    .controles input[type="range"]{
+      accent-color:#7dd3fc;
+      cursor:pointer;
+    }
+
+    @media (max-width:520px){
+      body{
+        padding:12px;
+      }
+
+      .controles{
+        gap:8px;
+        padding:12px;
+      }
+
+      .controles button{
+        width:38px;
+        height:38px;
+        flex-basis:38px;
+      }
+
+      .volumen{
+        width:90px;
+        margin-left:0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <video src="002-python-en-1-minuto.webm"></video>
+
+  <script>
+    function tiempoASegundos(tiempo){
+      let partes = tiempo.split(":")
+      let minutos = parseInt(partes[0])
+      let segundos = parseFloat(partes[1])
+
+      return minutos * 60 + segundos
+    }
+
+    let videos = document.querySelectorAll("video")
+
+    videos.forEach(function(video){
+      let contenedor = document.createElement("div")
+      contenedor.classList.add("pierodevvideo")
+      video.parentNode.insertBefore(contenedor,video)
+
+      let pantalla = document.createElement("div")
+      pantalla.classList.add("pantalla")
+      contenedor.appendChild(pantalla)
+      pantalla.appendChild(video)
+
+      let contenedor_transcripcion = document.createElement("div")
+      contenedor_transcripcion.classList.add("subtitulos")
+      pantalla.appendChild(contenedor_transcripcion)
+
+      let origenvideo = video.getAttribute("src")
+      let nombrevideo = origenvideo.split(".")[0]
+      let nombretranscripcion = "subtitulos/" + nombrevideo + ".vtt"
+      let transcripcion = []
+      let subtitulosActivos = false
+
+      fetch(nombretranscripcion)
+      .then(function(resultado){return resultado.text()})
+      .then(function(datos){
+        let partido = datos.replace(/\r\n/g, "\n").split("\n\n")
+
+        partido.forEach(function(pieza){
+          let maspartido = pieza.split("\n")
+
+          if (maspartido[0].includes(" --> ")) {
+            let texto = maspartido.slice(1).join("\n")
+            let muchomaspartido = maspartido[0].split(" --> ")
+            let inicio = muchomaspartido[0]
+            let final = muchomaspartido[1]
+
+            transcripcion.push({"inicio":inicio,"final":final,"texto":texto})
+          }
+        })
+
+        actualizarSubtitulos()
+      })
+
+      let controles = document.createElement("div")
+      controles.classList.add("controles")
+      contenedor.appendChild(controles)
+
+      let reproducir = document.createElement("button")
+      reproducir.type = "button"
+      reproducir.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M8 5.5 18 12 8 18.5Z' fill='currentColor'/></svg>"
+      reproducir.title = "Reproducir"
+      reproducir.setAttribute("aria-label","Reproducir")
+      reproducir.classList.add("principal")
+      controles.appendChild(reproducir)
+
+      let parar = document.createElement("button")
+      parar.type = "button"
+      parar.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true'><rect x='6' y='5' width='4' height='14' rx='1' fill='currentColor'/><rect x='14' y='5' width='4' height='14' rx='1' fill='currentColor'/></svg>"
+      parar.title = "Pausar"
+      parar.setAttribute("aria-label","Pausar")
+      controles.appendChild(parar)
+
+      let atras = document.createElement("button")
+      atras.type = "button"
+      atras.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 11a8 8 0 1 1 2.5 6'/><path d='M4 5v6h6'/></svg>"
+      atras.title = "Retroceder 1 segundo"
+      atras.setAttribute("aria-label","Retroceder 1 segundo")
+      controles.appendChild(atras)
+
+      let adelante = document.createElement("button")
+      adelante.type = "button"
+      adelante.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 11a8 8 0 1 0-2.5 6'/><path d='M20 5v6h-6'/></svg>"
+      adelante.title = "Avanzar 1 segundo"
+      adelante.setAttribute("aria-label","Avanzar 1 segundo")
+      controles.appendChild(adelante)
+
+      let botonSubtitulos = document.createElement("button")
+      botonSubtitulos.type = "button"
+      botonSubtitulos.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='1.6'><rect x='2.5' y='5' width='19' height='14' rx='3'/><text x='12' y='14.7' text-anchor='middle' stroke='none' fill='currentColor' font-size='8' font-weight='700' font-family='Arial'>CC</text></svg>"
+      botonSubtitulos.title = "Activar subtítulos"
+      botonSubtitulos.setAttribute("aria-label","Activar subtítulos")
+      botonSubtitulos.setAttribute("aria-pressed","false")
+      botonSubtitulos.classList.add("boton-subtitulos")
+      controles.appendChild(botonSubtitulos)
+
+      let volumen = document.createElement("input")
+      volumen.type = "range"
+      volumen.min = 0
+      volumen.max = 1
+      volumen.step = 0.01
+      volumen.value = 1
+      volumen.classList.add("volumen")
+      volumen.setAttribute("aria-label","Volumen")
+      controles.appendChild(volumen)
+
+      let progreso = document.createElement("input")
+      progreso.type = "range"
+      progreso.min = 0
+      progreso.max = 1
+      progreso.step = 0.001
+      progreso.value = 0
+      progreso.classList.add("progreso")
+      progreso.setAttribute("aria-label","Progreso del vídeo")
+      controles.appendChild(progreso)
+
+      reproducir.onclick = function(){
+        video.play()
+      }
+
+      parar.onclick = function(){
+        video.pause()
+      }
+
+      adelante.onclick = function(){
+        video.currentTime += 1
+      }
+
+      atras.onclick = function(){
+        video.currentTime -= 1
+      }
+
+      volumen.oninput = function(){
+        video.volume = this.value
+      }
+
+      botonSubtitulos.onclick = function(){
+        subtitulosActivos = !subtitulosActivos
+        botonSubtitulos.classList.toggle("activo",subtitulosActivos)
+        botonSubtitulos.title = subtitulosActivos ? "Desactivar subtítulos" : "Activar subtítulos"
+        botonSubtitulos.setAttribute("aria-label",botonSubtitulos.title)
+        botonSubtitulos.setAttribute("aria-pressed",String(subtitulosActivos))
+        actualizarSubtitulos()
+      }
+
+      function actualizarSubtitulos(){
+        if(!subtitulosActivos){
+          contenedor_transcripcion.textContent = ""
+          return
+        }
+
+        let textoActual = ""
+
+        transcripcion.forEach(function(frase){
+          if(video.currentTime >= tiempoASegundos(frase.inicio)
+             && video.currentTime < tiempoASegundos(frase.final)){
+            textoActual = frase.texto
+          }
+        })
+
+        contenedor_transcripcion.textContent = textoActual
+      }
+
+      video.ontimeupdate = function(){
+        if(video.duration){
+          progreso.value = video.currentTime / video.duration
+        }
+
+        actualizarSubtitulos()
+      }
+
+      progreso.oninput = function(){
+        if(video.duration){
+          video.currentTime = this.value * video.duration
+        }
+      }
+    })
+  </script>
+</body>
+</html>

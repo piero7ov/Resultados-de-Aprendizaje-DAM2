@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:#e8e8e8;
+      font-family:Arial,sans-serif;
+    }
+
+    .pierodevvideo{
+      width:min(880px,100%);
+      overflow:hidden;
+      border:1px solid #d0d0d0;
+      border-radius:20px;
+      background:#f7f7f7;
+      box-shadow:0 18px 45px rgba(0,0,0,0.14);
+    }
+
+    .pierodevvideo video{
+      display:block;
+      width:100%;
+      aspect-ratio:16 / 9;
+      object-fit:contain;
+      background:#101010;
+    }
+
+    .pantalla{
+      position:relative;
+      background:#101010;
+    }
+
+    .pantalla::after{
+      position:absolute;
+      right:0;
+      bottom:0;
+      left:0;
+      height:25%;
+      background:linear-gradient(transparent,rgba(0,0,0,0.35));
+      content:"";
+      pointer-events:none;
+    }
+
+    .subtitulos{
+      position:absolute;
+      z-index:1;
+      bottom:22px;
+      left:50%;
+      width:max-content;
+      max-width:88%;
+      padding:8px 14px;
+      transform:translateX(-50%);
+      border-radius:10px;
+      background:rgba(0,0,0,0.78);
+      color:#fff;
+      font-size:clamp(15px,2.2vw,22px);
+      font-weight:600;
+      line-height:1.35;
+      text-align:center;
+      white-space:pre-line;
+      pointer-events:none;
+    }
+
+    .subtitulos:empty{
+      display:none;
+    }
+
+    .controles{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      padding:14px 18px 18px;
+      border-top:1px solid #dedede;
+      background:#f7f7f7;
+    }
+
+    .controles button{
+      display:grid;
+      width:40px;
+      height:40px;
+      flex:0 0 40px;
+      place-items:center;
+      padding:0;
+      border:1px solid #d0d0d0;
+      border-radius:11px;
+      background:#fff;
+      color:#303030;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:background 0.2s,border-color 0.2s,transform 0.2s;
+    }
+
+    .controles button.principal{
+      border-color:#555;
+      background:#555;
+      color:#fff;
+    }
+
+    .controles button svg{
+      display:block;
+      width:20px;
+      height:20px;
+    }
+
+    .controles button:hover{
+      border-color:#999;
+      background:#ececec;
+      transform:translateY(-2px);
+    }
+
+    .controles button.principal:hover{
+      background:#3f3f3f;
+    }
+
+    .controles button.boton-subtitulos{
+      font-size:12px;
+    }
+
+    .controles button.boton-subtitulos.activo{
+      border-color:#555;
+      background:#555;
+      color:#fff;
+    }
+
+    .controles button:focus-visible,
+    .controles input:focus-visible,
+    .controles select:focus-visible{
+      outline:2px solid #666;
+      outline-offset:3px;
+    }
+
+    .idioma-subtitulos{
+      height:40px;
+      min-width:132px;
+      padding:0 10px;
+      border:1px solid #d0d0d0;
+      border-radius:10px;
+      background:#fff;
+      color:#303030;
+      font:inherit;
+      cursor:pointer;
+    }
+
+    .idioma-subtitulos option:disabled{
+      color:#999;
+    }
+
+    .velocidad{
+      min-width:78px;
+    }
+
+    .volumen{
+      width:110px;
+      margin-left:auto;
+    }
+
+    .progreso{
+      order:-1;
+      flex:0 0 100%;
+      width:100%;
+      margin:0 0 2px;
+    }
+
+    .controles input[type="range"]{
+      accent-color:#555;
+      cursor:pointer;
+    }
+
+    .transcripcion-panel{
+      padding:16px 18px 18px;
+      border-top:1px solid #dedede;
+      background:#f2f2f2;
+      color:#303030;
+    }
+
+    .transcripcion-panel h2{
+      margin:0 0 12px;
+      font-size:15px;
+      font-weight:600;
+    }
+
+    .lista-transcripcion{
+      position:relative;
+      max-height:220px;
+      overflow-y:auto;
+      display:grid;
+      gap:6px;
+      padding-right:4px;
+    }
+
+    .frase-transcripcion{
+      display:grid;
+      grid-template-columns:52px minmax(0,1fr);
+      gap:12px;
+      width:100%;
+      padding:10px 12px;
+      border:1px solid transparent;
+      border-radius:10px;
+      background:#fff;
+      color:#303030;
+      font:inherit;
+      text-align:left;
+      cursor:pointer;
+    }
+
+    .frase-transcripcion:hover{
+      background:#e6e6e6;
+    }
+
+    .frase-transcripcion.activa{
+      border-color:#777;
+      background:#dedede;
+      color:#222;
+    }
+
+    .frase-transcripcion:focus-visible{
+      outline:2px solid #666;
+      outline-offset:2px;
+    }
+
+    .frase-transcripcion .tiempo{
+      color:#555;
+      font-size:13px;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .frase-transcripcion .texto{
+      white-space:pre-line;
+      line-height:1.35;
+    }
+
+    .atajos{
+      margin:12px 0 0;
+      color:#666;
+      font-size:12px;
+    }
+
+    .pierodevvideo:fullscreen{
+      display:flex;
+      flex-direction:column;
+      width:100vw;
+      height:100vh;
+      border:0;
+      border-radius:0;
+    }
+
+    .pierodevvideo:fullscreen .pantalla{
+      flex:1;
+      min-height:0;
+    }
+
+    .pierodevvideo:fullscreen video{
+      height:100%;
+      aspect-ratio:auto;
+    }
+
+    .pierodevvideo:fullscreen .lista-transcripcion{
+      max-height:min(24vh,220px);
+    }
+
+    @media (max-width:520px){
+      body{
+        padding:12px;
+      }
+
+      .controles{
+        gap:8px;
+        padding:12px;
+      }
+
+      .controles button{
+        width:38px;
+        height:38px;
+        flex-basis:38px;
+      }
+
+      .volumen{
+        width:90px;
+        margin-left:0;
+      }
+
+      .idioma-subtitulos{
+        flex:1;
+        min-width:120px;
+      }
+
+      .velocidad{
+        flex:0 0 78px;
+        min-width:78px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <video src="002-python-en-1-minuto.webm"></video>
+
+  <script>
+    function tiempoASegundos(tiempo){
+      let partes = tiempo.split(":")
+      let minutos = parseInt(partes[0])
+      let segundos = parseFloat(partes[1])
+
+      return minutos * 60 + segundos
+    }
+
+    function formatearTiempo(segundos){
+      let minutos = Math.floor(segundos / 60)
+      let resto = String(Math.floor(segundos % 60)).padStart(2,"0")
+      return minutos + ":" + resto
+    }
+
+    let videos = document.querySelectorAll("video")
+
+    videos.forEach(function(video){
+      let contenedor = document.createElement("div")
+      contenedor.classList.add("pierodevvideo")
+      video.parentNode.insertBefore(contenedor,video)
+
+      let pantalla = document.createElement("div")
+      pantalla.classList.add("pantalla")
+      contenedor.appendChild(pantalla)
+      pantalla.appendChild(video)
+
+      let contenedor_transcripcion = document.createElement("div")
+      contenedor_transcripcion.classList.add("subtitulos")
+      pantalla.appendChild(contenedor_transcripcion)
+
+      let origenvideo = video.getAttribute("src")
+      let nombrevideo = origenvideo.split(".")[0]
+      let transcripciones = {}
+      let subtitulosActivos = false
+      let botonesFrases = []
+      let indiceResaltado = -1
+      let idiomas = [
+        {codigo:"es",nombre:"Español"},
+        {codigo:"en",nombre:"English"},
+        {codigo:"fr",nombre:"Français"},
+        {codigo:"de",nombre:"Deutsch"},
+        {codigo:"it",nombre:"Italiano"},
+        {codigo:"pt",nombre:"Português"}
+      ]
+
+      function procesarVtt(datos){
+        let transcripcion = []
+        let partido = datos.replace(/\r\n/g, "\n").split("\n\n")
+
+        partido.forEach(function(pieza){
+          let maspartido = pieza.split("\n")
+
+          if (maspartido[0].includes(" --> ")) {
+            let texto = maspartido.slice(1).join("\n")
+            let muchomaspartido = maspartido[0].split(" --> ")
+            let inicio = muchomaspartido[0]
+            let final = muchomaspartido[1]
+
+            transcripcion.push({"inicio":inicio,"final":final,"texto":texto})
+          }
+        })
+
+        return transcripcion
+      }
+
+      let controles = document.createElement("div")
+      controles.classList.add("controles")
+      contenedor.appendChild(controles)
+
+      let panelTranscripcion = document.createElement("section")
+      panelTranscripcion.classList.add("transcripcion-panel")
+      let tituloTranscripcion = document.createElement("h2")
+      tituloTranscripcion.textContent = "Transcripción"
+      panelTranscripcion.appendChild(tituloTranscripcion)
+      let listaTranscripcion = document.createElement("div")
+      listaTranscripcion.classList.add("lista-transcripcion")
+      panelTranscripcion.appendChild(listaTranscripcion)
+      let ayudaAtajos = document.createElement("p")
+      ayudaAtajos.classList.add("atajos")
+      ayudaAtajos.textContent = "Atajos fuera de los controles: espacio para reproducir o pausar · ← / → para saltar 1 segundo"
+      panelTranscripcion.appendChild(ayudaAtajos)
+      contenedor.appendChild(panelTranscripcion)
+
+      let reproducir = document.createElement("button")
+      reproducir.type = "button"
+      reproducir.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true'><path d='M8 5.5 18 12 8 18.5Z' fill='currentColor'/></svg>"
+      reproducir.title = "Reproducir"
+      reproducir.setAttribute("aria-label","Reproducir")
+      reproducir.classList.add("principal")
+      controles.appendChild(reproducir)
+
+      let parar = document.createElement("button")
+      parar.type = "button"
+      parar.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true'><rect x='6' y='5' width='4' height='14' rx='1' fill='currentColor'/><rect x='14' y='5' width='4' height='14' rx='1' fill='currentColor'/></svg>"
+      parar.title = "Pausar"
+      parar.setAttribute("aria-label","Pausar")
+      controles.appendChild(parar)
+
+      let atras = document.createElement("button")
+      atras.type = "button"
+      atras.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 11a8 8 0 1 1 2.5 6'/><path d='M4 5v6h6'/></svg>"
+      atras.title = "Retroceder 1 segundo"
+      atras.setAttribute("aria-label","Retroceder 1 segundo")
+      controles.appendChild(atras)
+
+      let adelante = document.createElement("button")
+      adelante.type = "button"
+      adelante.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 11a8 8 0 1 0-2.5 6'/><path d='M20 5v6h-6'/></svg>"
+      adelante.title = "Avanzar 1 segundo"
+      adelante.setAttribute("aria-label","Avanzar 1 segundo")
+      controles.appendChild(adelante)
+
+      let botonSubtitulos = document.createElement("button")
+      botonSubtitulos.type = "button"
+      botonSubtitulos.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='1.6'><rect x='2.5' y='5' width='19' height='14' rx='3'/><text x='12' y='14.7' text-anchor='middle' stroke='none' fill='currentColor' font-size='8' font-weight='700' font-family='Arial'>CC</text></svg>"
+      botonSubtitulos.title = "Activar subtítulos"
+      botonSubtitulos.setAttribute("aria-label","Activar subtítulos")
+      botonSubtitulos.setAttribute("aria-pressed","false")
+      botonSubtitulos.classList.add("boton-subtitulos")
+      controles.appendChild(botonSubtitulos)
+
+      let selectorIdioma = document.createElement("select")
+      selectorIdioma.classList.add("idioma-subtitulos")
+      selectorIdioma.setAttribute("aria-label","Idioma de los subtítulos")
+      let opciones = {}
+
+      idiomas.forEach(function(idioma){
+        let opcion = document.createElement("option")
+        opcion.value = idioma.codigo
+        opcion.textContent = idioma.nombre
+        opcion.disabled = idioma.codigo !== "es"
+        selectorIdioma.appendChild(opcion)
+        opciones[idioma.codigo] = opcion
+      })
+
+      selectorIdioma.value = "es"
+      controles.appendChild(selectorIdioma)
+
+      let selectorVelocidad = document.createElement("select")
+      selectorVelocidad.classList.add("idioma-subtitulos","velocidad")
+      selectorVelocidad.setAttribute("aria-label","Velocidad de reproducción");
+
+      [0.75,1,1.25,1.5].forEach(function(velocidad){
+        let opcion = document.createElement("option")
+        opcion.value = velocidad
+        opcion.textContent = velocidad + "×"
+        selectorVelocidad.appendChild(opcion)
+      })
+
+      selectorVelocidad.value = "1"
+      controles.appendChild(selectorVelocidad)
+
+      let botonPantallaCompleta = document.createElement("button")
+      botonPantallaCompleta.type = "button"
+      botonPantallaCompleta.innerHTML = "<svg viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M8 3H4v4M16 3h4v4M4 17v4h4M20 17v4h-4'/></svg>"
+      botonPantallaCompleta.title = "Pantalla completa"
+      botonPantallaCompleta.setAttribute("aria-label","Pantalla completa")
+      controles.appendChild(botonPantallaCompleta)
+
+      idiomas.forEach(function(idioma){
+        let sufijo = idioma.codigo === "es" ? "" : "." + idioma.codigo
+        let ruta = "subtitulos/" + nombrevideo + sufijo + ".vtt"
+
+        fetch(ruta)
+        .then(function(resultado){
+          if(!resultado.ok){
+            throw new Error("No existe " + ruta)
+          }
+          return resultado.text()
+        })
+        .then(function(datos){
+          let transcripcion = procesarVtt(datos)
+
+          if(transcripcion.length){
+            transcripciones[idioma.codigo] = transcripcion
+            opciones[idioma.codigo].disabled = false
+            if(selectorIdioma.value === idioma.codigo){
+              mostrarTranscripcion()
+            }
+          }
+        })
+        .catch(function(){
+          opciones[idioma.codigo].disabled = true
+        })
+      })
+
+      let volumen = document.createElement("input")
+      volumen.type = "range"
+      volumen.min = 0
+      volumen.max = 1
+      volumen.step = 0.01
+      volumen.value = 1
+      volumen.classList.add("volumen")
+      volumen.setAttribute("aria-label","Volumen")
+      controles.appendChild(volumen)
+
+      let progreso = document.createElement("input")
+      progreso.type = "range"
+      progreso.min = 0
+      progreso.max = 1
+      progreso.step = 0.001
+      progreso.value = 0
+      progreso.classList.add("progreso")
+      progreso.setAttribute("aria-label","Progreso del vídeo")
+      controles.appendChild(progreso)
+
+      reproducir.onclick = function(){
+        video.play()
+      }
+
+      parar.onclick = function(){
+        video.pause()
+      }
+
+      adelante.onclick = function(){
+        video.currentTime += 1
+      }
+
+      atras.onclick = function(){
+        video.currentTime -= 1
+      }
+
+      volumen.oninput = function(){
+        video.volume = this.value
+      }
+
+      selectorVelocidad.onchange = function(){
+        video.playbackRate = Number(this.value)
+      }
+
+      botonPantallaCompleta.onclick = function(){
+        if(document.fullscreenElement === contenedor){
+          document.exitFullscreen()
+        }else{
+          contenedor.requestFullscreen()
+        }
+      }
+
+      document.addEventListener("fullscreenchange",function(){
+        let texto = document.fullscreenElement === contenedor
+          ? "Salir de pantalla completa"
+          : "Pantalla completa"
+        botonPantallaCompleta.title = texto
+        botonPantallaCompleta.setAttribute("aria-label",texto)
+      })
+
+      botonSubtitulos.onclick = function(){
+        subtitulosActivos = !subtitulosActivos
+        botonSubtitulos.classList.toggle("activo",subtitulosActivos)
+        botonSubtitulos.title = subtitulosActivos ? "Desactivar subtítulos" : "Activar subtítulos"
+        botonSubtitulos.setAttribute("aria-label",botonSubtitulos.title)
+        botonSubtitulos.setAttribute("aria-pressed",String(subtitulosActivos))
+        actualizarSubtitulos()
+      }
+
+      selectorIdioma.onchange = function(){
+        mostrarTranscripcion()
+      }
+
+      function mostrarTranscripcion(){
+        listaTranscripcion.textContent = ""
+        botonesFrases = []
+        indiceResaltado = -1
+        let transcripcion = transcripciones[selectorIdioma.value] || []
+
+        transcripcion.forEach(function(frase){
+          let boton = document.createElement("button")
+          boton.type = "button"
+          boton.classList.add("frase-transcripcion")
+
+          let tiempo = document.createElement("span")
+          tiempo.classList.add("tiempo")
+          tiempo.textContent = formatearTiempo(tiempoASegundos(frase.inicio))
+          boton.appendChild(tiempo)
+
+          let texto = document.createElement("span")
+          texto.classList.add("texto")
+          texto.textContent = frase.texto
+          boton.appendChild(texto)
+
+          boton.onclick = function(){
+            video.currentTime = tiempoASegundos(frase.inicio)
+            actualizarSubtitulos()
+          }
+
+          listaTranscripcion.appendChild(boton)
+          botonesFrases.push(boton)
+        })
+
+        actualizarSubtitulos()
+      }
+
+      function actualizarSubtitulos(){
+        let transcripcion = transcripciones[selectorIdioma.value] || []
+        let indiceActual = -1
+
+        transcripcion.forEach(function(frase,indice){
+          if(video.currentTime >= tiempoASegundos(frase.inicio)
+             && video.currentTime < tiempoASegundos(frase.final)){
+            indiceActual = indice
+          }
+        })
+
+        contenedor_transcripcion.textContent = subtitulosActivos && indiceActual >= 0
+          ? transcripcion[indiceActual].texto
+          : ""
+
+        if(indiceActual !== indiceResaltado){
+          if(botonesFrases[indiceResaltado]){
+            botonesFrases[indiceResaltado].classList.remove("activa")
+            botonesFrases[indiceResaltado].removeAttribute("aria-current")
+          }
+
+          if(botonesFrases[indiceActual]){
+            let boton = botonesFrases[indiceActual]
+            boton.classList.add("activa")
+            boton.setAttribute("aria-current","true")
+            listaTranscripcion.scrollTop = Math.max(0,
+              boton.offsetTop - (listaTranscripcion.clientHeight - boton.offsetHeight) / 2)
+          }
+
+          indiceResaltado = indiceActual
+        }
+      }
+
+      video.ontimeupdate = function(){
+        if(video.duration){
+          progreso.value = video.currentTime / video.duration
+        }
+
+        actualizarSubtitulos()
+      }
+
+      progreso.oninput = function(){
+        if(video.duration){
+          video.currentTime = this.value * video.duration
+        }
+      }
+
+      document.addEventListener("keydown",function(event){
+        if(event.target instanceof Element
+           && event.target.closest("input,select,textarea,button,[contenteditable='true']")){
+          return
+        }
+
+        if(event.code === "Space"){
+          event.preventDefault()
+          if(!event.repeat){
+            if(video.paused){
+              video.play()
+            }else{
+              video.pause()
+            }
+          }
+        }else if(event.code === "ArrowLeft"){
+          event.preventDefault()
+          video.currentTime = Math.max(0,video.currentTime - 1)
+        }else if(event.code === "ArrowRight"){
+          event.preventDefault()
+          video.currentTime = Math.min(video.duration || Infinity,video.currentTime + 1)
+        }
+      })
+    })
+  </script>
+</body>
+</html>

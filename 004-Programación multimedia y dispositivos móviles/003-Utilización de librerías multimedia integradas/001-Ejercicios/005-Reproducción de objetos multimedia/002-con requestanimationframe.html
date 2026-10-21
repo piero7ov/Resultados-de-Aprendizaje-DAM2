@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cargar un vídeo con requestAnimationFrame</title>
+</head>
+<body>
+  <video src="video/python-en-1-minuto.mp4" controls></video>
+  <canvas></canvas>
+
+  <script>
+    let video = document.querySelector("video")
+    let lienzo = document.querySelector("canvas")
+    let contexto = lienzo.getContext("2d")
+
+    video.onloadedmetadata = function(){
+      lienzo.width = video.videoWidth
+      lienzo.height = video.videoHeight
+
+      function fotograma(){
+        contexto.drawImage(
+          video,
+          0,
+          0,
+          lienzo.width,
+          lienzo.height
+        )
+
+        requestAnimationFrame(fotograma)
+      }
+
+      fotograma()
+    }
+  </script>
+</body>
+</html>

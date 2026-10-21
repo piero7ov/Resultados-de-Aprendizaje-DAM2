@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:32px 0;
+      background:linear-gradient(145deg,#0f172a,#1e293b);
+      font-family:Arial,sans-serif;
+    }
+
+    .pierodevvideo{
+      width:min(800px,calc(100% - 32px));
+      margin:0 auto;
+      overflow:hidden;
+      border:1px solid #334155;
+      border-radius:18px;
+      background:#0b1120;
+      box-shadow:0 24px 60px rgba(0,0,0,0.4);
+    }
+
+    .pierodevvideo video{
+      display:block;
+      width:100%;
+      aspect-ratio:16 / 9;
+      object-fit:contain;
+      background:#000;
+    }
+
+    .controles{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:14px;
+      background:#111c31;
+    }
+
+    .controles button{
+      display:grid;
+      width:42px;
+      height:42px;
+      flex:0 0 42px;
+      place-items:center;
+      padding:0;
+      border:1px solid #334155;
+      border-radius:50%;
+      background:#1e293b;
+      color:#f8fafc;
+      font-size:17px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:background 0.2s,transform 0.2s;
+    }
+
+    .controles button.principal{
+      border-color:#38bdf8;
+      background:#0284c7;
+      color:#fff;
+    }
+
+    .controles button:hover{
+      background:#334155;
+      transform:translateY(-1px);
+    }
+
+    .controles button.principal:hover{
+      background:#0ea5e9;
+    }
+
+    .controles button:focus-visible,
+    .controles input:focus-visible{
+      outline:2px solid #38bdf8;
+      outline-offset:3px;
+    }
+
+    .volumen{
+      width:100px;
+    }
+
+    .progreso{
+      flex:1;
+      min-width:130px;
+    }
+
+    .controles input[type="range"]{
+      accent-color:#38bdf8;
+      cursor:pointer;
+    }
+
+    @media (max-width:520px){
+      .controles{
+        gap:8px;
+        padding:12px;
+      }
+
+      .controles button{
+        flex-basis:42px;
+      }
+
+      .volumen{
+        width:calc(40% - 8px);
+      }
+
+      .progreso{
+        flex-basis:calc(60% - 8px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <video src="video/python-en-1-minuto.mp4"></video>
+
+  <script>
+    let videos = document.querySelectorAll("video")
+
+    videos.forEach(function(video){
+      let contenedor = document.createElement("div")
+      contenedor.classList.add("pierodevvideo")
+      video.parentNode.insertBefore(contenedor,video)
+      contenedor.appendChild(video)
+
+      let controles = document.createElement("div")
+      controles.classList.add("controles")
+      contenedor.appendChild(controles)
+
+      let reproducir = document.createElement("button")
+      reproducir.type = "button"
+      reproducir.textContent = "▶"
+      reproducir.title = "Reproducir"
+      reproducir.setAttribute("aria-label","Reproducir")
+      reproducir.classList.add("principal")
+      controles.appendChild(reproducir)
+
+      let parar = document.createElement("button")
+      parar.type = "button"
+      parar.textContent = "Ⅱ"
+      parar.title = "Pausar"
+      parar.setAttribute("aria-label","Pausar")
+      controles.appendChild(parar)
+
+      let atras = document.createElement("button")
+      atras.type = "button"
+      atras.textContent = "↶"
+      atras.title = "Retroceder 1 segundo"
+      atras.setAttribute("aria-label","Retroceder 1 segundo")
+      controles.appendChild(atras)
+
+      let adelante = document.createElement("button")
+      adelante.type = "button"
+      adelante.textContent = "↷"
+      adelante.title = "Avanzar 1 segundo"
+      adelante.setAttribute("aria-label","Avanzar 1 segundo")
+      controles.appendChild(adelante)
+
+      let volumen = document.createElement("input")
+      volumen.type = "range"
+      volumen.min = 0
+      volumen.max = 1
+      volumen.step = 0.01
+      volumen.value = 1
+      volumen.classList.add("volumen")
+      volumen.setAttribute("aria-label","Volumen")
+      controles.appendChild(volumen)
+
+      let progreso = document.createElement("input")
+      progreso.type = "range"
+      progreso.min = 0
+      progreso.max = 1
+      progreso.step = 0.001
+      progreso.value = 0
+      progreso.classList.add("progreso")
+      progreso.setAttribute("aria-label","Progreso del vídeo")
+      controles.appendChild(progreso)
+
+      reproducir.onclick = function(){
+        video.play()
+      }
+
+      parar.onclick = function(){
+        video.pause()
+      }
+
+      adelante.onclick = function(){
+        video.currentTime += 1
+      }
+
+      atras.onclick = function(){
+        video.currentTime -= 1
+      }
+
+      volumen.oninput = function(){
+        video.volume = this.value
+      }
+
+      video.ontimeupdate = function(){
+        if(video.duration){
+          progreso.value = video.currentTime / video.duration
+        }
+      }
+
+      progreso.oninput = function(){
+        if(video.duration){
+          video.currentTime = this.value * video.duration
+        }
+      }
+    })
+  </script>
+</body>
+</html>

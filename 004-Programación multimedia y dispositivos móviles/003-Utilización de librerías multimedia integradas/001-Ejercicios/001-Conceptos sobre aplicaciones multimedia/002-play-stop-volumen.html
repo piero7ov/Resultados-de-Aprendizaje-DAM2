@@ -1,0 +1,25 @@
+<video src="video/video-tutorial-patinaje-Piero-Olivares.mp4" controls></video>
+
+<button id="reproducir">Reproducir</button>
+<button id="parar">Parar</button>
+
+<input type="range" id="volumen" min="0" max="1" step="0.01" value="1">
+
+<script>
+  let video = document.querySelector("video")
+  let reproducir = document.querySelector("#reproducir")
+  let parar = document.querySelector("#parar")
+  let volumen = document.querySelector("#volumen")
+
+  reproducir.onclick = function(){
+    video.play()
+  }
+
+  parar.onclick = function(){
+    video.pause()
+  }
+
+  volumen.oninput = function(){
+    video.volume = this.value
+  }
+</script>

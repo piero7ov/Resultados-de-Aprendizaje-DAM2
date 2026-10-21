@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body{
+      font-family:Arial,sans-serif;
+      padding:30px;
+      background:#ffffff;
+    }
+
+    button{
+      padding:12px 18px;
+      border:0;
+      border-radius:6px;
+      background:#ddd6fe;
+      color:#312e41;
+      cursor:pointer;
+      font-size:16px;
+    }
+
+    #toast{
+      position:fixed;
+      right:30px;
+      bottom:30px;
+      display:none;
+      align-items:center;
+      gap:20px;
+      width:420px;
+      padding:28px;
+      border-left:8px solid #a78bfa;
+      border-radius:12px;
+      background:#f3e8ff;
+      color:#312e41;
+      box-shadow:0 8px 24px #0002;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    #toast.visible{
+      display:flex;
+    }
+
+    #cerrar{
+      padding:4px 8px;
+      background:#e9d5ff;
+      color:#312e41;
+      font-size:24px;
+    }
+  </style>
+</head>
+<body>
+  <button id="mostrar">Mostrar toast</button>
+
+  <div id="toast" role="status" aria-live="polite">
+    <span>¡Cambios guardados correctamente!</span>
+    <button id="cerrar" aria-label="Cerrar toast">×</button>
+  </div>
+
+  <script>
+    const toast = document.getElementById("toast");
+    const mostrar = document.getElementById("mostrar");
+    const cerrar = document.getElementById("cerrar");
+    let temporizador;
+
+    mostrar.addEventListener("click", function(){
+      clearTimeout(temporizador);
+      toast.classList.add("visible");
+      temporizador = setTimeout(function(){
+        toast.classList.remove("visible");
+      }, 4000);
+    });
+
+    cerrar.addEventListener("click", function(){
+      clearTimeout(temporizador);
+      toast.classList.remove("visible");
+    });
+  </script>
+</body>
+</html>

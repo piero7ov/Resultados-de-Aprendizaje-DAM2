@@ -1,0 +1,49 @@
+<video src="video/video-tutorial-patinaje-Piero-Olivares.mp4" controls></video>
+
+<button id="reproducir">Reproducir</button>
+<button id="parar">Parar</button>
+
+<button id="adelante">Adelante</button>
+<button id="atras">Atras</button>
+
+<input type="range" id="volumen" min="0" max="1" step="0.01" value="1">
+<input type="range" id="progreso" max="1" min="0" step="0.01">
+
+<script>
+  let video = document.querySelector("video")
+  let reproducir = document.querySelector("#reproducir")
+  let parar = document.querySelector("#parar")
+  let volumen = document.querySelector("#volumen")
+
+  let adelante = document.querySelector("#adelante")
+  let atras = document.querySelector("#atras")
+  let progreso = document.querySelector("#progreso")
+
+  reproducir.onclick = function(){
+    video.play()
+  }
+
+  parar.onclick = function(){
+    video.pause()
+  }
+
+  adelante.onclick = function(){
+    video.currentTime += 1
+  }
+  atras.onclick = function(){
+    video.currentTime -= 1
+  }
+
+  volumen.oninput = function(){
+    video.volume = this.value
+  }
+
+  video.ontimeupdate = function(){
+    progreso.setAttribute("value",video.currentTime/video.duration)
+  }
+  progreso.onchange = function(){
+    video.currentTime = this.value*video.duration
+  }
+
+  console.log(video)
+</script>

@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ERINWAVE · Visualizador</title>
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    :root{
+      color-scheme:light;
+      --azul-pantalla:#79eeff;
+      --azul-profundo:#041d32;
+      --azul-medio:#07557a;
+      --metal-claro:#f8fbfc;
+      --metal-medio:#b9c5cd;
+      --metal-oscuro:#68747d;
+      --turquesa:#0aa6bb;
+      --texto:#17232b;
+    }
+
+    body{
+      min-height:100vh;
+      margin:0;
+      padding:28px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow-x:hidden;
+      background:
+        radial-gradient(circle at 18% 18%,rgba(255,255,255,0.95) 0 5%,transparent 18%),
+        radial-gradient(circle at 82% 12%,rgba(255,255,255,0.7) 0 4%,transparent 15%),
+        linear-gradient(180deg,#58bdec 0%,#a9e9fb 47%,#eafcff 48%,#78c784 69%,#17824e 100%);
+      color:var(--texto);
+      font-family:Verdana,Arial,sans-serif;
+    }
+
+    body::before,
+    body::after{
+      content:"";
+      position:fixed;
+      z-index:-1;
+      border-radius:50%;
+      filter:blur(2px);
+      pointer-events:none;
+    }
+
+    body::before{
+      width:420px;
+      height:420px;
+      left:-180px;
+      bottom:-220px;
+      background:radial-gradient(circle at 65% 25%,#ecff86 0 6%,#49bd65 35%,#087244 72%);
+      box-shadow:0 0 90px rgba(255,255,255,0.55);
+    }
+
+    body::after{
+      width:520px;
+      height:220px;
+      right:-160px;
+      bottom:-85px;
+      background:radial-gradient(ellipse at center,#c9fa91 0%,#4ebf70 48%,#067247 100%);
+      transform:rotate(-8deg);
+    }
+
+    button,
+    input,
+    select{
+      font:inherit;
+    }
+
+    .reproductor{
+      position:relative;
+      width:min(1180px,100%);
+      padding:20px;
+      overflow:hidden;
+      border:1px solid #5b6871;
+      border-radius:30px 30px 24px 24px;
+      background:
+        linear-gradient(115deg,transparent 0 13%,rgba(255,255,255,0.72) 17%,transparent 24%),
+        linear-gradient(180deg,#ffffff 0%,#dce4e9 7%,#aeb9c0 49%,#eef3f5 52%,#98a5ae 100%);
+      box-shadow:
+        0 30px 80px rgba(3,42,57,0.4),
+        0 8px 18px rgba(3,42,57,0.35),
+        inset 0 2px 1px #fff,
+        inset 0 -4px 8px rgba(55,66,73,0.38);
+    }
+
+    .reproductor::before{
+      content:"";
+      position:absolute;
+      inset:7px;
+      border:1px solid rgba(255,255,255,0.78);
+      border-radius:23px 23px 18px 18px;
+      pointer-events:none;
+    }
+
+    .cabecera{
+      position:relative;
+      z-index:1;
+      min-height:38px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      padding:0 10px 12px;
+    }
+
+    .marca{
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+      color:#25353f;
+      text-shadow:0 1px 0 #fff;
+    }
+
+    .marca strong{
+      font-size:18px;
+      letter-spacing:0.11em;
+    }
+
+    .acciones-cabecera{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .idiomas{
+      display:flex;
+      padding:2px;
+      border:1px solid #74818a;
+      border-radius:7px;
+      background:linear-gradient(180deg,#8f9ba3,#edf2f4);
+      box-shadow:inset 0 1px 2px rgba(29,43,51,0.35),0 1px 0 #fff;
+    }
+
+    .idioma{
+      min-width:29px;
+      height:23px;
+      padding:0 6px;
+      border:0;
+      border-radius:5px;
+      background:transparent;
+      color:#35434b;
+      font-size:9px;
+      font-weight:700;
+      letter-spacing:0.06em;
+      cursor:pointer;
+    }
+
+    .idioma.activo{
+      background:linear-gradient(180deg,#e9feff,#52c9d7);
+      color:#083c49;
+      box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(23,51,59,0.42);
+    }
+
+    .pantalla{
+      position:relative;
+      z-index:1;
+      min-height:210px;
+      padding:18px 20px 16px;
+      overflow:hidden;
+      border:4px solid #3c474e;
+      border-radius:14px;
+      background:
+        linear-gradient(180deg,rgba(124,237,255,0.12),transparent 24%),
+        repeating-linear-gradient(0deg,rgba(255,255,255,0.025) 0 1px,transparent 1px 4px),
+        radial-gradient(circle at 50% 110%,#08739b 0%,#063f63 44%,var(--azul-profundo) 100%);
+      color:var(--azul-pantalla);
+      box-shadow:
+        inset 0 0 24px rgba(0,0,0,0.8),
+        inset 0 2px 4px #010b13,
+        0 2px 1px rgba(255,255,255,0.8);
+      font-family:"Courier New",monospace;
+      text-shadow:0 0 8px rgba(121,238,255,0.7);
+    }
+
+    .pantalla::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(120deg,rgba(255,255,255,0.19),transparent 24% 72%,rgba(255,255,255,0.05));
+      pointer-events:none;
+    }
+
+    .datos-superiores{
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      color:#9beeff;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:0.1em;
+      text-transform:uppercase;
+    }
+
+    .estado::before{
+      content:"";
+      display:inline-block;
+      width:7px;
+      height:7px;
+      margin-right:7px;
+      border-radius:50%;
+      background:currentColor;
+      box-shadow:0 0 8px currentColor;
+      vertical-align:1px;
+    }
+
+    .estado.error{
+      color:#ff9d95;
+    }
+
+    .informacion-pista{
+      position:relative;
+      z-index:1;
+      min-height:82px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      padding:14px 0 10px;
+    }
+
+    .titulo-pista{
+      overflow:hidden;
+      color:#e1fcff;
+      font-size:clamp(20px,4.5vw,32px);
+      font-weight:700;
+      line-height:1.15;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .texto-titulo-pista{
+      display:inline-block;
+      max-width:100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      vertical-align:top;
+    }
+
+    .titulo-pista.desplazable{
+      text-overflow:clip;
+    }
+
+    .titulo-pista.desplazable .texto-titulo-pista{
+      max-width:none;
+      overflow:visible;
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      .titulo-pista.desplazable .texto-titulo-pista{
+        max-width:100%;
+        overflow:hidden;
+        transform:none !important;
+      }
+    }
+
+    .artista-pista{
+      min-height:17px;
+      margin-top:6px;
+      color:#82cfe2;
+      font-size:12px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+    }
+
+    .fila-tiempo{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:52px minmax(0,1fr) 52px;
+      align-items:center;
+      gap:12px;
+      font-size:12px;
+      font-weight:700;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .fila-tiempo span:last-child{
+      text-align:right;
+    }
+
+    .progreso,
+    .volumen{
+      width:100%;
+      height:8px;
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid #00131f;
+      border-radius:999px;
+      background:linear-gradient(180deg,#00111e,#08718e);
+      box-shadow:inset 0 1px 3px #000,0 1px 0 rgba(255,255,255,0.24);
+      cursor:pointer;
+    }
+
+    .progreso::-webkit-slider-thumb,
+    .volumen::-webkit-slider-thumb{
+      width:17px;
+      height:17px;
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid #43515a;
+      border-radius:50%;
+      background:radial-gradient(circle at 38% 32%,#fff 0 12%,#dbe5e9 32%,#82919a 72%,#46535b 100%);
+      box-shadow:0 1px 4px #00131f;
+    }
+
+    .progreso::-moz-range-thumb,
+    .volumen::-moz-range-thumb{
+      width:17px;
+      height:17px;
+      border:1px solid #43515a;
+      border-radius:50%;
+      background:radial-gradient(circle at 38% 32%,#fff 0 12%,#dbe5e9 32%,#82919a 72%,#46535b 100%);
+      box-shadow:0 1px 4px #00131f;
+    }
+
+    .panel-controles{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+      align-items:center;
+      gap:20px;
+      padding:22px 8px 12px;
+    }
+
+    .bloque-biblioteca,
+    .bloque-volumen{
+      min-width:0;
+    }
+
+    .etiqueta{
+      display:block;
+      margin-bottom:7px;
+      color:#35434b;
+      font-size:9px;
+      font-weight:700;
+      letter-spacing:0.13em;
+      text-shadow:0 1px 0 #fff;
+      text-transform:uppercase;
+    }
+
+    .selector-pista{
+      width:100%;
+      min-height:38px;
+      padding:0 34px 0 11px;
+      overflow:hidden;
+      border:1px solid #69777f;
+      border-radius:8px;
+      outline:0;
+      background:linear-gradient(180deg,#f9fbfc,#c2ccd2);
+      color:#1c2b33;
+      font-size:12px;
+      text-overflow:ellipsis;
+      box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(0,0,0,0.25);
+    }
+
+    .selector-pista:focus-visible,
+    .progreso:focus-visible,
+    .volumen:focus-visible,
+    .boton:focus-visible,
+    .boton-karaoke:focus-visible,
+    .idioma:focus-visible{
+      outline:3px solid #72eaff;
+      outline-offset:3px;
+    }
+
+    .transporte{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+    }
+
+    .boton,
+    .boton-karaoke{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid #53616a;
+      color:#1b2b33;
+      cursor:pointer;
+      box-shadow:inset 0 2px 1px #fff,0 3px 5px rgba(25,39,47,0.38);
+      transition:transform 120ms ease,filter 120ms ease;
+    }
+
+    .boton{
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      background:radial-gradient(circle at 38% 30%,#fff 0 8%,#dce5e9 28%,#89969e 70%,#5b6972 100%);
+    }
+
+    .boton svg{
+      width:20px;
+      height:20px;
+    }
+
+    .boton-navegacion{
+      width:50px;
+      height:50px;
+      padding:0;
+      border-radius:50%;
+    }
+
+    .boton-navegacion svg{
+      width:24px;
+      height:24px;
+    }
+
+    .boton-principal{
+      width:62px;
+      height:62px;
+      border-color:#036d7c;
+      background:radial-gradient(circle at 38% 30%,#f1ffff 0 8%,#64eff1 25%,#0aa6bb 60%,#04576f 100%);
+      color:#fff;
+      box-shadow:inset 0 2px 2px rgba(255,255,255,0.85),0 4px 8px rgba(6,75,87,0.5);
+      text-shadow:0 1px 1px #014957;
+    }
+
+    .boton:hover,
+    .boton-karaoke:hover{
+      filter:brightness(1.08);
+    }
+
+    .boton:active,
+    .boton-karaoke:active{
+      transform:translateY(2px);
+      box-shadow:inset 0 2px 5px rgba(31,45,53,0.42),0 1px 2px rgba(25,39,47,0.25);
+    }
+
+    .controles-derecha{
+      display:grid;
+      grid-template-columns:minmax(80px,1fr) auto;
+      align-items:end;
+      gap:13px;
+    }
+
+    .datos-volumen{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .valor-volumen{
+      color:#4a5962;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .volumen{
+      height:7px;
+      border-color:#52616a;
+      background:linear-gradient(180deg,#56646d,#dce4e8);
+    }
+
+    .boton-karaoke{
+      position:relative;
+      width:40px;
+      height:40px;
+      padding:0;
+      border-radius:11px;
+      background:radial-gradient(circle at 35% 28%,#7eeef3 0 8%,#128da5 44%,#064c66 100%);
+      color:#fff;
+    }
+
+    .boton-karaoke img{
+      width:22px;
+      height:22px;
+      object-fit:contain;
+    }
+
+    .boton-karaoke:disabled{
+      cursor:not-allowed;
+      filter:saturate(0.82);
+    }
+
+    .brillo-karaoke{
+      position:absolute;
+      top:1px;
+      right:2px;
+      color:#087e9b;
+      font-family:Arial,sans-serif;
+      font-size:14px;
+      font-weight:700;
+      line-height:1;
+      text-shadow:0 0 6px #77efff;
+    }
+
+    .brillo-karaoke.oculto{
+      display:none;
+    }
+
+    .carga-karaoke{
+      position:absolute;
+      inset:4px;
+      border:2px solid rgba(255,255,255,0.3);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:girar-carga 850ms linear infinite;
+      pointer-events:none;
+    }
+
+    .boton-karaoke.generando img{
+      opacity:0.35;
+    }
+
+    @keyframes girar-carga{
+      to{
+        transform:rotate(360deg);
+      }
+    }
+
+    .oculto{
+      display:none !important;
+    }
+
+    .panel-karaoke{
+      position:relative;
+      box-sizing:border-box;
+      width:100%;
+      min-height:184px;
+      max-height:240px;
+      padding:12px 16px 14px;
+      overflow:hidden;
+      border:3px solid #46535a;
+      border-radius:12px;
+      background:
+        repeating-linear-gradient(0deg,rgba(255,255,255,0.025) 0 1px,transparent 1px 4px),
+        radial-gradient(circle at 50% 120%,#087392 0%,#063d5c 45%,#041d32 100%);
+      color:#8eddeb;
+      box-shadow:inset 0 0 18px rgba(0,0,0,0.72),0 1px 0 #fff;
+      font-family:"Courier New",monospace;
+      text-shadow:0 0 7px rgba(121,238,255,0.42);
+      transform:translateY(0) scaleY(1);
+      transform-origin:top center;
+      opacity:1;
+      transition:
+        min-height 520ms cubic-bezier(0.22,0.72,0.2,1),
+        max-height 520ms cubic-bezier(0.22,0.72,0.2,1),
+        padding 520ms cubic-bezier(0.22,0.72,0.2,1),
+        border-width 380ms ease,
+        opacity 320ms ease,
+        transform 520ms cubic-bezier(0.22,0.72,0.2,1);
+    }
+
+    .panel-karaoke.cerrado{
+      min-height:0;
+      max-height:0;
+      padding-top:0;
+      padding-bottom:0;
+      border-top-width:0;
+      border-bottom-width:0;
+      opacity:0;
+      pointer-events:none;
+      transform:translateY(-6px) scaleY(0.985);
+    }
+
+    .panel-prueba-karaoke{
+      width:100%;
+      margin-bottom:12px;
+      padding:9px 11px 10px;
+      border:1px solid #617079;
+      border-radius:9px;
+      background:linear-gradient(180deg,#eaf0f2,#aebbc2);
+      color:#263840;
+      box-shadow:inset 0 1px 0 #fff,0 2px 4px rgba(22,39,48,0.24);
+      font-family:"Courier New",monospace;
+    }
+
+    .cabecera-prueba-karaoke,
+    .estado-prueba-karaoke{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .cabecera-prueba-karaoke{
+      margin-bottom:6px;
+      color:#40515a;
+      font-size:8px;
+      font-weight:700;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+    }
+
+    .estado-prueba-karaoke{
+      margin-bottom:6px;
+      font-size:9px;
+    }
+
+    .fase-prueba-karaoke{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .porcentaje-prueba-karaoke{
+      color:#075f75;
+      font-weight:700;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .barra-prueba-karaoke{
+      height:5px;
+      overflow:hidden;
+      border:1px solid #68767e;
+      border-radius:999px;
+      background:#7d8b92;
+      box-shadow:inset 0 1px 2px rgba(8,27,36,0.45);
+    }
+
+    .progreso-prueba-karaoke{
+      display:block;
+      width:0;
+      height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg,#0c90a8,#62e8ed);
+      box-shadow:0 0 6px rgba(31,206,224,0.75);
+      transition:width 250ms ease;
+    }
+
+    .barra-prueba-karaoke.indeterminada .progreso-prueba-karaoke{
+      width:38%;
+      transition:none;
+      animation:progreso-karaoke-indeterminado 1.15s ease-in-out infinite;
+    }
+
+    @keyframes progreso-karaoke-indeterminado{
+      from{transform:translateX(-125%)}
+      to{transform:translateX(365%)}
+    }
+
+    .detalle-prueba-karaoke{
+      margin-top:6px;
+      overflow:hidden;
+      color:#51636c;
+      font-size:8px;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .cabecera-karaoke{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:9px;
+    }
+
+    .cabecera-karaoke h2{
+      margin:0;
+      color:#a9eff7;
+      font-size:10px;
+      letter-spacing:0.14em;
+      text-transform:uppercase;
+    }
+
+    .estado-karaoke{
+      overflow:hidden;
+      color:#65b7c8;
+      font-size:8px;
+      letter-spacing:0.08em;
+      text-overflow:ellipsis;
+      text-transform:uppercase;
+      white-space:nowrap;
+    }
+
+    .mensaje-karaoke{
+      min-height:92px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      color:#70bdcc;
+      font-size:10px;
+      line-height:1.55;
+      text-align:center;
+    }
+
+    .letras-karaoke{
+      min-height:122px;
+      display:grid;
+      align-content:center;
+      gap:6px;
+    }
+
+    .linea-karaoke{
+      width:100%;
+      min-width:0;
+      max-height:2.9em;
+      padding:5px 10px;
+      overflow:hidden;
+      border:0;
+      border-radius:7px;
+      background:transparent;
+      color:#5da5b5;
+      cursor:pointer;
+      font-family:inherit;
+      font-size:11px;
+      line-height:1.35;
+      opacity:0.48;
+      text-align:center;
+      white-space:normal;
+      transition:
+        color 260ms ease,
+        opacity 260ms ease,
+        transform 320ms cubic-bezier(0.22,0.7,0.22,1),
+        font-size 320ms cubic-bezier(0.22,0.7,0.22,1),
+        background 260ms ease;
+    }
+
+    .linea-karaoke.actual{
+      max-height:3.4em;
+      padding:8px 12px;
+      background:linear-gradient(90deg,transparent,rgba(75,210,225,0.14),transparent);
+      color:#e5fdff;
+      font-size:17px;
+      font-weight:700;
+      line-height:1.3;
+      opacity:1;
+      transform:scale(1.015);
+      text-shadow:0 0 9px #6fe9f4;
+    }
+
+    .linea-karaoke:empty{
+      cursor:default;
+    }
+
+    .linea-karaoke:focus-visible{
+      outline:2px solid #72eaff;
+      outline-offset:-1px;
+      border-radius:5px;
+    }
+
+    .audio-original{
+      display:none;
+    }
+
+    .distribucion{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:minmax(250px,1fr) minmax(390px,1.45fr) 320px;
+      align-items:stretch;
+      gap:16px;
+      transition:grid-template-columns 560ms cubic-bezier(0.22,0.72,0.2,1);
+    }
+
+    .distribucion.cola-minimizada{
+      grid-template-columns:minmax(250px,1fr) minmax(390px,1.45fr) 58px;
+    }
+
+    .centro-reproductor{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    .panel-lateral{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+      min-height:450px;
+      padding:12px;
+      border:1px solid #5d6971;
+      border-radius:14px;
+      background:linear-gradient(160deg,rgba(250,253,254,0.95),rgba(159,172,180,0.94));
+      box-shadow:inset 0 1px 0 #fff,0 2px 6px rgba(24,39,47,0.28);
+    }
+
+    .panel-cola{
+      position:relative;
+      overflow:hidden;
+      transition:
+        padding 560ms cubic-bezier(0.22,0.72,0.2,1),
+        border-color 260ms ease,
+        box-shadow 260ms ease;
+    }
+
+    .panel-cola .cabecera-panel{
+      padding-right:38px;
+      transition:padding 560ms cubic-bezier(0.22,0.72,0.2,1);
+    }
+
+    .acciones-cola{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .boton-minimizar-cola{
+      position:absolute;
+      top:12px;
+      right:12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:32px;
+      height:28px;
+      padding:0;
+      border:1px solid #48636d;
+      border-radius:9px;
+      background:linear-gradient(180deg,#e9fcff 0%,#4cc7d4 46%,#087c94 100%);
+      color:#f5ffff;
+      cursor:pointer;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.95),
+        inset 0 -1px 0 rgba(0,69,84,0.45),
+        0 2px 4px rgba(22,39,48,0.3),
+        0 0 7px rgba(44,211,226,0.25);
+      transition:
+        filter 180ms ease,
+        box-shadow 180ms ease;
+      z-index:2;
+    }
+
+    .boton-minimizar-cola:hover{
+      filter:brightness(1.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.95),
+        inset 0 -1px 0 rgba(0,69,84,0.45),
+        0 2px 5px rgba(22,39,48,0.34),
+        0 0 10px rgba(44,211,226,0.52);
+    }
+
+    .boton-minimizar-cola:focus-visible{
+      outline:2px solid #72eaff;
+      outline-offset:2px;
+    }
+
+    .boton-minimizar-cola svg{
+      width:16px;
+      height:16px;
+    }
+
+    .panel-cola .cabecera-panel h2,
+    .panel-cola .acciones-cola,
+    .panel-cola .marco-lista{
+      transition:
+        opacity 260ms ease,
+        transform 460ms cubic-bezier(0.22,0.72,0.2,1),
+        visibility 0s linear 0s;
+    }
+
+    .distribucion.cola-minimizada .panel-cola{
+      min-height:0;
+      padding:0;
+      border-color:transparent;
+      background:transparent;
+      box-shadow:none;
+    }
+
+    .distribucion.cola-minimizada .boton-minimizar-cola{
+      right:13px;
+    }
+
+    .distribucion.cola-minimizada .panel-cola .cabecera-panel{
+      padding-right:0;
+      margin:0;
+    }
+
+    .distribucion.cola-minimizada .panel-cola .cabecera-panel h2,
+    .distribucion.cola-minimizada .panel-cola .acciones-cola,
+    .distribucion.cola-minimizada .panel-cola .marco-lista{
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transform:translateX(28px);
+      transition:
+        opacity 220ms ease,
+        transform 460ms cubic-bezier(0.22,0.72,0.2,1),
+        visibility 0s linear 240ms;
+    }
+
+    .cabecera-panel{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-height:30px;
+      margin-bottom:9px;
+      color:#263740;
+      text-shadow:0 1px 0 #fff;
+    }
+
+    .cabecera-panel h2{
+      margin:0;
+      font-size:11px;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+    }
+
+    .contador-panel{
+      min-width:24px;
+      padding:3px 7px;
+      border-radius:999px;
+      background:#0a617b;
+      color:#d9fbff;
+      font-size:9px;
+      font-weight:700;
+      text-align:center;
+      text-shadow:none;
+    }
+
+    .acciones-biblioteca{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .boton-anadir-cancion{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:28px;
+      height:28px;
+      padding:0;
+      border:1px solid #48636d;
+      border-radius:9px;
+      background:linear-gradient(180deg,#e9fcff 0%,#4cc7d4 46%,#087c94 100%);
+      color:#f5ffff;
+      font-size:20px;
+      font-weight:600;
+      line-height:1;
+      cursor:pointer;
+      box-shadow:inset 0 1px 0 #fff,0 2px 4px rgba(22,39,48,0.3);
+      text-shadow:0 1px 1px rgba(0,62,75,0.55);
+    }
+
+    .boton-anadir-cancion:hover{
+      filter:brightness(1.08);
+    }
+
+    .boton-anadir-cancion:focus-visible{
+      outline:2px solid #72eaff;
+      outline-offset:2px;
+    }
+
+    .boton-anadir-cancion:disabled{
+      cursor:wait;
+      filter:grayscale(0.55);
+      opacity:0.72;
+    }
+
+    .busqueda{
+      display:block;
+      flex:0 0 36px;
+      width:100%;
+      height:36px;
+      min-height:36px;
+      max-height:36px;
+      margin-bottom:10px;
+      padding:0 11px;
+      border:1px solid #66747c;
+      border-radius:8px;
+      outline:0;
+      background:linear-gradient(180deg,#fff,#d8e1e5);
+      color:#1c2b33;
+      font-size:12px;
+      box-shadow:inset 0 1px 2px rgba(30,45,54,0.15),0 1px 0 #fff;
+    }
+
+    .busqueda:focus-visible{
+      outline:3px solid #72eaff;
+      outline-offset:2px;
+    }
+
+    .marco-lista{
+      flex:1 1 auto;
+      height:0;
+      min-height:286px;
+      overflow:hidden;
+      border:3px solid #445158;
+      border-radius:10px;
+      background:
+        repeating-linear-gradient(0deg,rgba(255,255,255,0.02) 0 1px,transparent 1px 4px),
+        linear-gradient(180deg,#052a43,#073b56 62%,#05283e);
+      box-shadow:inset 0 0 16px rgba(0,0,0,0.68),0 1px 0 #fff;
+    }
+
+    .lista-canciones,
+    .lista-cola{
+      height:100%;
+      max-height:none;
+      margin:0;
+      padding:6px;
+      overflow-y:auto;
+      list-style:none;
+      scrollbar-color:#3e9fb1 #062b42;
+      scrollbar-width:thin;
+    }
+
+    .fila-cancion,
+    .fila-cola{
+      display:grid;
+      grid-template-columns:24px minmax(0,1fr) auto auto;
+      align-items:center;
+      gap:7px;
+      min-height:54px;
+      padding:6px;
+      border:1px solid transparent;
+      border-radius:7px;
+      color:#d8f9ff;
+    }
+
+    .fila-cola{
+      grid-template-columns:22px minmax(0,1fr) auto;
+    }
+
+    .fila-cancion + .fila-cancion,
+    .fila-cola + .fila-cola{
+      margin-top:3px;
+    }
+
+    .fila-cancion:hover,
+    .fila-cola:hover{
+      border-color:rgba(126,238,243,0.38);
+      background:rgba(55,181,200,0.12);
+    }
+
+    .fila-cancion.seleccionada{
+      border-color:#5edbe6;
+      background:linear-gradient(90deg,rgba(27,164,181,0.42),rgba(24,115,142,0.18));
+      box-shadow:inset 0 0 10px rgba(93,224,238,0.12);
+    }
+
+    .numero-cancion{
+      color:#6fc6d8;
+      font-family:"Courier New",monospace;
+      font-size:10px;
+      font-weight:700;
+      text-align:center;
+    }
+
+    .datos-cancion{
+      min-width:0;
+      border:0;
+      background:transparent;
+      color:inherit;
+      cursor:pointer;
+      text-align:left;
+    }
+
+    .nombre-cancion,
+    .artista-cancion{
+      display:block;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .nombre-cancion{
+      color:#e5fcff;
+      font-size:11px;
+      font-weight:700;
+    }
+
+    .artista-cancion{
+      margin-top:3px;
+      color:#75c0d2;
+      font-size:9px;
+    }
+
+    .duracion-cancion{
+      color:#8ed3df;
+      font-family:"Courier New",monospace;
+      font-size:9px;
+      font-variant-numeric:tabular-nums;
+    }
+
+    .boton-lista{
+      width:26px;
+      height:26px;
+      padding:0;
+      border:1px solid #397d91;
+      border-radius:7px;
+      background:linear-gradient(180deg,#318da1,#0a526c);
+      color:#e8fdff;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+
+    .boton-lista:hover{
+      filter:brightness(1.18);
+    }
+
+    .boton-lista:focus-visible,
+    .boton-modo:focus-visible,
+    .vaciar-cola:focus-visible,
+    .boton-minimizar-cola:focus-visible{
+      outline:2px solid #72eaff;
+      outline-offset:2px;
+    }
+
+    .mensaje-lista{
+      padding:28px 14px;
+      color:#83cad8;
+      font-size:11px;
+      line-height:1.5;
+      text-align:center;
+    }
+
+    .vaciar-cola{
+      padding:4px 7px;
+      border:1px solid #76848b;
+      border-radius:6px;
+      background:linear-gradient(180deg,#f8fbfc,#bdc8ce);
+      color:#35444c;
+      font-size:9px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .vaciar-cola:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+    }
+
+    .panel-controles{
+      display:flex;
+      flex:1 1 auto;
+      flex-direction:column;
+      justify-content:center;
+      gap:0;
+      padding:18px 6px 6px;
+    }
+
+    .transporte{
+      margin-bottom:30px;
+    }
+
+    .franja-secundaria{
+      display:grid;
+      grid-template-columns:auto minmax(220px,290px);
+      align-items:end;
+      justify-content:center;
+      gap:18px;
+      width:100%;
+      margin-top:30px;
+    }
+
+    .modos-reproduccion{
+      display:flex;
+      gap:7px;
+    }
+
+    .boton-modo{
+      min-width:42px;
+      height:36px;
+      padding:0 9px;
+      border:1px solid #65737b;
+      border-radius:9px;
+      background:linear-gradient(145deg,#f7fafb,#aebbc3);
+      color:#27363e;
+      font-size:15px;
+      cursor:pointer;
+      box-shadow:inset 0 1px 0 #fff,0 2px 3px rgba(25,39,47,0.3);
+    }
+
+    .boton-modo.activo{
+      border-color:#04728a;
+      background:linear-gradient(180deg,#67e6ea,#098ba4);
+      color:#fff;
+    }
+
+    .controles-derecha{
+      grid-template-columns:minmax(100px,1fr) auto;
+    }
+
+    @media(max-width:1000px){
+      .distribucion{
+        grid-template-columns:minmax(240px,0.8fr) minmax(420px,1.2fr);
+      }
+
+      .distribucion.cola-minimizada{
+        grid-template-columns:minmax(240px,0.8fr) minmax(420px,1.2fr);
+      }
+
+      .panel-cola{
+        grid-column:1 / -1;
+        min-height:180px;
+      }
+
+      .panel-cola .cabecera-panel{
+        padding-right:0;
+      }
+
+      .boton-minimizar-cola{
+        display:none;
+      }
+
+      .distribucion.cola-minimizada .panel-cola{
+        padding:12px;
+        border-color:#5d6971;
+        background:linear-gradient(160deg,rgba(250,253,254,0.95),rgba(159,172,180,0.94));
+        box-shadow:inset 0 1px 0 #fff,0 2px 6px rgba(24,39,47,0.28);
+      }
+
+      .distribucion.cola-minimizada .panel-cola .cabecera-panel{
+        justify-content:space-between;
+      }
+
+      .distribucion.cola-minimizada .panel-cola .cabecera-panel h2,
+      .distribucion.cola-minimizada .panel-cola .acciones-cola,
+      .distribucion.cola-minimizada .panel-cola .marco-lista{
+        opacity:1;
+        visibility:visible;
+        pointer-events:auto;
+        transform:none;
+      }
+
+      .panel-cola .marco-lista{
+        height:auto;
+        min-height:120px;
+      }
+
+      .lista-cola{
+        height:auto;
+        max-height:180px;
+      }
+    }
+
+    @media(max-width:680px){
+      body{
+        align-items:flex-start;
+        padding:14px 10px;
+      }
+
+      .reproductor{
+        padding:15px;
+        border-radius:23px;
+      }
+
+      .cabecera{
+        padding-inline:5px;
+      }
+
+      .acciones-cabecera{
+        gap:0;
+      }
+
+      .pantalla{
+        min-height:190px;
+        padding:16px 14px 14px;
+      }
+
+      .datos-superiores{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:6px;
+      }
+
+      .informacion-pista{
+        min-height:76px;
+      }
+
+      .fila-tiempo{
+        grid-template-columns:44px minmax(0,1fr) 44px;
+        gap:8px;
+      }
+
+      .panel-controles{
+        padding:18px 4px 10px;
+      }
+
+      .distribucion{
+        display:flex;
+        flex-direction:column;
+      }
+
+      .centro-reproductor{
+        order:1;
+        width:100%;
+      }
+
+      .panel-biblioteca{
+        order:2;
+        width:100%;
+      }
+
+      .panel-cola{
+        order:3;
+        width:100%;
+      }
+
+      .panel-lateral{
+        min-height:340px;
+      }
+
+      .panel-lateral .marco-lista{
+        height:286px;
+        min-height:286px;
+        flex:none;
+      }
+
+      .lista-canciones,
+      .lista-cola{
+        height:100%;
+        max-height:none;
+      }
+
+      .franja-secundaria{
+        grid-template-columns:1fr;
+        gap:18px;
+      }
+
+      .modos-reproduccion{
+        justify-content:center;
+      }
+
+      .controles-derecha{
+        grid-template-columns:minmax(0,1fr) auto;
+      }
+
+      .boton-navegacion{
+        width:50px;
+        padding:0;
+      }
+
+    }
+  </style>
+  <link rel="stylesheet" href="visualizador.css?v=4.3">
+</head>
+<body>
+  <main class="reproductor" aria-label="Reproductor ERINWAVE">
+    <header class="cabecera">
+      <div class="marca">
+        <strong>ERINWAVE</strong>
+      </div>
+      <div class="acciones-cabecera">
+        <div class="idiomas" role="group" aria-label="Idioma de la interfaz">
+          <button id="idiomaEs" class="idioma activo" type="button" aria-pressed="true">ES</button>
+          <button id="idiomaEn" class="idioma" type="button" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="distribucion cola-minimizada">
+      <aside class="panel-lateral panel-biblioteca" aria-labelledby="tituloBiblioteca">
+        <div class="cabecera-panel">
+          <h2 id="tituloBiblioteca">Biblioteca</h2>
+          <div class="acciones-biblioteca">
+            <span id="contadorBiblioteca" class="contador-panel">0</span>
+            <button id="anadirCancion" class="boton-anadir-cancion" type="button" aria-label="Añadir canción" title="Añadir canción">+</button>
+            <input id="selectorAudio" type="file" accept=".mp3,audio/mpeg" hidden>
+          </div>
+        </div>
+        <input id="busqueda" class="busqueda" type="search" placeholder="Buscar canción o artista" autocomplete="off">
+        <div class="marco-lista">
+          <ul id="listaCanciones" class="lista-canciones"></ul>
+        </div>
+      </aside>
+
+      <section class="centro-reproductor">
+        <section class="pantalla" aria-live="polite">
+          <div class="datos-superiores">
+            <span id="estado" class="estado">Buscando canciones</span>
+          </div>
+
+          <div class="informacion-pista">
+            <div id="tituloPista" class="titulo-pista"><span id="textoTituloPista" class="texto-titulo-pista">Sin canciones</span></div>
+            <div id="artistaPista" class="artista-pista">Añade archivos MP3 a la carpeta audio</div>
+          </div>
+
+          <div class="fila-tiempo">
+            <span id="tiempoActual">0:00</span>
+            <div class="progreso-con-onda">
+            <canvas id="ondaProgreso" aria-hidden="true"></canvas>
+            <input
+              id="progreso"
+              class="progreso"
+              type="range"
+              min="0"
+              max="0"
+              step="0.01"
+              value="0"
+              aria-label="Posición de reproducción"
+            >
+            </div>
+            <span id="duracion">0:00</span>
+          </div>
+          <div id="alojamientoVisualizador">
+            <section id="visualizador" class="visualizador" aria-label="Visualizador">
+              <header class="visor-cabecera">
+                <span id="nombreVisualizador">Visualizador</span>
+                <div class="visor-pista"><strong id="tituloFlotante"></strong><span id="artistaFlotante"></span></div>
+                <select id="escenaVisualizador" aria-label="Efecto visual" disabled></select>
+                <button id="siguienteEscena" class="visor-boton" type="button" aria-label="Siguiente efecto" title="Siguiente efecto" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button id="pantallaCompletaVisualizador" class="visor-boton" type="button" aria-label="Pantalla completa" title="Pantalla completa">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <button id="ventanaVisualizador" class="visor-boton" type="button" aria-label="Ventana flotante" title="Ventana flotante">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="11" y="11" width="8" height="6" rx="1" fill="currentColor"/></svg>
+                </button>
+                <button id="plegarVisualizador" class="visor-boton" type="button" aria-label="Minimizar visualizador" title="Minimizar visualizador" aria-expanded="true" aria-controls="contenidoVisualizador">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </header>
+              <div id="contenidoVisualizador" class="visor-contenido">
+              <div class="visor-interior">
+              <div id="escenarioVisualizador" class="visor-escenario">
+                <canvas id="lienzoMilkdrop" aria-hidden="true" hidden></canvas>
+              </div>
+              <div class="visor-transporte">
+                <button id="anteriorFlotante" class="visor-boton" type="button"></button>
+                <button id="reproducirFlotante" class="visor-boton visor-principal" type="button"></button>
+                <button id="siguienteFlotante" class="visor-boton" type="button"></button>
+                <label for="volumenFlotante" id="etiquetaVolumenFlotante">Volumen</label>
+                <input id="volumenFlotante" type="range" min="0" max="1" step="0.01" value="0.3">
+                <output id="valorVolumenFlotante" for="volumenFlotante">30%</output>
+              </div>
+              <p id="avisoVisualizador" class="visor-aviso" role="status" hidden></p>
+              </div>
+              </div>
+            </section>
+            <button id="recuperarVisualizador" class="visor-recuperar" type="button" hidden>Volver a traer el visualizador</button>
+          </div>
+        </section>
+
+        <section id="panelControles" class="panel-controles" aria-label="Controles del reproductor">
+          <div class="transporte">
+            <button id="anterior" class="boton boton-navegacion" type="button" aria-label="Canción anterior" title="Canción anterior">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 5h2.5v14H6zM18 5.5v13L9.5 12z" fill="currentColor"/>
+              </svg>
+            </button>
+
+            <button id="reproducir" class="boton boton-principal" type="button" aria-label="Reproducir" title="Reproducir">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5.5 18 12 8 18.5Z" fill="currentColor"/>
+              </svg>
+            </button>
+
+            <button id="siguiente" class="boton boton-navegacion" type="button" aria-label="Canción siguiente" title="Canción siguiente">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15.5 5H18v14h-2.5zM6 5.5v13l8.5-6.5z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="panelPruebaKaraoke" class="panel-prueba-karaoke oculto" aria-live="polite">
+            <div class="cabecera-prueba-karaoke">
+              <span id="tituloPruebaKaraoke">Diagnóstico temporal</span>
+              <span id="tiempoPruebaKaraoke">0:00</span>
+            </div>
+            <div class="estado-prueba-karaoke">
+              <span id="fasePruebaKaraoke" class="fase-prueba-karaoke">Preparando karaoke</span>
+              <span id="porcentajePruebaKaraoke" class="porcentaje-prueba-karaoke">0%</span>
+            </div>
+            <div id="barraPruebaKaraoke" class="barra-prueba-karaoke" aria-hidden="true">
+              <span id="progresoPruebaKaraoke" class="progreso-prueba-karaoke"></span>
+            </div>
+            <div id="detallePruebaKaraoke" class="detalle-prueba-karaoke">small · CPU</div>
+          </div>
+
+          <section id="panelKaraoke" class="panel-karaoke cerrado" aria-labelledby="tituloPanelKaraoke" aria-live="polite" aria-hidden="true">
+            <div class="cabecera-karaoke">
+              <h2 id="tituloPanelKaraoke">Karaoke</h2>
+              <span id="estadoKaraoke" class="estado-karaoke">Automático · revisar</span>
+            </div>
+            <div id="mensajeKaraoke" class="mensaje-karaoke oculto"></div>
+            <div id="letrasKaraoke" class="letras-karaoke oculto">
+              <button id="lineaAnterior" class="linea-karaoke" type="button"></button>
+              <button id="lineaActual" class="linea-karaoke actual" type="button"></button>
+              <button id="lineaSiguiente" class="linea-karaoke" type="button"></button>
+            </div>
+          </section>
+
+          <div class="franja-secundaria">
+            <div class="modos-reproduccion">
+              <button id="aleatorio" class="boton-modo" type="button" aria-pressed="false">⇄</button>
+              <button id="repetir" class="boton-modo" type="button" aria-pressed="false">↻</button>
+            </div>
+
+            <div class="controles-derecha">
+              <div class="bloque-volumen">
+                <div class="datos-volumen">
+                  <label id="etiquetaVolumen" class="etiqueta" for="volumen">Volumen</label>
+                  <span id="valorVolumen" class="valor-volumen">30%</span>
+                </div>
+                <input
+                  id="volumen"
+                  class="volumen"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value="0.3"
+                  aria-label="Volumen"
+                >
+              </div>
+
+              <button id="botonKaraoke" class="boton-karaoke" type="button" aria-label="Generar karaoke" title="Generar karaoke" aria-expanded="false" disabled>
+                <img src="iconos/microfono-blanco.png" alt="">
+                <span id="brilloKaraoke" class="brillo-karaoke" aria-hidden="true">✦</span>
+                <span id="cargaKaraoke" class="carga-karaoke oculto" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="panel-lateral panel-cola" aria-labelledby="tituloCola">
+        <div class="cabecera-panel">
+          <h2 id="tituloCola">Cola</h2>
+          <div class="acciones-cola">
+            <button id="vaciarCola" class="vaciar-cola" type="button" disabled>Vaciar</button>
+          </div>
+          <button id="botonMinimizarCola" class="boton-minimizar-cola" type="button" aria-label="Abrir cola" title="Abrir cola" aria-expanded="false" aria-controls="marcoCola">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 7h14M5 12h14M5 17h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div id="marcoCola" class="marco-lista">
+          <ol id="listaCola" class="lista-cola"></ol>
+        </div>
+      </aside>
+    </div>
+
+    <audio id="audio" class="audio-original" preload="metadata"></audio>
+
+  </main>
+
+  <script src="audio-visual.js?v=4.0"></script>
+  <script src="reproductor.js?v=4.2"></script>
+  <script src="visualizador.js?v=4.3"></script>
+</body>
+</html>

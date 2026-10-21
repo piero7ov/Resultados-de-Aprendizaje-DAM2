@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <style>
+      #subtitulos { white-space: pre-line; }
+    </style>
+  </head>
+  <body>
+    <video src="002-python-en-1-minuto.webm" controls></video>
+    <div id="subtitulos"></div>
+    <script>
+      function tiempoASegundos(tiempo){
+        let partes = tiempo.split(":")
+        let minutos = parseInt(partes[0])
+        let segundos = parseFloat(partes[1])
+
+        return minutos * 60 + segundos
+      }
+
+      let video = document.querySelector("video")
+      let origenvideo = video.getAttribute("src")
+      let nombrevideo = origenvideo.split(".")[0]
+      let nombretranscripcion = "subtitulos/" + nombrevideo + ".vtt"
+      let transcripcion = []
+      fetch(nombretranscripcion)
+      .then(function(resultado){return resultado.text()})
+      .then(function(datos){
+        let partido = datos.replace(/\r\n/g, "\n").split("\n\n")
+
+        partido.forEach(function(pieza){
+          let maspartido = pieza.split("\n")
+
+          if (maspartido[0].includes(" --> ")) {
+            let texto = maspartido.slice(1).join("\n")
+            let muchomaspartido = maspartido[0].split(" --> ")
+            let inicio = muchomaspartido[0]
+            let final = muchomaspartido[1]
+
+            transcripcion.push({"inicio":inicio,"final":final,"texto":texto})
+          }
+        })
+
+        console.log(transcripcion)
+      })
+
+      let contenedor_transcripcion = document.querySelector("#subtitulos")
+      video.ontimeupdate = function(){
+        console.log("Playing:", video.currentTime)
+        let textoActual = ""
+
+        transcripcion.forEach(function(frase){
+          if (video.currentTime >= tiempoASegundos(frase.inicio)
+              && video.currentTime < tiempoASegundos(frase.final)) {
+            textoActual = frase.texto
+          }
+        })
+
+        contenedor_transcripcion.textContent = textoActual
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+1
+00:00:00,000 --> 00:00:02,800
+¿Quieres saber por qué Python es el mejor lenguaje de programación?
+
+2
+00:00:03,280 --> 00:00:05,920
+Porque es tan fácil que hasta una tortuga puede hacerlo.
+
+3
+00:00:06,320 --> 00:00:08,440
+Code, code, code, code, code.
+
+4
+00:00:08,760 --> 00:00:10,480
+¿Quieres imprimir hola mundo en Python?
+
+5
+00:00:10,560 --> 00:00:13,400
+¿Es tan fácil como decir cheese para una foto?
+
+6
+00:00:13,720 --> 00:00:14,480
+¡Toma!
+
+7
+00:00:14,840 --> 00:00:16,400
+¿Quieres sumar dos números en Python?
+
+8
+00:00:16,720 --> 00:00:18,680
+Es más fácil que contar tus dedos.
+
+9
+00:00:19,800 --> 00:00:21,800
+Uno, dos, listo.
+
+10
+00:00:22,040 --> 00:00:23,840
+¿Y eso es todo? Fácil, ¿no?
+
+11
+00:00:23,920 --> 00:00:26,480
+¿Quieres hacer una lista de tus comidas favoritas en Python?
+
+12
+00:00:26,560 --> 00:00:28,720
+Es más fácil que decidir qué comer para cenar.
+
+13
+00:00:29,240 --> 00:00:32,280
+Pizza, spaghetti, hamburguesa, listo.
+
+14
+00:00:32,600 --> 00:00:34,600
+¿Y eso es todo? Fácil, ¿verdad?
+

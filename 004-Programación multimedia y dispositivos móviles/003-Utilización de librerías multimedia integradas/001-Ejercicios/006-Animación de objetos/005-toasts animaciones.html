@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body{
+      font-family:Arial,sans-serif;
+      padding:30px;
+      background:#ffffff;
+    }
+
+    button{
+      padding:12px 18px;
+      border:0;
+      border-radius:6px;
+      background:#ddd6fe;
+      color:#312e41;
+      cursor:pointer;
+      font-size:16px;
+    }
+
+    #toast{
+      position:fixed;
+      right:30px;
+      bottom:30px;
+      display:none;
+      align-items:center;
+      gap:20px;
+      width:420px;
+      padding:28px;
+      border-left:8px solid #a78bfa;
+      border-radius:12px;
+      background:#f3e8ff;
+      color:#312e41;
+      box-shadow:0 8px 24px #0002;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    #toast.visible{
+      display:flex;
+      animation:aviso 1.2s ease both;
+    }
+
+    #toast.ocultando{
+      display:flex;
+      animation:desvanecer .5s ease forwards;
+    }
+
+    #cerrar{
+      padding:4px 8px;
+      background:#fee2e2;
+      color:#7f1d1d;
+      font-size:24px;
+    }
+
+    @keyframes aviso{
+      0%{transform:translateX(120%);background:#f3e8ff;color:#312e41;}
+      40%{transform:translateX(0);background:#fecaca;color:#7f1d1d;}
+      55%{transform:translateX(-8px) rotate(-2deg);background:#ef4444;color:white;}
+      65%{transform:translateX(8px) rotate(2deg);}
+      75%{transform:translateX(-6px) rotate(-1deg);}
+      85%{transform:translateX(6px) rotate(1deg);}
+      100%{transform:translateX(0) rotate(0);background:#dc2626;color:white;}
+    }
+
+    @keyframes desvanecer{
+      from{opacity:1;}
+      to{opacity:0;}
+    }
+  </style>
+</head>
+<body>
+  <button id="mostrar">Mostrar alerta</button>
+
+  <div id="toast" role="alert" aria-live="assertive">
+    <span>¡Atención! Revisa este aviso.</span>
+    <button id="cerrar" aria-label="Cerrar toast">×</button>
+  </div>
+
+  <script>
+    const toast = document.getElementById("toast");
+    const mostrar = document.getElementById("mostrar");
+    const cerrar = document.getElementById("cerrar");
+    let temporizador;
+
+    function ocultarToast(){
+      toast.classList.add("ocultando");
+      toast.classList.remove("visible");
+    }
+
+    toast.addEventListener("animationend", function(event){
+      if(event.animationName === "desvanecer"){
+        toast.classList.remove("ocultando");
+      }
+    });
+
+    mostrar.addEventListener("click", function(){
+      clearTimeout(temporizador);
+      toast.classList.remove("ocultando");
+      toast.classList.add("visible");
+      temporizador = setTimeout(function(){
+        ocultarToast();
+      }, 4000);
+    });
+
+    cerrar.addEventListener("click", function(){
+      clearTimeout(temporizador);
+      ocultarToast();
+    });
+  </script>
+</body>
+</html>

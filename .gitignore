@@ -8,5 +8,8 @@ agents.md
 !.env.example
 !.env.sample
 
+# Entorno local de Python y modelos de Whisper
+/.runtime/
+
 # Agenda ficticia para las pruebas de acceso a ficheros
 /001-Acceso a datos/001-Manejo de ficheros/004-Operaciones sobre ficheros secuenciales y aleatorios/empresa/clientes_pierodev.csv
