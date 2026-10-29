@@ -1,0 +1,8 @@
+PK,id
+FK,empresa_id,empresas,id
+FK,cliente_id,clientes,id
+NN,empresa_id
+NN,cliente_id
+NN,fecha
+NN,estado
+NN,total

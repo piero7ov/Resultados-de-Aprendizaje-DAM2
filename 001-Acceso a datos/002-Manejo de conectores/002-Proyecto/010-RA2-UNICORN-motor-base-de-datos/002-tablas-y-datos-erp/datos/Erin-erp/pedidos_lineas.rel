@@ -1,0 +1,7 @@
+PK,id
+FK,pedido_id,pedidos,id
+FK,producto_id,productos,id
+NN,pedido_id
+NN,producto_id
+NN,cantidad
+NN,precio

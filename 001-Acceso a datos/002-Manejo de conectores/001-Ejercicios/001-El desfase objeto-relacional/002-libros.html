@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Libros</title>
+  </head>
+  <body>
+    <h1>Libros</h1>
+    <canvas id="estanteria" width="512" height="250">Tu navegador no admite canvas.</canvas>
+
+    <script>
+      const lienzo = document.querySelector("#estanteria")
+      const contexto = lienzo.getContext("2d")
+
+      class Libro{
+        constructor(titulo, autor){
+          this.titulo = titulo
+          this.autor = autor
+        }
+        dibuja(x, color){
+          contexto.fillStyle = color
+          contexto.fillRect(x, 30, 144, 190)
+
+          contexto.fillStyle = "white"
+          contexto.font = "bold 14px Arial"
+          contexto.fillText(this.titulo, x + 10, 105, 124)
+          contexto.font = "12px Arial"
+          contexto.fillText(this.autor, x + 10, 135, 124)
+        }
+      }
+
+      const libros = [
+        new Libro("El bosque de papel", "Marina Valdovinos"),
+        new Libro("Viaje a la luna azul", "Tomás Arce Belmonte"),
+        new Libro("Python entre páginas", "Alicia Vilar Castaño")
+      ]
+
+      const colores = ["#315c72", "#80505a", "#557451"]
+
+      for(let i = 0;i<libros.length;i++){
+        libros[i].dibuja(24 + i * 164, colores[i])
+      }
+    </script>
+  </body>
+</html>

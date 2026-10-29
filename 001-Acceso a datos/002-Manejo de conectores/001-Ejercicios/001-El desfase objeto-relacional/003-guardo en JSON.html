@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Guardo libros en JSON</title>
+    <style>
+      body{
+        max-width: 650px;
+        margin: 30px auto;
+        padding: 0 20px;
+        color: #263238;
+        font-family: Arial, sans-serif;
+      }
+      canvas{
+        display: block;
+        width: 100%;
+        max-width: 512px;
+        height: auto;
+        border: 1px solid #d8cdbb;
+        background: #fffaf0;
+      }
+      li{ margin: 8px 0; }
+    </style>
+  </head>
+  <body>
+    <h1>Libros</h1>
+    <canvas id="estanteria" width="512" height="280">Tu navegador no admite canvas.</canvas>
+    <ul id="lista-libros"></ul>
+
+    <script>
+      const lienzo = document.querySelector("#estanteria")
+      const contexto = lienzo.getContext("2d")
+
+      class Libro{
+        constructor(titulo, autor){
+          this.titulo = titulo
+          this.autor = autor
+        }
+        dibuja(x, color){
+          contexto.fillStyle = color
+          contexto.fillRect(x, 25, 144, 205)
+
+          contexto.fillStyle = "rgba(0,0,0,0.18)"
+          contexto.fillRect(x, 25, 14, 205)
+
+          contexto.strokeStyle = "rgba(255,255,255,0.65)"
+          contexto.lineWidth = 2
+          contexto.strokeRect(x + 8, 33, 128, 189)
+
+          contexto.fillStyle = "#fffaf0"
+          contexto.textAlign = "center"
+          contexto.font = "bold 14px Arial"
+          contexto.fillText(this.titulo, x + 82, 105, 110)
+          contexto.font = "12px Arial"
+          contexto.fillText(this.autor, x + 82, 140, 110)
+        }
+      }
+
+      const libros = [
+        new Libro("El bosque de papel", "Marina Valdovinos"),
+        new Libro("Viaje a la luna azul", "Tomás Arce Belmonte"),
+        new Libro("Python entre páginas", "Alicia Vilar Castaño")
+      ]
+
+      contexto.fillStyle = "#b98758"
+      contexto.fillRect(10, 235, 492, 18)
+      contexto.fillStyle = "#93663f"
+      contexto.fillRect(10, 253, 492, 8)
+
+      const colores = ["#315c72", "#80505a", "#557451"]
+      const lista = document.querySelector("#lista-libros")
+
+      for(let i = 0;i<libros.length;i++){
+        libros[i].dibuja(24 + i * 164, colores[i])
+        const elemento = document.createElement("li")
+        elemento.textContent = libros[i].titulo + " — " + libros[i].autor
+        lista.append(elemento)
+      }
+
+      fetch("003-guarda libros.php",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(libros)
+      })
+        .then(respuesta => respuesta.text())
+        .then(mensaje => console.log(mensaje))
+    </script>
+  </body>
+</html>

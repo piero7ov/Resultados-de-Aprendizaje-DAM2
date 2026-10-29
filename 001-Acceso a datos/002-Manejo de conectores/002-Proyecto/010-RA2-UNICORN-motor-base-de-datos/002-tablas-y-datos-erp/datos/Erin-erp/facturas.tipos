@@ -1,0 +1,8 @@
+id,ENTERO
+activo,BOOLEANO
+empresa_id,ENTERO
+cliente_id,ENTERO
+pedido_id,ENTERO
+numero,TEXTO
+fecha,FECHA
+total,DECIMAL

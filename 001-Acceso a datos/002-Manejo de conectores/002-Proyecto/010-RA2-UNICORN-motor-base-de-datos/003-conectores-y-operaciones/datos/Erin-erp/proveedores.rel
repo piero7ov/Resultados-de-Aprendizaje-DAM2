@@ -1,0 +1,6 @@
+PK,id
+FK,empresa_id,empresas,id
+NN,empresa_id
+NN,nombre
+NN,email
+UQ,email

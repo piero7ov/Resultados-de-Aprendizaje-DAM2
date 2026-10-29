@@ -1,0 +1,11 @@
+PK,id
+FK,empresa_id,empresas,id
+FK,cliente_id,clientes,id
+FK,pedido_id,pedidos,id
+NN,empresa_id
+NN,cliente_id
+NN,pedido_id
+NN,numero
+NN,fecha
+NN,total
+UQ,numero

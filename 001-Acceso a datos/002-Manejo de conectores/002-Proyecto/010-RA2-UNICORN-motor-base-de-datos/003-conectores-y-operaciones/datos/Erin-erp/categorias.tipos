@@ -1,0 +1,4 @@
+id,ENTERO
+activo,BOOLEANO
+empresa_id,ENTERO
+nombre,TEXTO

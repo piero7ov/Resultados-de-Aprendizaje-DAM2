@@ -1,0 +1,6 @@
+id,ENTERO
+activo,BOOLEANO
+compra_id,ENTERO
+producto_id,ENTERO
+cantidad,ENTERO
+precio,DECIMAL

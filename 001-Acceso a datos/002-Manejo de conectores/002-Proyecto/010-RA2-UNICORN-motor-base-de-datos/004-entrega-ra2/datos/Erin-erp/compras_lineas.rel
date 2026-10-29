@@ -1,0 +1,7 @@
+PK,id
+FK,compra_id,compras,id
+FK,producto_id,productos,id
+NN,compra_id
+NN,producto_id
+NN,cantidad
+NN,precio

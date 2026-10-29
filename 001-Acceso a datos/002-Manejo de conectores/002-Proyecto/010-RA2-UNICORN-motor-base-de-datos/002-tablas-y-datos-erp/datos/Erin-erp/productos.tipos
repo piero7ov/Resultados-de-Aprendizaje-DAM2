@@ -1,0 +1,8 @@
+id,ENTERO
+activo,BOOLEANO
+empresa_id,ENTERO
+categoria_id,ENTERO
+codigo,TEXTO
+nombre,TEXTO
+precio,DECIMAL
+stock,ENTERO

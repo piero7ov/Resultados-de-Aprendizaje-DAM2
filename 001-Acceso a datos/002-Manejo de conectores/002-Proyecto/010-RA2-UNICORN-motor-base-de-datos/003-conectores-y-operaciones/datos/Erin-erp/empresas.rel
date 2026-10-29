@@ -1,0 +1,4 @@
+PK,id
+NN,nombre
+NN,cif
+UQ,cif

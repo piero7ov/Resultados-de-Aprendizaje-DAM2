@@ -1,0 +1,4 @@
+id,ENTERO
+activo,BOOLEANO
+nombre,TEXTO
+cif,TEXTO

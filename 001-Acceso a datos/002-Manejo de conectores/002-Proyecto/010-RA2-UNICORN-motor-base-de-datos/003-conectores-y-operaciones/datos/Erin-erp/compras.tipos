@@ -1,0 +1,6 @@
+id,ENTERO
+activo,BOOLEANO
+empresa_id,ENTERO
+proveedor_id,ENTERO
+fecha,FECHA
+total,DECIMAL

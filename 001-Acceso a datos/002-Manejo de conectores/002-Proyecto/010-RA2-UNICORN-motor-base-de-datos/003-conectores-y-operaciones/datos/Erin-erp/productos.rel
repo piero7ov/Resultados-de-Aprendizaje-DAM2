@@ -1,0 +1,10 @@
+PK,id
+FK,empresa_id,empresas,id
+FK,categoria_id,categorias,id
+NN,empresa_id
+NN,categoria_id
+NN,codigo
+NN,nombre
+NN,precio
+NN,stock
+UQ,codigo

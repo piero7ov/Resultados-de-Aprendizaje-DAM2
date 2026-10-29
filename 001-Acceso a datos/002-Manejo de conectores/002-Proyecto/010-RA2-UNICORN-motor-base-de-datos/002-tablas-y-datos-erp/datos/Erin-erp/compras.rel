@@ -1,0 +1,7 @@
+PK,id
+FK,empresa_id,empresas,id
+FK,proveedor_id,proveedores,id
+NN,empresa_id
+NN,proveedor_id
+NN,fecha
+NN,total
