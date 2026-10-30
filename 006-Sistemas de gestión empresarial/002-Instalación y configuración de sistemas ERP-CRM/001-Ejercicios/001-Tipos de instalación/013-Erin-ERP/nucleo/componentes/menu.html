@@ -1,0 +1,142 @@
+<p class="titulo-menu">ÁREAS DE GESTIÓN</p>
+<script>
+  let menu = document.querySelector("nav");
+  let principal = document.querySelector("main");
+
+  function mostrarError(mensaje){
+    principal.innerHTML = "";
+
+    let listado = document.createElement("div");
+    listado.setAttribute("class", "listado");
+
+    let cabecera = document.createElement("div");
+    cabecera.setAttribute("class", "cabecera-listado");
+
+    let titulo = document.createElement("h1");
+    titulo.textContent = "No se puede cargar la información";
+
+    let texto = document.createElement("p");
+    texto.textContent = mensaje;
+    texto.style.padding = "0 12px 12px";
+
+    cabecera.appendChild(titulo);
+    listado.appendChild(cabecera);
+    listado.appendChild(texto);
+    principal.appendChild(listado);
+  }
+
+  function cargarTabla(nombreTabla, enlace){
+    fetch("api/api.php?bloque=tabla&tabla=" + encodeURIComponent(nombreTabla))
+    .then(function(retorno){
+      return retorno.json().then(function(datos){
+        if(!retorno.ok){
+          throw new Error(datos.debug || datos.error || "Error al consultar la tabla");
+        }
+
+        return datos;
+      });
+    })
+    .then(function(datos){
+      principal.innerHTML = "";
+
+      document.querySelectorAll("nav a").forEach(function(elemento){
+        elemento.classList.remove("activo");
+        elemento.removeAttribute("aria-current");
+      });
+
+      enlace.classList.add("activo");
+      enlace.setAttribute("aria-current", "page");
+
+      let listado = document.createElement("div");
+      listado.setAttribute("class", "listado");
+
+      let cabeceraListado = document.createElement("div");
+      cabeceraListado.setAttribute("class", "cabecera-listado");
+
+      let titulo = document.createElement("h1");
+      titulo.textContent = datos.tabla;
+
+      let recuento = document.createElement("span");
+      recuento.setAttribute("class", "recuento");
+      recuento.textContent = datos.contenido.length + " registros";
+
+      cabeceraListado.appendChild(titulo);
+      cabeceraListado.appendChild(recuento);
+      listado.appendChild(cabeceraListado);
+
+      let contenedorTabla = document.createElement("div");
+      contenedorTabla.setAttribute("class", "tabla-contenedor");
+
+      let tabla = document.createElement("table");
+      let cabecera = document.createElement("thead");
+      let filaCabecera = document.createElement("tr");
+
+      datos.estructura.forEach(function(campo){
+        let th = document.createElement("th");
+        th.textContent = campo.name;
+        filaCabecera.appendChild(th);
+      });
+
+      cabecera.appendChild(filaCabecera);
+      tabla.appendChild(cabecera);
+
+      let cuerpo = document.createElement("tbody");
+
+      datos.contenido.forEach(function(registro){
+        let fila = document.createElement("tr");
+
+        datos.estructura.forEach(function(campo){
+          let celda = document.createElement("td");
+          celda.textContent = registro[campo.name] ?? "";
+          fila.appendChild(celda);
+        });
+
+        cuerpo.appendChild(fila);
+      });
+
+      tabla.appendChild(cuerpo);
+      contenedorTabla.appendChild(tabla);
+      listado.appendChild(contenedorTabla);
+      principal.appendChild(listado);
+    })
+    .catch(function(error){
+      mostrarError(error.message);
+    });
+  }
+
+  fetch("api/api.php?bloque=menu")
+  .then(function(retorno){
+    return retorno.json().then(function(datos){
+      if(!retorno.ok){
+        throw new Error(datos.debug || datos.error || "Error al cargar el menú");
+      }
+
+      return datos;
+    });
+  })
+  .then(function(datos){
+    datos.forEach(function(dato, indice){
+      let enlace = document.createElement("a");
+      enlace.setAttribute("href", "#");
+      enlace.textContent = dato;
+
+      enlace.onclick = function(evento){
+        evento.preventDefault();
+        cargarTabla(dato, enlace);
+      };
+
+      menu.appendChild(enlace);
+
+      if(indice == 0 && principal.dataset.vista == "tablas"){
+        cargarTabla(dato, enlace);
+      }
+    });
+
+    if(datos.length == 0){
+      mostrarError("La base de datos no contiene tablas.");
+    }
+  })
+  .catch(function(error){
+    mostrarError(error.message);
+  });
+</script>

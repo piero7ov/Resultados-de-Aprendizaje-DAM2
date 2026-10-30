@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acceso · ERIN ERP</title>
+  <link rel="stylesheet" href="nucleo/estilo/general.css">
+  <style>body{min-height:100vh;display:grid;place-items:center;background:#fffaf2}main{width:min(420px,90vw);padding:32px;background:white;border:1px solid #ddd0bf}label,input,button{display:block;width:100%;margin:12px 0}input{padding:12px}button{padding:12px;background:#bd573e;color:white;border:0;cursor:pointer}.error{color:#a21d1d}</style>
+</head>
+<body>
+  <main>
+    <h1>ERIN ERP</h1>
+    <h2>Iniciar sesión</h2>
+    <form id="acceso">
+      <label>Usuario<input name="usuario" autocomplete="username" required></label>
+      <label>Contraseña<input name="clave" type="password" autocomplete="current-password" required></label>
+      <button>Entrar</button>
+      <p id="mensaje" class="error" role="alert"></p>
+    </form>
+  </main>
+  <script>
+    fetch('api/acceso.php').then(r=>r.json()).then(datos=>{
+      if(!datos.instalado){ location.replace('instalacion/instalar.php'); }
+      else if(datos.usuario){ location.replace('index.html'); }
+    });
+    document.querySelector('#acceso').addEventListener('submit', async function(evento){
+      evento.preventDefault();
+      let respuesta = await fetch('api/acceso.php', {method:'POST',body:new URLSearchParams(new FormData(this)).toString() + '&accion=entrar',headers:{'Content-Type':'application/x-www-form-urlencoded'}});
+      let datos = await respuesta.json();
+      if(respuesta.ok){ location.replace('index.html'); }
+      else{ document.querySelector('#mensaje').textContent = datos.error || 'No se ha podido iniciar sesión'; }
+    });
+  </script>
+</body>
+</html>

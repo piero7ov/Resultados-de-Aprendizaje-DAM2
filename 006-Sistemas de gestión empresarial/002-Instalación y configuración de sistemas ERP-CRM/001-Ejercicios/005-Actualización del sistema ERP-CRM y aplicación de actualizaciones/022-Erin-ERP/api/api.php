@@ -1,0 +1,462 @@
+<?php
+header("Content-Type: application/json; charset=utf-8");
+require_once dirname(__DIR__) . '/nucleo/autenticacion.php';
+
+function identificador($texto){
+	return '"' . str_replace('"', '""', $texto) . '"';
+}
+
+function responder($datos, $codigo = 200){
+	http_response_code($codigo);
+	echo json_encode($datos, JSON_UNESCAPED_UNICODE);
+}
+
+function validarTabla($db, $tabla){
+	if($tabla == ""){
+		throw new Exception("No se ha indicado ninguna tabla");
+	}
+
+	$consulta = $db->prepare("
+		SELECT name
+		FROM sqlite_master
+		WHERE type = 'table'
+		AND name = :tabla
+		AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'erin_%'
+	");
+	$consulta->execute([
+		":tabla" => $tabla
+	]);
+
+	if(!$consulta->fetchColumn()){
+		throw new Exception("La tabla '" . $tabla . "' no existe");
+	}
+}
+
+function estructuraTabla($db, $tabla){
+	$estructura = $db->query(
+		"PRAGMA table_info(" . identificador($tabla) . ")"
+	)->fetchAll(PDO::FETCH_ASSOC);
+	$foraneas = $db->query(
+		"PRAGMA foreign_key_list(" . identificador($tabla) . ")"
+	)->fetchAll(PDO::FETCH_ASSOC);
+	$mapaForaneas = [];
+
+	foreach($foraneas as $foranea){
+		$mapaForaneas[$foranea["from"]] = [
+			"tabla" => $foranea["table"],
+			"campo" => $foranea["to"]
+		];
+	}
+
+	foreach($estructura as &$campo){
+		$campo["fk"] = $mapaForaneas[$campo["name"]] ?? null;
+	}
+
+	return $estructura;
+}
+
+function camposEditables($estructura){
+	return array_values(array_filter(
+		$estructura,
+		function($campo){
+			return $campo["name"] != "Identificador";
+		}
+	));
+}
+
+function validarIdentificador($identificador){
+	if(!ctype_digit((string)$identificador) || (int)$identificador < 1){
+		throw new Exception("El Identificador no es válido");
+	}
+
+	return (int)$identificador;
+}
+
+function exigirPost(){
+	if(($_SERVER["REQUEST_METHOD"] ?? "GET") != "POST"){
+		throw new Exception("La operación debe enviarse mediante POST");
+	}
+}
+
+function obtenerRegistro($db, $tabla, $identificadorRegistro){
+	$consulta = $db->prepare(
+		"SELECT * FROM " . identificador($tabla) .
+		" WHERE " . identificador("Identificador") . " = :identificador"
+	);
+	$consulta->execute([
+		":identificador" => $identificadorRegistro
+	]);
+	$registro = $consulta->fetch(PDO::FETCH_ASSOC);
+
+	if(!$registro){
+		throw new Exception("El registro solicitado no existe");
+	}
+
+	return $registro;
+}
+
+function describirRegistro($registro){
+	$identificadorRegistro = $registro["Identificador"];
+	$preferidos = [
+		"nombre",
+		"apellidos",
+		"email",
+		"numero",
+		"fecha",
+		"estado",
+		"descripcion",
+		"precio",
+		"puesto",
+		"ciudad"
+	];
+	$valores = [];
+
+	foreach($preferidos as $preferido){
+		foreach($registro as $campo => $valor){
+			if(
+				strtolower($campo) == $preferido &&
+				$valor !== null &&
+				$valor !== "" &&
+				!in_array((string)$valor, $valores, true)
+			){
+				$valores[] = (string)$valor;
+				break;
+			}
+		}
+
+		if(count($valores) == 3){
+			break;
+		}
+	}
+
+	if(count($valores) == 0){
+		foreach($registro as $campo => $valor){
+			if($campo != "Identificador" && $valor !== null && $valor !== ""){
+				$valores[] = (string)$valor;
+			}
+
+			if(count($valores) == 3){
+				break;
+			}
+		}
+	}
+
+	if(count($valores) == 0){
+		$valores[] = "Registro";
+	}
+
+	return implode(" · ", $valores) . " · #" . $identificadorRegistro;
+}
+
+function opcionesRelacion($db, $tabla){
+	validarTabla($db, $tabla);
+	$registros = $db->query(
+		"SELECT * FROM " . identificador($tabla) .
+		" ORDER BY " . identificador("Identificador")
+	)->fetchAll(PDO::FETCH_ASSOC);
+	$opciones = [];
+
+	foreach($registros as $registro){
+		$opciones[] = [
+			"identificador" => (int)$registro["Identificador"],
+			"descripcion" => describirRegistro($registro)
+		];
+	}
+
+	return $opciones;
+}
+
+function tablasModulo($db, $modulo){
+	if(!preg_match('/^[a-z0-9_-]+$/', $modulo)){
+		throw new Exception("El módulo indicado no es válido");
+	}
+
+	$ruta = dirname(__DIR__) . "/modulos/" . $modulo;
+	if(!is_dir($ruta)){
+		throw new Exception("El módulo '" . $modulo . "' no existe");
+	}
+
+	$archivo = $ruta . "/carpetas.json";
+	if(!file_exists($archivo)){
+		return [];
+	}
+
+	$configuracion = json_decode(file_get_contents($archivo), true);
+	if(
+		!is_array($configuracion) ||
+		($configuracion["modulo"] ?? null) !== $modulo ||
+		!isset($configuracion["tablas"]) ||
+		!is_array($configuracion["tablas"])
+	){
+		throw new Exception("La configuración de '" . $modulo . "' no es válida");
+	}
+	if(($configuracion["activo"] ?? true) === false){
+		return [];
+	}
+
+	$existentes = $db->query("
+		SELECT name FROM sqlite_master
+		WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'erin_%'
+	")->fetchAll(PDO::FETCH_COLUMN);
+	$tablas = [];
+
+	foreach($configuracion["tablas"] as $tabla){
+		if(!is_string($tabla)){
+			throw new Exception("La configuración de '" . $modulo . "' contiene una tabla no válida");
+		}
+
+		if(in_array($tabla, $existentes, true) && !in_array($tabla, $tablas, true)){
+			$tablas[] = $tabla;
+		}
+	}
+
+	return $tablas;
+}
+
+function moduloActivo($nombre){
+	$archivo = dirname(__DIR__) . "/modulos/" . $nombre . "/carpetas.json";
+	if(!file_exists($archivo)){
+		return true;
+	}
+	$datos = json_decode(file_get_contents($archivo), true);
+	return ($datos["activo"] ?? true) !== false;
+}
+
+function permisosTabla($db, $usuario, $tabla){
+  $resultado = ['ver'=>0, 'insertar'=>0, 'actualizar'=>0, 'eliminar'=>0];
+  foreach(scandir(dirname(__DIR__) . '/modulos') as $modulo){
+    if($modulo === '.' || $modulo === '..' || !is_dir(dirname(__DIR__) . '/modulos/' . $modulo)){ continue; }
+    if(in_array($tabla, tablasModulo($db, $modulo), true)){
+      $permisos = permisosModulo($db, $usuario, $modulo);
+      foreach($resultado as $accion => $valor){ $resultado[$accion] = $valor || ($permisos['ver'] && $permisos[$accion]); }
+    }
+  }
+  return $resultado;
+}
+
+$bloque = $_GET["bloque"] ?? "";
+
+try{
+	$baseDatos = dirname(__DIR__) . "/data/erin.sqlite";
+	$instalado = file_exists($baseDatos);
+
+	if($bloque == "estado"){
+		responder([
+			"instalado" => $instalado
+		]);
+		return;
+	}
+
+	if(!$instalado){
+		throw new Exception("No existe la base de datos SQLite");
+	}
+
+	$db = new PDO("sqlite:" . $baseDatos);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	$db->exec("PRAGMA foreign_keys = ON");
+	$usuario = exigirUsuario($db);
+
+	$tabla = $_GET["tabla"] ?? "";
+
+	switch($bloque){
+		case "modulos":
+			$rutaModulos = dirname(__DIR__) . "/modulos";
+			$modulos = [];
+
+			foreach(scandir($rutaModulos) as $nombre){
+				if($nombre != "." && $nombre != ".." && is_dir($rutaModulos . "/" . $nombre) && moduloActivo($nombre) && permisosModulo($db, $usuario, $nombre)['ver']){
+					$modulos[] = $nombre;
+				}
+			}
+
+			if($tabla != ""){
+				validarTabla($db, $tabla);
+				$prioritarios = [];
+				$resto = [];
+
+				foreach($modulos as $nombre){
+					if(in_array($tabla, tablasModulo($db, $nombre), true)){
+						$prioritarios[] = $nombre;
+					}else{
+						$resto[] = $nombre;
+					}
+				}
+
+				$modulos = array_merge($prioritarios, $resto);
+			}
+
+			responder($modulos);
+			break;
+
+		case "menu":
+			$modulo = $_GET["modulo"] ?? "";
+			if($modulo === ''){ responder([]); break; }
+			if(!permisosModulo($db, $usuario, $modulo)['ver']){ http_response_code(403); throw new Exception('No tienes acceso al módulo'); }
+			responder($modulo == "" ? [] : tablasModulo($db, $modulo));
+			break;
+
+		case "tabla":
+			validarTabla($db, $tabla);
+			if(!permisoTabla($db, $usuario, $tabla, 'ver', 'tablasModulo')){ http_response_code(403); throw new Exception('Sin permiso de lectura'); }
+			$estructura = estructuraTabla($db, $tabla);
+			$contenido = $db->query(
+				"SELECT * FROM " . identificador($tabla) .
+				" ORDER BY " . identificador("Identificador") . " DESC"
+			)->fetchAll(PDO::FETCH_ASSOC);
+
+			responder([
+				"tabla" => $tabla,
+				"estructura" => $estructura,
+				"contenido" => $contenido
+				,"permisos" => permisosTabla($db, $usuario, $tabla)
+			]);
+			break;
+
+		case "registro":
+			validarTabla($db, $tabla);
+			if(!permisoTabla($db, $usuario, $tabla, 'actualizar', 'tablasModulo')){ http_response_code(403); throw new Exception('Sin permiso para actualizar'); }
+			$identificadorRegistro = validarIdentificador(
+				$_GET["identificador"] ?? ""
+			);
+
+			responder([
+				"tabla" => $tabla,
+				"estructura" => estructuraTabla($db, $tabla),
+				"registro" => obtenerRegistro($db, $tabla, $identificadorRegistro)
+			]);
+			break;
+
+		case "opciones":
+			$origen = $_GET['origen'] ?? '';
+			if(!permisoTabla($db, $usuario, $origen, 'ver', 'tablasModulo')){ http_response_code(403); throw new Exception('Sin permiso de lectura'); }
+			validarTabla($db, $origen);
+			$relacionValida = false;
+			foreach(estructuraTabla($db, $origen) as $campo){
+				if(($campo['fk']['tabla'] ?? null) === $tabla){ $relacionValida = true; break; }
+			}
+			if(!$relacionValida){ http_response_code(403); throw new Exception('La tabla no es una relación del módulo visible'); }
+			responder([
+				"tabla" => $tabla,
+				"opciones" => opcionesRelacion($db, $tabla)
+			]);
+			break;
+
+		case "insertar":
+			exigirPost();
+			validarTabla($db, $tabla);
+			if(!permisoTabla($db, $usuario, $tabla, 'insertar', 'tablasModulo')){ http_response_code(403); throw new Exception('Sin permiso para insertar'); }
+			$campos = camposEditables(estructuraTabla($db, $tabla));
+			$nombres = [];
+			$marcadores = [];
+			$valores = [];
+
+			foreach($campos as $indice => $campo){
+				$nombres[] = identificador($campo["name"]);
+				$marcador = ":campo" . $indice;
+				$marcadores[] = $marcador;
+				$valor = $_POST[$campo["name"]] ?? null;
+				$valores[$marcador] = $valor === "" ? null : $valor;
+			}
+
+			if(count($nombres) == 0){
+				throw new Exception("La tabla no contiene campos editables");
+			}
+
+			$consulta = $db->prepare(
+				"INSERT INTO " . identificador($tabla) .
+				" (" . implode(", ", $nombres) . ")" .
+				" VALUES (" . implode(", ", $marcadores) . ")"
+			);
+			$consulta->execute($valores);
+
+			responder([
+				"correcto" => true,
+				"mensaje" => "Registro insertado correctamente",
+				"identificador" => (int)$db->lastInsertId()
+			], 201);
+			break;
+
+		case "actualizar":
+			exigirPost();
+			validarTabla($db, $tabla);
+			if(!permisoTabla($db, $usuario, $tabla, 'actualizar', 'tablasModulo')){ http_response_code(403); throw new Exception('Sin permiso para actualizar'); }
+			$identificadorRegistro = validarIdentificador(
+				$_GET["identificador"] ?? ""
+			);
+			obtenerRegistro($db, $tabla, $identificadorRegistro);
+			$campos = camposEditables(estructuraTabla($db, $tabla));
+			$asignaciones = [];
+			$valores = [
+				":identificador" => $identificadorRegistro
+			];
+
+			foreach($campos as $indice => $campo){
+				$marcador = ":campo" . $indice;
+				$asignaciones[] = identificador($campo["name"]) . " = " . $marcador;
+				$valor = $_POST[$campo["name"]] ?? null;
+				$valores[$marcador] = $valor === "" ? null : $valor;
+			}
+
+			if(count($asignaciones) == 0){
+				throw new Exception("La tabla no contiene campos editables");
+			}
+
+			$consulta = $db->prepare(
+				"UPDATE " . identificador($tabla) .
+				" SET " . implode(", ", $asignaciones) .
+				" WHERE " . identificador("Identificador") . " = :identificador"
+			);
+			$consulta->execute($valores);
+
+			responder([
+				"correcto" => true,
+				"mensaje" => "Registro actualizado correctamente"
+			]);
+			break;
+
+		case "eliminar":
+			exigirPost();
+			validarTabla($db, $tabla);
+			if(!permisoTabla($db, $usuario, $tabla, 'eliminar', 'tablasModulo')){ http_response_code(403); throw new Exception('Sin permiso para eliminar'); }
+			$identificadorRegistro = validarIdentificador(
+				$_GET["identificador"] ?? ""
+			);
+			obtenerRegistro($db, $tabla, $identificadorRegistro);
+
+			$consulta = $db->prepare(
+				"DELETE FROM " . identificador($tabla) .
+				" WHERE " . identificador("Identificador") . " = :identificador"
+			);
+			$consulta->execute([
+				":identificador" => $identificadorRegistro
+			]);
+
+			responder([
+				"correcto" => true,
+				"mensaje" => "Registro eliminado correctamente"
+			]);
+			break;
+
+		default:
+			responder([
+				"error" => "Bloque no válido"
+			], 400);
+	}
+
+}catch(Throwable $error){
+	$mensaje = $error->getMessage();
+
+	if($error instanceof PDOException && str_contains($mensaje, "FOREIGN KEY constraint failed")){
+		if($bloque == "eliminar"){
+			$mensaje = "No se puede eliminar el registro porque está relacionado con otros datos.";
+		}else{
+			$mensaje = "La relación seleccionada no existe o ya no está disponible.";
+		}
+	}
+
+	responder([
+		"error" => "Se ha producido un error",
+		"debug" => $mensaje
+	], http_response_code() >= 400 ? http_response_code() : 500);
+}
+?>

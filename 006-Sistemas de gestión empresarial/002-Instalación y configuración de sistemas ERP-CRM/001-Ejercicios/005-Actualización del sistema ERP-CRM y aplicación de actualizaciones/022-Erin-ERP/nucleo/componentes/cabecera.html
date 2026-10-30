@@ -1,0 +1,62 @@
+<div class="marca">
+  <a class="logotipo" href="index.html" aria-label="ERIN, inicio">ER<span class="letra-i">I</span>N</a>
+  <small>Ecosistema de Recursos,<br>Información y Negocio</small>
+</div>
+
+<div class="herramientas">
+  <label for="buscar">Buscar</label>
+  <input class="buscador" id="buscar" type="search" placeholder="Buscar en ERIN…" disabled>
+</div>
+
+<div class="usuario">
+  <div class="avatar" aria-hidden="true"></div>
+  <div class="datos-usuario">
+    <p id="nombre-usuario">Usuario</p>
+    <div class="enlaces-usuario">
+      <a href="perfil.php">Mi perfil</a>
+      <a class="solo-admin" href="usuarios.php">Usuarios</a>
+      <a class="solo-admin" href="instalacion/disenador.php">Modelo de datos</a>
+      <a class="solo-admin" href="instalacion/migrar.php">Actualizaciones</a>
+      <a class="solo-admin" href="configuracion.php">Opciones</a>
+      <a href="#" id="salir-erin">Salir</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  fetch('api/acceso.php').then(r=>r.json()).then(datos=>{
+    if(!datos.usuario){ location.replace('acceso.html'); return; }
+    document.querySelector('#nombre-usuario').textContent = datos.usuario.nombre;
+    if(!datos.usuario.administrador){ document.querySelectorAll('.solo-admin').forEach(enlace=>enlace.style.display='none'); }
+  });
+  document.querySelector('#salir-erin').addEventListener('click', async function(evento){
+    evento.preventDefault();
+    await fetch('api/acceso.php', {method:'POST',body:new URLSearchParams({accion:'salir'})});
+    location.replace('acceso.html');
+  });
+  let buscadorErin = document.querySelector("#buscar");
+
+  function normalizarBusqueda(texto){
+    return texto
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  buscadorErin.addEventListener("input", function(){
+    let busqueda = normalizarBusqueda(buscadorErin.value.trim());
+
+    document.querySelectorAll(".fila-registro-crud").forEach(function(fila){
+      let contenido = normalizarBusqueda(fila.dataset.busqueda || "");
+      fila.hidden = busqueda != "" && !contenido.includes(busqueda);
+    });
+  });
+
+  document.addEventListener("erin:estado-crud", function(evento){
+    buscadorErin.value = "";
+    buscadorErin.disabled = !evento.detail.buscable;
+    buscadorErin.placeholder = evento.detail.buscable
+      ? "Buscar en " + evento.detail.etiqueta + "…"
+      : "Búsqueda disponible en el listado";
+  });
+</script>

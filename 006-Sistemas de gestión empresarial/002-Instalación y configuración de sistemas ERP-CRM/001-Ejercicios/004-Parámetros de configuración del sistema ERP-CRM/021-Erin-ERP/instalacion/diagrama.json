@@ -1,0 +1,379 @@
+{
+    "preset": "pequena",
+    "tablas": [
+        {
+            "nombre": "categorias",
+            "x": 80,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "clientes",
+            "x": 410,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cif",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "direccion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "compras",
+            "x": 740,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "proveedor_id",
+                    "tipo": "INTEGER",
+                    "fk": "proveedores"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "total",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "compras_lineas",
+            "x": 1070,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "compra_id",
+                    "tipo": "INTEGER",
+                    "fk": "compras"
+                },
+                {
+                    "nombre": "producto_id",
+                    "tipo": "INTEGER",
+                    "fk": "productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "precio",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "empleados",
+            "x": 80,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "puesto",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "empresas",
+            "x": 410,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cif",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "facturas",
+            "x": 740,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "cliente_id",
+                    "tipo": "INTEGER",
+                    "fk": "clientes"
+                },
+                {
+                    "nombre": "pedido_id",
+                    "tipo": "INTEGER",
+                    "fk": "pedidos"
+                },
+                {
+                    "nombre": "numero",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "total",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "pedidos",
+            "x": 1070,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "cliente_id",
+                    "tipo": "INTEGER",
+                    "fk": "clientes"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "total",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "pedidos_lineas",
+            "x": 80,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "pedido_id",
+                    "tipo": "INTEGER",
+                    "fk": "pedidos"
+                },
+                {
+                    "nombre": "producto_id",
+                    "tipo": "INTEGER",
+                    "fk": "productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "precio",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "productos",
+            "x": 410,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "categoria_id",
+                    "tipo": "INTEGER",
+                    "fk": "categorias"
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "precio",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "stock",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "proveedores",
+            "x": 740,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cif",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "usuarios",
+            "x": 1070,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "empresa_id",
+                    "tipo": "INTEGER",
+                    "fk": "empresas"
+                },
+                {
+                    "nombre": "username",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "password_hash",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "activo",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        }
+    ]
+}

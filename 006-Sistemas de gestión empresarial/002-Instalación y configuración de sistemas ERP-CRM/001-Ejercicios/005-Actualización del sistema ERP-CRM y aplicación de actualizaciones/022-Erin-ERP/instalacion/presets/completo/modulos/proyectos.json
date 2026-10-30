@@ -1,0 +1,10 @@
+{
+  "modulo": "proyectos",
+  "tablas": [
+    "Proyectos",
+    "TareasProyecto",
+    "PartesHoras",
+    "Empleados",
+    "Clientes"
+  ]
+}

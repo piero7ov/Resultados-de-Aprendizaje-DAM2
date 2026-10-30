@@ -1,0 +1,18 @@
+<p class="titulo-menu">ÁREAS DE GESTIÓN</p>
+<script>
+  let menu = document.querySelector("nav");
+  fetch("api/api.php?bloque=menu")
+  .then(function(retorno){return retorno.json()})
+  .then(function(datos){
+    datos.forEach(function(dato, indice){
+      let enlace = document.createElement("a");
+      enlace.setAttribute("href", "");
+      enlace.textContent = dato;
+      if(indice == 0){
+        enlace.setAttribute("class", "activo");
+        enlace.setAttribute("aria-current", "page");
+      }
+      menu.appendChild(enlace);
+    })
+  })
+</script>

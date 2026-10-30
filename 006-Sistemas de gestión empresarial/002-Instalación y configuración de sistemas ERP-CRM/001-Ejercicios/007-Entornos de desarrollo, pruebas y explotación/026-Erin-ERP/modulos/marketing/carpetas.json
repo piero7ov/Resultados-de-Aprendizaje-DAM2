@@ -1,0 +1,9 @@
+{
+    "modulo": "marketing",
+    "activo": true,
+    "tablas": [
+        "categorias",
+        "productos",
+        "proveedores"
+    ]
+}

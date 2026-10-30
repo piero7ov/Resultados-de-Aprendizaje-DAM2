@@ -1,0 +1,87 @@
+<p class="titulo-menu">TABLAS</p>
+<script>
+  let menu = document.querySelector("#menu");
+  let principal = document.querySelector("main");
+  let solicitudMenu = 0;
+
+  function activarApartado(enlace){
+    menu.querySelectorAll("a").forEach(function(elemento){
+      elemento.classList.remove("activo");
+      elemento.removeAttribute("aria-current");
+    });
+
+    enlace.classList.add("activo");
+    enlace.setAttribute("aria-current", "page");
+  }
+
+  window.cargarTablasModulo = function(modulo){
+    if(!menu){
+      return;
+    }
+
+    let solicitudActual = ++solicitudMenu;
+    menu.querySelectorAll("a, .mensaje-menu").forEach(function(elemento){
+      elemento.remove();
+    });
+    principal.textContent = "Cargando tablas del módulo " + modulo + "…";
+
+    fetch("api/api.php?bloque=menu&modulo=" + encodeURIComponent(modulo))
+    .then(function(respuesta){
+      return respuesta.json().then(function(datos){
+        if(!respuesta.ok){
+          throw new Error(datos.debug || datos.error || "No se pueden cargar las tablas");
+        }
+
+        return datos;
+      });
+    })
+    .then(function(datos){
+      if(solicitudActual != solicitudMenu){
+        return;
+      }
+
+      let tablaSolicitada = new URLSearchParams(window.location.search).get("tabla");
+      let tablaInicial = datos.includes(tablaSolicitada) ? tablaSolicitada : datos[0];
+
+      datos.forEach(function(dato){
+        let enlace = document.createElement("a");
+        enlace.setAttribute(
+          "href",
+          "index.html?modulo=" + encodeURIComponent(modulo) +
+          "&tabla=" + encodeURIComponent(dato)
+        );
+        enlace.textContent = typeof window.nombreTablaCrud == "function"
+          ? window.nombreTablaCrud(dato, false)
+          : dato;
+
+        if(typeof window.cargarCrud == "function"){
+          enlace.onclick = function(evento){
+            evento.preventDefault();
+            activarApartado(enlace);
+            window.cargarCrud(dato, "listar");
+          };
+        }
+
+        menu.appendChild(enlace);
+
+        if(dato == tablaInicial && typeof window.cargarCrud == "function"){
+          activarApartado(enlace);
+          window.cargarCrud(dato, "listar");
+        }
+      });
+
+      if(datos.length == 0){
+        principal.textContent = "Este módulo no tiene tablas configuradas.";
+      }
+    })
+    .catch(function(error){
+      if(solicitudActual == solicitudMenu){
+        principal.textContent = error.message;
+      }
+    });
+  };
+
+  if(window.moduloActivo){
+    window.cargarTablasModulo(window.moduloActivo);
+  }
+</script>

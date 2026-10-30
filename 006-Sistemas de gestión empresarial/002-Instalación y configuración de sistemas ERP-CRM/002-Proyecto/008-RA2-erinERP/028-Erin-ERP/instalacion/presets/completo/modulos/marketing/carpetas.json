@@ -1,0 +1,10 @@
+{
+  "modulo": "marketing",
+  "tablas": [
+    "Campanas",
+    "CampanasContactos",
+    "Oportunidades",
+    "Clientes",
+    "Contactos"
+  ]
+}

@@ -1,0 +1,39 @@
+<p class="titulo-menu">MÓDULOS</p>
+<script>
+  let navegacionModulos = document.querySelector("#modulos");
+
+  fetch("api/api.php?bloque=modulos")
+  .then(function(respuesta){
+    return respuesta.json().then(function(datos){
+      if(!respuesta.ok){
+        throw new Error(datos.debug || datos.error || "No se pueden cargar los módulos");
+      }
+
+      return datos;
+    });
+  })
+  .then(function(datos){
+    datos.forEach(function(nombre, indice){
+      let enlace = document.createElement("a");
+      enlace.href = "#";
+      enlace.textContent = nombre;
+      enlace.onclick = function(evento){
+        evento.preventDefault();
+        navegacionModulos.querySelectorAll("a").forEach(function(elemento){
+          elemento.classList.remove("activo");
+          elemento.removeAttribute("aria-current");
+        });
+        enlace.classList.add("activo");
+        enlace.setAttribute("aria-current", "page");
+      };
+
+      navegacionModulos.appendChild(enlace);
+      if(indice == 0){
+        enlace.click();
+      }
+    });
+  })
+  .catch(function(error){
+    navegacionModulos.insertAdjacentText("beforeend", error.message);
+  });
+</script>

@@ -1,0 +1,10 @@
+{
+  "modulo": "logistica",
+  "tablas": [
+    "Transportistas",
+    "Envios",
+    "Pedidos",
+    "Almacenes",
+    "UbicacionesAlmacen"
+  ]
+}

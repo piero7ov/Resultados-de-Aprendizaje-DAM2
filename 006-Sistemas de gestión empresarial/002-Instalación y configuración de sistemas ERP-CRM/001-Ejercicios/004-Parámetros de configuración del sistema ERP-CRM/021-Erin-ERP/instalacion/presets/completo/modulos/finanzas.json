@@ -1,0 +1,14 @@
+{
+  "modulo": "finanzas",
+  "tablas": [
+    "Bancos",
+    "CuentasBancarias",
+    "Monedas",
+    "TiposCambio",
+    "Pagos",
+    "Cobros",
+    "PresupuestosFinancieros",
+    "PresupuestosFinancierosLineas",
+    "CentrosCoste"
+  ]
+}

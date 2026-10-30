@@ -1,0 +1,544 @@
+<script>
+  let configuracionEntidadesCrud = {
+    Clientes: {singular: "cliente", plural: "Clientes"},
+    Productos: {singular: "producto", plural: "Productos"},
+    Pedidos: {singular: "pedido", plural: "Pedidos"},
+    DetallesPedidos: {singular: "detalle de pedido", plural: "Detalles de pedidos"},
+    Departamentos: {singular: "departamento", plural: "Departamentos"},
+    Empleados: {singular: "empleado", plural: "Empleados"}
+  };
+  let cacheOpcionesCrud = {};
+
+  function humanizarTextoCrud(texto){
+    let resultado = texto
+      .replace(/_/g, " ")
+      .replace(/([a-záéíóúñ])([A-ZÁÉÍÓÚÑ])/g, "$1 $2")
+      .toLowerCase();
+
+    return resultado.charAt(0).toUpperCase() + resultado.slice(1);
+  }
+
+  window.nombreTablaCrud = function(tabla, singular){
+    let configuracion = configuracionEntidadesCrud[tabla];
+
+    if(configuracion){
+      return singular ? configuracion.singular : configuracion.plural;
+    }
+
+    return humanizarTextoCrud(tabla);
+  };
+
+  function solicitarJson(url, opciones){
+    return fetch(url, opciones)
+    .then(function(respuesta){
+      return respuesta.json().then(function(datos){
+        if(!respuesta.ok){
+          throw new Error(datos.debug || datos.error || "La operación no se ha completado");
+        }
+
+        return datos;
+      });
+    });
+  }
+
+  function obtenerOpcionesCrud(tabla, origen){
+    let clave = origen + ":" + tabla;
+    if(!cacheOpcionesCrud[clave]){
+      cacheOpcionesCrud[clave] = solicitarJson(
+        "api/api.php?bloque=opciones&tabla=" + encodeURIComponent(tabla) + "&origen=" + encodeURIComponent(origen)
+      ).then(function(datos){
+        return datos.opciones;
+      });
+    }
+
+    return cacheOpcionesCrud[clave];
+  }
+
+  function cargarRelacionesCrud(estructura, origen){
+    let promesas = estructura
+      .filter(function(campo){ return campo.fk !== null; })
+      .map(function(campo){
+        return obtenerOpcionesCrud(campo.fk.tabla, origen).then(function(opciones){
+          return {
+            campo: campo.name,
+            tabla: campo.fk.tabla,
+            opciones: opciones
+          };
+        });
+      });
+
+    return Promise.all(promesas).then(function(resultados){
+      let relaciones = {};
+
+      resultados.forEach(function(resultado){
+        relaciones[resultado.campo] = resultado;
+      });
+
+      return relaciones;
+    });
+  }
+
+  function notificarEstadoCrud(tabla, operacion, buscable){
+    document.dispatchEvent(new CustomEvent("erin:estado-crud", {
+      detail: {
+        tabla: tabla,
+        etiqueta: window.nombreTablaCrud(tabla, false),
+        operacion: operacion,
+        buscable: buscable
+      }
+    }));
+  }
+
+  function crearBotonCrud(texto, accion, secundario){
+    let boton = document.createElement("button");
+    boton.setAttribute("type", "button");
+    boton.setAttribute("class", secundario ? "boton boton-secundario" : "boton");
+    boton.textContent = texto;
+    boton.onclick = accion;
+    return boton;
+  }
+
+  function crearCabeceraCrud(tabla, operacion, recuento){
+    let cabecera = document.createElement("div");
+    cabecera.setAttribute("class", "cabecera-listado cabecera-crud");
+
+    let contexto = document.createElement("div");
+    contexto.setAttribute("class", "contexto-crud");
+
+    let titulo = document.createElement("h1");
+    titulo.textContent = window.nombreTablaCrud(tabla, false);
+
+    let estado = document.createElement("p");
+    estado.setAttribute("class", "operacion-crud");
+    estado.textContent = operacion;
+
+    contexto.appendChild(titulo);
+    contexto.appendChild(estado);
+    cabecera.appendChild(contexto);
+
+    if(recuento !== null){
+      let total = document.createElement("span");
+      total.setAttribute("class", "recuento");
+      let nombre = recuento == 1
+        ? window.nombreTablaCrud(tabla, true)
+        : window.nombreTablaCrud(tabla, false).toLowerCase();
+      total.textContent = recuento + " " + nombre;
+      cabecera.appendChild(total);
+    }
+
+    return cabecera;
+  }
+
+  function mostrarErrorCrud(tabla, error){
+    let principal = document.querySelector("main");
+    principal.innerHTML = "";
+
+    let listado = document.createElement("div");
+    listado.setAttribute("class", "listado");
+    listado.appendChild(crearCabeceraCrud(tabla || "ERIN ERP", "Operación no completada", null));
+
+    let mensaje = document.createElement("p");
+    mensaje.setAttribute("class", "mensaje-crud mensaje-error");
+    mensaje.textContent = error.message || error;
+
+    listado.appendChild(mensaje);
+    principal.appendChild(listado);
+    notificarEstadoCrud(tabla, "error", false);
+  }
+
+  function valorVisibleCrud(campo, valor, relaciones){
+    if(valor === null || valor === ""){
+      return "";
+    }
+
+    if(campo.fk !== null && relaciones[campo.name]){
+      let opcion = relaciones[campo.name].opciones.find(function(elemento){
+        return String(elemento.identificador) == String(valor);
+      });
+
+      return opcion ? opcion.descripcion : "Registro relacionado #" + valor;
+    }
+
+    return valor;
+  }
+
+  function dibujarListadoCrud(datos, relaciones, mensajeCorrecto){
+    let tabla = datos.tabla;
+    let principal = document.querySelector("main");
+    principal.innerHTML = "";
+
+    let listado = document.createElement("div");
+    listado.setAttribute("class", "listado");
+
+    let cabecera = crearCabeceraCrud(
+      tabla,
+      "Listado de registros",
+      datos.contenido.length
+    );
+
+    listado.appendChild(cabecera);
+
+    if(mensajeCorrecto){
+      let mensaje = document.createElement("p");
+      mensaje.setAttribute("class", "mensaje-crud mensaje-correcto");
+      mensaje.textContent = mensajeCorrecto;
+      listado.appendChild(mensaje);
+    }
+
+    let contenedor = document.createElement("div");
+    contenedor.setAttribute("class", "tabla-contenedor");
+
+    let tablaHtml = document.createElement("table");
+    let cabeceraTabla = document.createElement("thead");
+    let filaCabecera = document.createElement("tr");
+
+    datos.estructura.forEach(function(campo){
+      let th = document.createElement("th");
+      th.textContent = humanizarTextoCrud(campo.name);
+      filaCabecera.appendChild(th);
+    });
+
+    let thAcciones = document.createElement("th");
+    thAcciones.textContent = "Acciones";
+    filaCabecera.appendChild(thAcciones);
+    cabeceraTabla.appendChild(filaCabecera);
+    tablaHtml.appendChild(cabeceraTabla);
+
+    let cuerpo = document.createElement("tbody");
+
+    datos.contenido.forEach(function(registro){
+      let fila = document.createElement("tr");
+      fila.setAttribute("class", "fila-registro-crud");
+      let valoresBusqueda = [];
+
+      datos.estructura.forEach(function(campo){
+        let celda = document.createElement("td");
+        celda.textContent = valorVisibleCrud(campo, registro[campo.name], relaciones);
+        valoresBusqueda.push(celda.textContent);
+        fila.appendChild(celda);
+      });
+
+      fila.dataset.busqueda = valoresBusqueda.join(" ");
+
+      let celdaAcciones = document.createElement("td");
+      celdaAcciones.setAttribute("class", "acciones-fila");
+      let botonEditar = crearBotonCrud(
+        "Editar",
+        function(){
+          cargarFormularioCrud(tabla, "actualizar", registro.Identificador);
+        },
+        true
+      );
+      botonEditar.disabled = !datos.permisos.actualizar;
+      celdaAcciones.appendChild(botonEditar);
+      let botonEliminar = crearBotonCrud(
+        "Eliminar",
+        function(){
+          eliminarRegistroCrud(tabla, registro.Identificador);
+        },
+        false
+      );
+      botonEliminar.disabled = !datos.permisos.eliminar;
+      celdaAcciones.appendChild(botonEliminar);
+      fila.appendChild(celdaAcciones);
+      cuerpo.appendChild(fila);
+    });
+
+    tablaHtml.appendChild(cuerpo);
+    contenedor.appendChild(tablaHtml);
+    listado.appendChild(contenedor);
+    principal.appendChild(listado);
+    let botonInsertar = crearBotonCrud(
+      "+",
+      function(){ cargarFormularioCrud(tabla, "insertar"); },
+      false
+    );
+    botonInsertar.setAttribute("class", "boton boton-insertar-flotante");
+    botonInsertar.setAttribute("aria-label", "Añadir " + window.nombreTablaCrud(tabla, true));
+    botonInsertar.setAttribute("title", "Añadir " + window.nombreTablaCrud(tabla, true));
+    botonInsertar.disabled = !datos.permisos.insertar;
+    principal.appendChild(botonInsertar);
+    notificarEstadoCrud(tabla, "listado", true);
+  }
+
+  function cargarListadoCrud(tabla, mensajeCorrecto){
+    solicitarJson("api/api.php?bloque=tabla&tabla=" + encodeURIComponent(tabla))
+    .then(function(datos){
+      return cargarRelacionesCrud(datos.estructura, tabla).then(function(relaciones){
+        dibujarListadoCrud(datos, relaciones, mensajeCorrecto);
+      });
+    })
+    .catch(function(error){
+      mostrarErrorCrud(tabla, error);
+    });
+  }
+
+  function tipoControlCrud(campo){
+    let nombre = campo.name.toLowerCase();
+    let tipo = campo.type.toUpperCase();
+
+    if(nombre.includes("email")){
+      return "email";
+    }
+
+    if(nombre.includes("fecha")){
+      return "date";
+    }
+
+    if(tipo == "INTEGER" || tipo == "REAL" || tipo == "NUMERIC"){
+      return "number";
+    }
+
+    return "text";
+  }
+
+  function crearControlRelacionCrud(campo, relacion, registro){
+    let contenedor = document.createDocumentFragment();
+    let control = document.createElement("input");
+    let oculto = document.createElement("input");
+    let lista = document.createElement("datalist");
+    let idLista = "opciones-" + campo.name;
+
+    control.setAttribute("id", "campo-" + campo.name);
+    control.setAttribute("type", "text");
+    control.setAttribute("list", idLista);
+    control.setAttribute(
+      "placeholder",
+      "Buscar " + window.nombreTablaCrud(relacion.tabla, true) + "…"
+    );
+    oculto.setAttribute("type", "hidden");
+    oculto.setAttribute("name", campo.name);
+    lista.setAttribute("id", idLista);
+
+    relacion.opciones.forEach(function(opcion){
+      let elemento = document.createElement("option");
+      elemento.setAttribute("value", opcion.descripcion);
+      lista.appendChild(elemento);
+    });
+
+    if(registro && registro[campo.name] !== null){
+      let seleccionada = relacion.opciones.find(function(opcion){
+        return String(opcion.identificador) == String(registro[campo.name]);
+      });
+
+      if(seleccionada){
+        control.value = seleccionada.descripcion;
+        oculto.value = seleccionada.identificador;
+      }
+    }
+
+    function sincronizarRelacion(){
+      if(control.value == ""){
+        oculto.value = "";
+        control.setCustomValidity("");
+        return;
+      }
+
+      let seleccionada = relacion.opciones.find(function(opcion){
+        return opcion.descripcion == control.value;
+      });
+
+      if(seleccionada){
+        oculto.value = seleccionada.identificador;
+        control.setCustomValidity("");
+      }else{
+        oculto.value = "";
+        control.setCustomValidity("Selecciona una opción existente de la lista.");
+      }
+    }
+
+    control.addEventListener("input", sincronizarRelacion);
+    control.addEventListener("change", sincronizarRelacion);
+    contenedor.appendChild(control);
+    contenedor.appendChild(oculto);
+    contenedor.appendChild(lista);
+    return contenedor;
+  }
+
+  function dibujarFormularioCrud(tabla, operacion, estructura, registro, relaciones){
+    let principal = document.querySelector("main");
+    principal.innerHTML = "";
+
+    let listado = document.createElement("div");
+    listado.setAttribute("class", "listado");
+
+    let tituloOperacion = operacion == "insertar"
+      ? "Nuevo " + window.nombreTablaCrud(tabla, true)
+      : "Editar " + window.nombreTablaCrud(tabla, true);
+    let cabecera = crearCabeceraCrud(tabla, tituloOperacion, null);
+
+    let acciones = document.createElement("div");
+    acciones.setAttribute("class", "acciones-crud");
+    acciones.appendChild(crearBotonCrud(
+      "Volver al listado",
+      function(){ cargarListadoCrud(tabla); },
+      true
+    ));
+    cabecera.appendChild(acciones);
+    listado.appendChild(cabecera);
+
+    let formulario = document.createElement("form");
+    formulario.setAttribute("class", "formulario-crud");
+
+    estructura.forEach(function(campo){
+      if(campo.name == "Identificador"){
+        return;
+      }
+
+      let grupo = document.createElement("div");
+      grupo.setAttribute("class", campo.fk ? "campo-crud campo-relacion" : "campo-crud");
+
+      let etiqueta = document.createElement("label");
+      etiqueta.setAttribute("for", "campo-" + campo.name);
+      etiqueta.appendChild(document.createTextNode(humanizarTextoCrud(campo.name)));
+
+      let tipo = document.createElement("small");
+      tipo.textContent = campo.fk
+        ? "Relacionado con " + window.nombreTablaCrud(campo.fk.tabla, false)
+        : campo.type || "TEXT";
+      etiqueta.appendChild(tipo);
+      grupo.appendChild(etiqueta);
+
+      if(campo.fk && relaciones[campo.name]){
+        grupo.appendChild(crearControlRelacionCrud(
+          campo,
+          relaciones[campo.name],
+          registro
+        ));
+      }else{
+        let control = document.createElement("input");
+        control.setAttribute("id", "campo-" + campo.name);
+        control.setAttribute("name", campo.name);
+        control.setAttribute("type", tipoControlCrud(campo));
+
+        if(control.type == "number" && campo.type.toUpperCase() != "INTEGER"){
+          control.setAttribute("step", "any");
+        }
+
+        if(registro && registro[campo.name] !== null){
+          control.value = registro[campo.name];
+        }
+
+        grupo.appendChild(control);
+      }
+
+      formulario.appendChild(grupo);
+    });
+
+    let pieFormulario = document.createElement("div");
+    pieFormulario.setAttribute("class", "acciones-formulario");
+
+    let guardar = document.createElement("button");
+    guardar.setAttribute("type", "submit");
+    guardar.setAttribute("class", "boton");
+    guardar.textContent = operacion == "insertar" ? "Guardar registro" : "Guardar cambios";
+    pieFormulario.appendChild(guardar);
+    formulario.appendChild(pieFormulario);
+
+    formulario.onsubmit = function(evento){
+      evento.preventDefault();
+
+      if(!formulario.reportValidity()){
+        return;
+      }
+
+      guardar.disabled = true;
+      guardar.textContent = "Guardando…";
+
+      let url = "api/api.php?bloque=" + operacion + "&tabla=" + encodeURIComponent(tabla);
+
+      if(operacion == "actualizar"){
+        url += "&identificador=" + encodeURIComponent(registro.Identificador);
+      }
+
+      solicitarJson(url, {
+        method: "POST",
+        body: new FormData(formulario)
+      })
+      .then(function(datos){
+        cacheOpcionesCrud = {};
+        cargarListadoCrud(tabla, datos.mensaje);
+      })
+      .catch(function(error){
+        guardar.disabled = false;
+        guardar.textContent = operacion == "insertar" ? "Guardar registro" : "Guardar cambios";
+        mostrarErrorCrud(tabla, error);
+      });
+    };
+
+    listado.appendChild(formulario);
+    principal.appendChild(listado);
+    notificarEstadoCrud(tabla, operacion, false);
+  }
+
+  function cargarFormularioCrud(tabla, operacion, identificador){
+    let promesaDatos;
+
+    if(operacion == "insertar"){
+      promesaDatos = solicitarJson(
+        "api/api.php?bloque=tabla&tabla=" + encodeURIComponent(tabla)
+      ).then(function(datos){
+        return {
+          estructura: datos.estructura,
+          registro: null
+        };
+      });
+    }else{
+      promesaDatos = solicitarJson(
+        "api/api.php?bloque=registro&tabla=" + encodeURIComponent(tabla) +
+        "&identificador=" + encodeURIComponent(identificador)
+      ).then(function(datos){
+        return {
+          estructura: datos.estructura,
+          registro: datos.registro
+        };
+      });
+    }
+
+    promesaDatos
+    .then(function(datos){
+      return cargarRelacionesCrud(datos.estructura, tabla).then(function(relaciones){
+        dibujarFormularioCrud(
+          tabla,
+          operacion,
+          datos.estructura,
+          datos.registro,
+          relaciones
+        );
+      });
+    })
+    .catch(function(error){
+      mostrarErrorCrud(tabla, error);
+    });
+  }
+
+  function eliminarRegistroCrud(tabla, identificador){
+    let entidad = window.nombreTablaCrud(tabla, true);
+
+    if(!confirm("¿Quieres eliminar " + entidad + " #" + identificador + "?")){
+      return;
+    }
+
+    solicitarJson(
+      "api/api.php?bloque=eliminar&tabla=" + encodeURIComponent(tabla) +
+      "&identificador=" + encodeURIComponent(identificador),
+      {method: "POST"}
+    )
+    .then(function(datos){
+      cacheOpcionesCrud = {};
+      cargarListadoCrud(tabla, datos.mensaje);
+    })
+    .catch(function(error){
+      mostrarErrorCrud(tabla, error);
+    });
+  }
+
+  window.cargarCrud = function(tabla, operacion, identificador){
+    if(operacion == "insertar" || operacion == "actualizar"){
+      cargarFormularioCrud(tabla, operacion, identificador);
+      return;
+    }
+
+    cargarListadoCrud(tabla);
+  };
+</script>

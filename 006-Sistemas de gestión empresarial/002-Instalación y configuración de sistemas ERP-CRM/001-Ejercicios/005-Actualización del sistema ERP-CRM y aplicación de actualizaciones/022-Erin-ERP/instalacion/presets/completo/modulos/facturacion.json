@@ -1,0 +1,13 @@
+{
+  "modulo": "facturacion",
+  "tablas": [
+    "Facturas",
+    "DetallesFacturas",
+    "Cobros",
+    "Pagos",
+    "FormasPago",
+    "TiposIVA",
+    "Clientes",
+    "Proveedores"
+  ]
+}

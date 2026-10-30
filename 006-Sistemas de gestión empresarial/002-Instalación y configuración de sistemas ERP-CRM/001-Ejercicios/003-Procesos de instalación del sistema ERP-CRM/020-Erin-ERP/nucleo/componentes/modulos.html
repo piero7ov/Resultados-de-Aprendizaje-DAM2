@@ -1,0 +1,53 @@
+<p class="titulo-menu">MÓDULOS</p>
+<script>
+  let navegacionModulos = document.querySelector("#modulos");
+
+  let tablaSolicitada = new URLSearchParams(window.location.search).get("tabla");
+  let urlModulos = "api/api.php?bloque=modulos";
+  if(tablaSolicitada){
+    urlModulos += "&tabla=" + encodeURIComponent(tablaSolicitada);
+  }
+
+  fetch(urlModulos)
+  .then(function(respuesta){
+    return respuesta.json().then(function(datos){
+      if(!respuesta.ok){
+        throw new Error(datos.debug || datos.error || "No se pueden cargar los módulos");
+      }
+
+      return datos;
+    });
+  })
+  .then(function(datos){
+    let moduloSolicitado = new URLSearchParams(window.location.search).get("modulo");
+    let moduloInicial = datos.includes(moduloSolicitado) ? moduloSolicitado : datos[0];
+
+    datos.forEach(function(nombre){
+      let enlace = document.createElement("a");
+      enlace.href = "#";
+      enlace.textContent = nombre;
+      enlace.onclick = function(evento){
+        evento.preventDefault();
+        navegacionModulos.querySelectorAll("a").forEach(function(elemento){
+          elemento.classList.remove("activo");
+          elemento.removeAttribute("aria-current");
+        });
+        enlace.classList.add("activo");
+        enlace.setAttribute("aria-current", "page");
+        window.moduloActivo = nombre;
+
+        if(typeof window.cargarTablasModulo == "function"){
+          window.cargarTablasModulo(nombre);
+        }
+      };
+
+      navegacionModulos.appendChild(enlace);
+      if(nombre == moduloInicial){
+        enlace.click();
+      }
+    });
+  })
+  .catch(function(error){
+    navegacionModulos.insertAdjacentText("beforeend", error.message);
+  });
+</script>

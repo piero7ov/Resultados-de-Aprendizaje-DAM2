@@ -1,0 +1,9 @@
+{
+    "modulo": "crm",
+    "activo": true,
+    "tablas": [
+        "clientes",
+        "empresas",
+        "productos"
+    ]
+}

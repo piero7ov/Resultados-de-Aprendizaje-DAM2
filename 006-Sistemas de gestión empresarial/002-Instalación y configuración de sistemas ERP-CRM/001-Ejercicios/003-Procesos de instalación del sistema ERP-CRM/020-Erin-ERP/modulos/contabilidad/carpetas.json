@@ -1,0 +1,11 @@
+{
+  "modulo": "contabilidad",
+  "tablas": [
+    "PlanesContables",
+    "CuentasContables",
+    "DiariosContables",
+    "Asientos",
+    "AsientosLineas",
+    "CentrosCoste"
+  ]
+}

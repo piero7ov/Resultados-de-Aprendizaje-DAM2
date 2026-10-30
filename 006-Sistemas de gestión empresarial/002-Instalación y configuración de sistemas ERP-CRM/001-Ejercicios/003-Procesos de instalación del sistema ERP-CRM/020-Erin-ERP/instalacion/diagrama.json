@@ -1,0 +1,2049 @@
+{
+    "tablas": [
+        {
+            "nombre": "ActividadesComerciales",
+            "x": 80,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "oportunidad",
+                    "tipo": "INTEGER",
+                    "fk": "Oportunidades"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "tipo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Almacenes",
+            "x": 410,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "ubicacion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Asientos",
+            "x": 740,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "concepto",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "numero",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "AsientosLineas",
+            "x": 1070,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "asiento",
+                    "tipo": "INTEGER",
+                    "fk": "Asientos"
+                },
+                {
+                    "nombre": "cuenta",
+                    "tipo": "INTEGER",
+                    "fk": "CuentasContables"
+                },
+                {
+                    "nombre": "debe",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "haber",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Ausencias",
+            "x": 1400,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "empleado",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "fecha_inicio",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_fin",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "motivo",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Bancos",
+            "x": 1730,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Campanas",
+            "x": 2060,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_inicio",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_fin",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "CampanasContactos",
+            "x": 2390,
+            "y": 80,
+            "campos": [
+                {
+                    "nombre": "campana",
+                    "tipo": "INTEGER",
+                    "fk": "Campanas"
+                },
+                {
+                    "nombre": "contacto",
+                    "tipo": "INTEGER",
+                    "fk": "Contactos"
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "CategoriasProductos",
+            "x": 80,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "CentrosCoste",
+            "x": 410,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Clientes",
+            "x": 740,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "apellidos",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "ciudad",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Cobros",
+            "x": 1070,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "factura",
+                    "tipo": "INTEGER",
+                    "fk": "Facturas"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "importe",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "metodo",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Compras",
+            "x": 1400,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "proveedor",
+                    "tipo": "INTEGER",
+                    "fk": "Proveedores"
+                }
+            ]
+        },
+        {
+            "nombre": "ConsumosFabricacion",
+            "x": 1730,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "orden",
+                    "tipo": "INTEGER",
+                    "fk": "OrdenesFabricacion"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Contactos",
+            "x": 2060,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "cliente",
+                    "tipo": "INTEGER",
+                    "fk": "Clientes"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "apellidos",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Contratos",
+            "x": 2390,
+            "y": 500,
+            "campos": [
+                {
+                    "nombre": "empleado",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "tipo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_inicio",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_fin",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "salario_anual",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "CuentasBancarias",
+            "x": 80,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "banco",
+                    "tipo": "INTEGER",
+                    "fk": "Bancos"
+                },
+                {
+                    "nombre": "iban",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "moneda",
+                    "tipo": "INTEGER",
+                    "fk": "Monedas"
+                }
+            ]
+        },
+        {
+            "nombre": "CuentasContables",
+            "x": 410,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "tipo",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Departamentos",
+            "x": 740,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "DetallesCompras",
+            "x": 1070,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "compra",
+                    "tipo": "INTEGER",
+                    "fk": "Compras"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "precio_unitario",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "DetallesFacturas",
+            "x": 1400,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "factura",
+                    "tipo": "INTEGER",
+                    "fk": "Facturas"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "precio_unitario",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "DetallesPedidos",
+            "x": 1730,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "pedido",
+                    "tipo": "INTEGER",
+                    "fk": "Pedidos"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "precio_unitario",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "DetallesPresupuestos",
+            "x": 2060,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "presupuesto",
+                    "tipo": "INTEGER",
+                    "fk": "Presupuestos"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "precio_unitario",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Devoluciones",
+            "x": 2390,
+            "y": 920,
+            "campos": [
+                {
+                    "nombre": "pedido",
+                    "tipo": "INTEGER",
+                    "fk": "Pedidos"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "motivo",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "DiariosContables",
+            "x": 80,
+            "y": 1340,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "plan",
+                    "tipo": "INTEGER",
+                    "fk": "PlanesContables"
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Documentos",
+            "x": 410,
+            "y": 1340,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "tipo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "ruta",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Empleados",
+            "x": 740,
+            "y": 1340,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "apellidos",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_nacimiento",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "puesto",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_contratacion",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "departamento",
+                    "tipo": "INTEGER",
+                    "fk": "Departamentos"
+                }
+            ]
+        },
+        {
+            "nombre": "EmpleadosFormaciones",
+            "x": 1070,
+            "y": 1340,
+            "campos": [
+                {
+                    "nombre": "empleado",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "formacion",
+                    "tipo": "INTEGER",
+                    "fk": "Formaciones"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "resultado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Empresas",
+            "x": 1400,
+            "y": 1340,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cif",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "ciudad",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Envios",
+            "x": 1730,
+            "y": 1340,
+            "campos": [
+                {
+                    "nombre": "pedido",
+                    "tipo": "INTEGER",
+                    "fk": "Pedidos"
+                },
+                {
+                    "nombre": "transportista",
+                    "tipo": "INTEGER",
+                    "fk": "Transportistas"
+                },
+                {
+                    "nombre": "fecha_salida",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_entrega",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Existencias",
+            "x": 2060,
+            "y": 1340,
+            "campos": [
+                {
+                    "nombre": "almacen",
+                    "tipo": "INTEGER",
+                    "fk": "Almacenes"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Facturas",
+            "x": 2390,
+            "y": 1340,
+            "campos": [
+                {
+                    "nombre": "numero",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "pedido",
+                    "tipo": "INTEGER",
+                    "fk": "Pedidos"
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "total",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Fichajes",
+            "x": 80,
+            "y": 1760,
+            "campos": [
+                {
+                    "nombre": "empleado",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "entrada",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "salida",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Formaciones",
+            "x": 410,
+            "y": 1760,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "proveedor",
+                    "tipo": "INTEGER",
+                    "fk": "Proveedores"
+                },
+                {
+                    "nombre": "horas",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "coste",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "FormasPago",
+            "x": 740,
+            "y": 1760,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "plazo_dias",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Inventarios",
+            "x": 1070,
+            "y": 1760,
+            "campos": [
+                {
+                    "nombre": "almacen",
+                    "tipo": "INTEGER",
+                    "fk": "Almacenes"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "InventariosLineas",
+            "x": 1400,
+            "y": 1760,
+            "campos": [
+                {
+                    "nombre": "inventario",
+                    "tipo": "INTEGER",
+                    "fk": "Inventarios"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "cantidad_teorica",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "cantidad_real",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "ListasMateriales",
+            "x": 1730,
+            "y": 1760,
+            "campos": [
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "version",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "activa",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "ListasMaterialesLineas",
+            "x": 2060,
+            "y": 1760,
+            "campos": [
+                {
+                    "nombre": "lista",
+                    "tipo": "INTEGER",
+                    "fk": "ListasMateriales"
+                },
+                {
+                    "nombre": "componente",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Lotes",
+            "x": 2390,
+            "y": 1760,
+            "campos": [
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_entrada",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "caducidad",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Monedas",
+            "x": 80,
+            "y": 2180,
+            "campos": [
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "simbolo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "decimales",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "MovimientosInventario",
+            "x": 410,
+            "y": 2180,
+            "campos": [
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "almacen",
+                    "tipo": "INTEGER",
+                    "fk": "Almacenes"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "tipo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "referencia",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Nominas",
+            "x": 740,
+            "y": 2180,
+            "campos": [
+                {
+                    "nombre": "empleado",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "anio",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "mes",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "bruto",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "neto",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "OperacionesRuta",
+            "x": 1070,
+            "y": 2180,
+            "campos": [
+                {
+                    "nombre": "ruta",
+                    "tipo": "INTEGER",
+                    "fk": "RutasFabricacion"
+                },
+                {
+                    "nombre": "maquina",
+                    "tipo": "INTEGER",
+                    "fk": "RecursosMaquina"
+                },
+                {
+                    "nombre": "secuencia",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "tiempo_minutos",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Oportunidades",
+            "x": 1400,
+            "y": 2180,
+            "campos": [
+                {
+                    "nombre": "cliente",
+                    "tipo": "INTEGER",
+                    "fk": "Clientes"
+                },
+                {
+                    "nombre": "contacto",
+                    "tipo": "INTEGER",
+                    "fk": "Contactos"
+                },
+                {
+                    "nombre": "titulo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "importe",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "OrdenesFabricacion",
+            "x": 1730,
+            "y": 2180,
+            "campos": [
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "lista",
+                    "tipo": "INTEGER",
+                    "fk": "ListasMateriales"
+                },
+                {
+                    "nombre": "ruta",
+                    "tipo": "INTEGER",
+                    "fk": "RutasFabricacion"
+                },
+                {
+                    "nombre": "cantidad",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Pagos",
+            "x": 2060,
+            "y": 2180,
+            "campos": [
+                {
+                    "nombre": "compra",
+                    "tipo": "INTEGER",
+                    "fk": "Compras"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "importe",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "metodo",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Paises",
+            "x": 2390,
+            "y": 2180,
+            "campos": [
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "PartesHoras",
+            "x": 80,
+            "y": 2600,
+            "campos": [
+                {
+                    "nombre": "proyecto",
+                    "tipo": "INTEGER",
+                    "fk": "Proyectos"
+                },
+                {
+                    "nombre": "empleado",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "horas",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Pedidos",
+            "x": 410,
+            "y": 2600,
+            "campos": [
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cliente",
+                    "tipo": "INTEGER",
+                    "fk": "Clientes"
+                }
+            ]
+        },
+        {
+            "nombre": "Permisos",
+            "x": 740,
+            "y": 2600,
+            "campos": [
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "PlanesContables",
+            "x": 1070,
+            "y": 2600,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "ejercicio",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Presupuestos",
+            "x": 1400,
+            "y": 2600,
+            "campos": [
+                {
+                    "nombre": "cliente",
+                    "tipo": "INTEGER",
+                    "fk": "Clientes"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "total",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "PresupuestosFinancieros",
+            "x": 1730,
+            "y": 2600,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "ejercicio",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "PresupuestosFinancierosLineas",
+            "x": 2060,
+            "y": 2600,
+            "campos": [
+                {
+                    "nombre": "presupuesto",
+                    "tipo": "INTEGER",
+                    "fk": "PresupuestosFinancieros"
+                },
+                {
+                    "nombre": "cuenta",
+                    "tipo": "INTEGER",
+                    "fk": "CuentasContables"
+                },
+                {
+                    "nombre": "centro_coste",
+                    "tipo": "INTEGER",
+                    "fk": "CentrosCoste"
+                },
+                {
+                    "nombre": "mes",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "importe",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "ProduccionesFabricacion",
+            "x": 2390,
+            "y": 2600,
+            "campos": [
+                {
+                    "nombre": "orden",
+                    "tipo": "INTEGER",
+                    "fk": "OrdenesFabricacion"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cantidad_buena",
+                    "tipo": "INTEGER",
+                    "fk": null
+                },
+                {
+                    "nombre": "cantidad_rechazada",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Productos",
+            "x": 80,
+            "y": 3020,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "precio",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "ProductosCategorias",
+            "x": 410,
+            "y": 3020,
+            "campos": [
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "categoria",
+                    "tipo": "INTEGER",
+                    "fk": "CategoriasProductos"
+                }
+            ]
+        },
+        {
+            "nombre": "Proveedores",
+            "x": 740,
+            "y": 3020,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "ciudad",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Provincias",
+            "x": 1070,
+            "y": 3020,
+            "campos": [
+                {
+                    "nombre": "pais",
+                    "tipo": "INTEGER",
+                    "fk": "Paises"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Proyectos",
+            "x": 1400,
+            "y": 3020,
+            "campos": [
+                {
+                    "nombre": "cliente",
+                    "tipo": "INTEGER",
+                    "fk": "Clientes"
+                },
+                {
+                    "nombre": "responsable",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_inicio",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "RecepcionesCompra",
+            "x": 1730,
+            "y": 3020,
+            "campos": [
+                {
+                    "nombre": "compra",
+                    "tipo": "INTEGER",
+                    "fk": "Compras"
+                },
+                {
+                    "nombre": "almacen",
+                    "tipo": "INTEGER",
+                    "fk": "Almacenes"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "RecursosMaquina",
+            "x": 2060,
+            "y": 3020,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "coste_hora",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "activo",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Roles",
+            "x": 2390,
+            "y": 3020,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "RolesPermisos",
+            "x": 80,
+            "y": 3440,
+            "campos": [
+                {
+                    "nombre": "rol",
+                    "tipo": "INTEGER",
+                    "fk": "Roles"
+                },
+                {
+                    "nombre": "permiso",
+                    "tipo": "INTEGER",
+                    "fk": "Permisos"
+                }
+            ]
+        },
+        {
+            "nombre": "RutasFabricacion",
+            "x": 410,
+            "y": 3440,
+            "campos": [
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "version",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "activa",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Sedes",
+            "x": 740,
+            "y": 3440,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "direccion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "SolicitudesCompra",
+            "x": 1070,
+            "y": 3440,
+            "campos": [
+                {
+                    "nombre": "proveedor",
+                    "tipo": "INTEGER",
+                    "fk": "Proveedores"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "TareasProyecto",
+            "x": 1400,
+            "y": 3440,
+            "campos": [
+                {
+                    "nombre": "proyecto",
+                    "tipo": "INTEGER",
+                    "fk": "Proyectos"
+                },
+                {
+                    "nombre": "responsable",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "titulo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Tarifas",
+            "x": 1730,
+            "y": 3440,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_inicio",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha_fin",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "TarifasLineas",
+            "x": 2060,
+            "y": 3440,
+            "campos": [
+                {
+                    "nombre": "tarifa",
+                    "tipo": "INTEGER",
+                    "fk": "Tarifas"
+                },
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "precio",
+                    "tipo": "REAL",
+                    "fk": null
+                },
+                {
+                    "nombre": "descuento",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "TicketsSoporte",
+            "x": 2390,
+            "y": 3440,
+            "campos": [
+                {
+                    "nombre": "cliente",
+                    "tipo": "INTEGER",
+                    "fk": "Clientes"
+                },
+                {
+                    "nombre": "responsable",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "asunto",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "estado",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "TiposCambio",
+            "x": 80,
+            "y": 3860,
+            "campos": [
+                {
+                    "nombre": "moneda_origen",
+                    "tipo": "INTEGER",
+                    "fk": "Monedas"
+                },
+                {
+                    "nombre": "moneda_destino",
+                    "tipo": "INTEGER",
+                    "fk": "Monedas"
+                },
+                {
+                    "nombre": "fecha",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "cambio",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "TiposIVA",
+            "x": 410,
+            "y": 3860,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "porcentaje",
+                    "tipo": "REAL",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Transportistas",
+            "x": 740,
+            "y": 3860,
+            "campos": [
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "telefono",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "UbicacionesAlmacen",
+            "x": 1070,
+            "y": 3860,
+            "campos": [
+                {
+                    "nombre": "almacen",
+                    "tipo": "INTEGER",
+                    "fk": "Almacenes"
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "UnidadesMedida",
+            "x": 1400,
+            "y": 3860,
+            "campos": [
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "nombre",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "simbolo",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "Usuarios",
+            "x": 1730,
+            "y": 3860,
+            "campos": [
+                {
+                    "nombre": "empresa",
+                    "tipo": "INTEGER",
+                    "fk": "Empresas"
+                },
+                {
+                    "nombre": "empleado",
+                    "tipo": "INTEGER",
+                    "fk": "Empleados"
+                },
+                {
+                    "nombre": "nombre_usuario",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "email",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "activo",
+                    "tipo": "INTEGER",
+                    "fk": null
+                }
+            ]
+        },
+        {
+            "nombre": "UsuariosRoles",
+            "x": 2060,
+            "y": 3860,
+            "campos": [
+                {
+                    "nombre": "usuario",
+                    "tipo": "INTEGER",
+                    "fk": "Usuarios"
+                },
+                {
+                    "nombre": "rol",
+                    "tipo": "INTEGER",
+                    "fk": "Roles"
+                }
+            ]
+        },
+        {
+            "nombre": "VariantesProducto",
+            "x": 2390,
+            "y": 3860,
+            "campos": [
+                {
+                    "nombre": "producto",
+                    "tipo": "INTEGER",
+                    "fk": "Productos"
+                },
+                {
+                    "nombre": "unidad",
+                    "tipo": "INTEGER",
+                    "fk": "UnidadesMedida"
+                },
+                {
+                    "nombre": "tipo_iva",
+                    "tipo": "INTEGER",
+                    "fk": "TiposIVA"
+                },
+                {
+                    "nombre": "codigo",
+                    "tipo": "TEXT",
+                    "fk": null
+                },
+                {
+                    "nombre": "descripcion",
+                    "tipo": "TEXT",
+                    "fk": null
+                }
+            ]
+        }
+    ]
+}

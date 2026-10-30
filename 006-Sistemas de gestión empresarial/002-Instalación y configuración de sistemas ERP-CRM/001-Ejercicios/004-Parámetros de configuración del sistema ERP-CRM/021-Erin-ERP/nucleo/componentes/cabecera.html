@@ -1,0 +1,46 @@
+<div class="marca">
+  <a class="logotipo" href="index.html" aria-label="ERIN, inicio">ER<span class="letra-i">I</span>N</a>
+  <small>Ecosistema de Recursos,<br>Información y Negocio</small>
+</div>
+
+<div class="herramientas">
+  <label for="buscar">Buscar</label>
+  <input class="buscador" id="buscar" type="search" placeholder="Buscar en ERIN…" disabled>
+</div>
+
+<div class="usuario">
+  <div class="avatar" aria-hidden="true"></div>
+  <div>
+    <p>Usuario</p>
+    <a href="instalacion/disenador.php">Modelo de datos</a>
+    <a href="configuracion.php">Opciones</a>
+  </div>
+</div>
+
+<script>
+  let buscadorErin = document.querySelector("#buscar");
+
+  function normalizarBusqueda(texto){
+    return texto
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  buscadorErin.addEventListener("input", function(){
+    let busqueda = normalizarBusqueda(buscadorErin.value.trim());
+
+    document.querySelectorAll(".fila-registro-crud").forEach(function(fila){
+      let contenido = normalizarBusqueda(fila.dataset.busqueda || "");
+      fila.hidden = busqueda != "" && !contenido.includes(busqueda);
+    });
+  });
+
+  document.addEventListener("erin:estado-crud", function(evento){
+    buscadorErin.value = "";
+    buscadorErin.disabled = !evento.detail.buscable;
+    buscadorErin.placeholder = evento.detail.buscable
+      ? "Buscar en " + evento.detail.etiqueta + "…"
+      : "Búsqueda disponible en el listado";
+  });
+</script>

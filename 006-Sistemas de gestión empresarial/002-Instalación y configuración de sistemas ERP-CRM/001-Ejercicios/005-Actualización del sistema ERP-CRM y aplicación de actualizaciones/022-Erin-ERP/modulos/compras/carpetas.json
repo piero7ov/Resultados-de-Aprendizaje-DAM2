@@ -1,0 +1,11 @@
+{
+  "modulo": "compras",
+  "activo": true,
+  "tablas": [
+    "categorias",
+    "productos",
+    "proveedores",
+    "compras",
+    "compras_lineas"
+  ]
+}

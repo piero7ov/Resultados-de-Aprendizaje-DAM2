@@ -1,0 +1,14 @@
+{
+  "modulo": "rrhh",
+  "tablas": [
+    "Departamentos",
+    "Empleados",
+    "Contratos",
+    "Fichajes",
+    "Ausencias",
+    "Nominas",
+    "Formaciones",
+    "EmpleadosFormaciones",
+    "PartesHoras"
+  ]
+}

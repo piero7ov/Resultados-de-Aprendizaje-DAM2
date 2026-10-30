@@ -1,0 +1,23 @@
+<div>
+  <strong>Erin-ERP</strong>
+  <span>Sistema ERP</span>
+</div>
+
+<div>
+  <a class="enlace-pie" href="verificacion.html">Verificar entorno</a>
+</div>
+
+<div>
+  <span id="usuario-pie">Usuario</span>
+</div>
+
+<script>
+  fetch("api/acceso.php")
+    .then(respuesta => respuesta.json())
+    .then(datos => {
+      if(datos.usuario){
+        document.querySelector("#usuario-pie").textContent =
+          datos.usuario.nombre + " · " + (datos.usuario.administrador ? "Administrador" : "Usuario");
+      }
+    });
+</script>

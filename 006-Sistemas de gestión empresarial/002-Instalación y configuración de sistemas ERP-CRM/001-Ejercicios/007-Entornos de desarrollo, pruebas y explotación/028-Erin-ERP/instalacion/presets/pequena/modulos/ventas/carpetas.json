@@ -1,0 +1,10 @@
+{
+  "modulo": "ventas",
+  "activo": true,
+  "tablas": [
+    "clientes",
+    "pedidos",
+    "pedidos_lineas",
+    "facturas"
+  ]
+}

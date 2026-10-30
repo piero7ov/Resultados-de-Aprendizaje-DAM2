@@ -1,0 +1,326 @@
+<script>
+  function solicitarJson(url, opciones){
+    return fetch(url, opciones)
+    .then(function(respuesta){
+      return respuesta.json().then(function(datos){
+        if(!respuesta.ok){
+          throw new Error(datos.debug || datos.error || "La operación no se ha completado");
+        }
+
+        return datos;
+      });
+    });
+  }
+
+  function crearBotonCrud(texto, accion, secundario){
+    let boton = document.createElement("button");
+    boton.setAttribute("type", "button");
+    boton.setAttribute("class", secundario ? "boton boton-secundario" : "boton");
+    boton.textContent = texto;
+    boton.onclick = accion;
+    return boton;
+  }
+
+  function crearCabeceraCrud(tabla, operacion, recuento){
+    let cabecera = document.createElement("div");
+    cabecera.setAttribute("class", "cabecera-listado cabecera-crud");
+
+    let contexto = document.createElement("div");
+    contexto.setAttribute("class", "contexto-crud");
+
+    let titulo = document.createElement("h1");
+    titulo.textContent = tabla;
+
+    let estado = document.createElement("p");
+    estado.setAttribute("class", "operacion-crud");
+    estado.textContent = operacion;
+
+    contexto.appendChild(titulo);
+    contexto.appendChild(estado);
+    cabecera.appendChild(contexto);
+
+    if(recuento !== null){
+      let total = document.createElement("span");
+      total.setAttribute("class", "recuento");
+      total.textContent = recuento + " registros";
+      cabecera.appendChild(total);
+    }
+
+    return cabecera;
+  }
+
+  function mostrarErrorCrud(tabla, error){
+    let principal = document.querySelector("main");
+    principal.innerHTML = "";
+
+    let listado = document.createElement("div");
+    listado.setAttribute("class", "listado");
+    listado.appendChild(crearCabeceraCrud(tabla || "ERIN ERP", "No se ha podido completar", null));
+
+    let mensaje = document.createElement("p");
+    mensaje.setAttribute("class", "mensaje-crud mensaje-error");
+    mensaje.textContent = error.message || error;
+
+    listado.appendChild(mensaje);
+    principal.appendChild(listado);
+  }
+
+  function cargarListadoCrud(tabla, mensajeCorrecto){
+    solicitarJson("api/api.php?bloque=tabla&tabla=" + encodeURIComponent(tabla))
+    .then(function(datos){
+      let principal = document.querySelector("main");
+      principal.innerHTML = "";
+
+      let listado = document.createElement("div");
+      listado.setAttribute("class", "listado");
+
+      let cabecera = crearCabeceraCrud(
+        datos.tabla,
+        "Listado de registros",
+        datos.contenido.length
+      );
+
+      let acciones = document.createElement("div");
+      acciones.setAttribute("class", "acciones-crud");
+      acciones.appendChild(crearBotonCrud(
+        "Ver listado",
+        function(){ cargarListadoCrud(tabla); },
+        true
+      ));
+      acciones.appendChild(crearBotonCrud(
+        "Añadir registro",
+        function(){ cargarFormularioCrud(tabla, "insertar"); },
+        false
+      ));
+      cabecera.appendChild(acciones);
+      listado.appendChild(cabecera);
+
+      if(mensajeCorrecto){
+        let mensaje = document.createElement("p");
+        mensaje.setAttribute("class", "mensaje-crud mensaje-correcto");
+        mensaje.textContent = mensajeCorrecto;
+        listado.appendChild(mensaje);
+      }
+
+      let contenedor = document.createElement("div");
+      contenedor.setAttribute("class", "tabla-contenedor");
+
+      let tablaHtml = document.createElement("table");
+      let cabeceraTabla = document.createElement("thead");
+      let filaCabecera = document.createElement("tr");
+
+      datos.estructura.forEach(function(campo){
+        let th = document.createElement("th");
+        th.textContent = campo.name;
+        filaCabecera.appendChild(th);
+      });
+
+      let thAcciones = document.createElement("th");
+      thAcciones.textContent = "Acciones";
+      filaCabecera.appendChild(thAcciones);
+      cabeceraTabla.appendChild(filaCabecera);
+      tablaHtml.appendChild(cabeceraTabla);
+
+      let cuerpo = document.createElement("tbody");
+
+      datos.contenido.forEach(function(registro){
+        let fila = document.createElement("tr");
+
+        datos.estructura.forEach(function(campo){
+          let celda = document.createElement("td");
+          celda.textContent = registro[campo.name] ?? "";
+          fila.appendChild(celda);
+        });
+
+        let celdaAcciones = document.createElement("td");
+        celdaAcciones.setAttribute("class", "acciones-fila");
+        celdaAcciones.appendChild(crearBotonCrud(
+          "Editar",
+          function(){
+            cargarFormularioCrud(tabla, "actualizar", registro.Identificador);
+          },
+          true
+        ));
+        celdaAcciones.appendChild(crearBotonCrud(
+          "Eliminar",
+          function(){
+            eliminarRegistroCrud(tabla, registro.Identificador);
+          },
+          false
+        ));
+        fila.appendChild(celdaAcciones);
+        cuerpo.appendChild(fila);
+      });
+
+      tablaHtml.appendChild(cuerpo);
+      contenedor.appendChild(tablaHtml);
+      listado.appendChild(contenedor);
+      principal.appendChild(listado);
+    })
+    .catch(function(error){
+      mostrarErrorCrud(tabla, error);
+    });
+  }
+
+  function tipoControlCrud(campo){
+    let nombre = campo.name.toLowerCase();
+    let tipo = campo.type.toUpperCase();
+
+    if(nombre.includes("email")){
+      return "email";
+    }
+
+    if(nombre.includes("fecha")){
+      return "date";
+    }
+
+    if(tipo == "INTEGER" || tipo == "REAL" || tipo == "NUMERIC"){
+      return "number";
+    }
+
+    return "text";
+  }
+
+  function dibujarFormularioCrud(tabla, operacion, estructura, registro){
+    let principal = document.querySelector("main");
+    principal.innerHTML = "";
+
+    let listado = document.createElement("div");
+    listado.setAttribute("class", "listado");
+
+    let tituloOperacion = operacion == "insertar" ? "Nuevo registro" : "Editar registro";
+    let cabecera = crearCabeceraCrud(tabla, tituloOperacion, null);
+
+    let acciones = document.createElement("div");
+    acciones.setAttribute("class", "acciones-crud");
+    acciones.appendChild(crearBotonCrud(
+      "Ver listado",
+      function(){ cargarListadoCrud(tabla); },
+      true
+    ));
+    cabecera.appendChild(acciones);
+    listado.appendChild(cabecera);
+
+    let formulario = document.createElement("form");
+    formulario.setAttribute("class", "formulario-crud");
+
+    estructura.forEach(function(campo){
+      if(campo.name == "Identificador"){
+        return;
+      }
+
+      let grupo = document.createElement("div");
+      grupo.setAttribute("class", "campo-crud");
+
+      let etiqueta = document.createElement("label");
+      etiqueta.setAttribute("for", "campo-" + campo.name);
+      etiqueta.textContent = campo.name;
+
+      let tipo = document.createElement("small");
+      tipo.textContent = campo.type || "TEXT";
+      etiqueta.appendChild(tipo);
+
+      let control = document.createElement("input");
+      control.setAttribute("id", "campo-" + campo.name);
+      control.setAttribute("name", campo.name);
+      control.setAttribute("type", tipoControlCrud(campo));
+
+      if(control.type == "number" && campo.type.toUpperCase() != "INTEGER"){
+        control.setAttribute("step", "any");
+      }
+
+      if(registro && registro[campo.name] !== null){
+        control.value = registro[campo.name];
+      }
+
+      grupo.appendChild(etiqueta);
+      grupo.appendChild(control);
+      formulario.appendChild(grupo);
+    });
+
+    let pieFormulario = document.createElement("div");
+    pieFormulario.setAttribute("class", "acciones-formulario");
+
+    let guardar = document.createElement("button");
+    guardar.setAttribute("type", "submit");
+    guardar.setAttribute("class", "boton");
+    guardar.textContent = operacion == "insertar" ? "Guardar registro" : "Guardar cambios";
+    pieFormulario.appendChild(guardar);
+    formulario.appendChild(pieFormulario);
+
+    formulario.onsubmit = function(evento){
+      evento.preventDefault();
+
+      let url = "api/api.php?bloque=" + operacion + "&tabla=" + encodeURIComponent(tabla);
+
+      if(operacion == "actualizar"){
+        url += "&identificador=" + encodeURIComponent(registro.Identificador);
+      }
+
+      solicitarJson(url, {
+        method: "POST",
+        body: new FormData(formulario)
+      })
+      .then(function(datos){
+        cargarListadoCrud(tabla, datos.mensaje);
+      })
+      .catch(function(error){
+        mostrarErrorCrud(tabla, error);
+      });
+    };
+
+    listado.appendChild(formulario);
+    principal.appendChild(listado);
+  }
+
+  function cargarFormularioCrud(tabla, operacion, identificador){
+    if(operacion == "insertar"){
+      solicitarJson("api/api.php?bloque=tabla&tabla=" + encodeURIComponent(tabla))
+      .then(function(datos){
+        dibujarFormularioCrud(tabla, operacion, datos.estructura, null);
+      })
+      .catch(function(error){
+        mostrarErrorCrud(tabla, error);
+      });
+      return;
+    }
+
+    solicitarJson(
+      "api/api.php?bloque=registro&tabla=" + encodeURIComponent(tabla) +
+      "&identificador=" + encodeURIComponent(identificador)
+    )
+    .then(function(datos){
+      dibujarFormularioCrud(tabla, operacion, datos.estructura, datos.registro);
+    })
+    .catch(function(error){
+      mostrarErrorCrud(tabla, error);
+    });
+  }
+
+  function eliminarRegistroCrud(tabla, identificador){
+    if(!confirm("¿Quieres eliminar el registro " + identificador + " de " + tabla + "?")){
+      return;
+    }
+
+    solicitarJson(
+      "api/api.php?bloque=eliminar&tabla=" + encodeURIComponent(tabla) +
+      "&identificador=" + encodeURIComponent(identificador),
+      {method: "POST"}
+    )
+    .then(function(datos){
+      cargarListadoCrud(tabla, datos.mensaje);
+    })
+    .catch(function(error){
+      mostrarErrorCrud(tabla, error);
+    });
+  }
+
+  window.cargarCrud = function(tabla, operacion, identificador){
+    if(operacion == "insertar" || operacion == "actualizar"){
+      cargarFormularioCrud(tabla, operacion, identificador);
+      return;
+    }
+
+    cargarListadoCrud(tabla);
+  };
+</script>

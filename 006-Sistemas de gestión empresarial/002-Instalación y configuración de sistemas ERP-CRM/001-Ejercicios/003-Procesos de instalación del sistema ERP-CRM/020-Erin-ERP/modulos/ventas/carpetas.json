@@ -1,0 +1,15 @@
+{
+  "modulo": "ventas",
+  "tablas": [
+    "Clientes",
+    "Contactos",
+    "Presupuestos",
+    "DetallesPresupuestos",
+    "Pedidos",
+    "DetallesPedidos",
+    "Devoluciones",
+    "Productos",
+    "Tarifas",
+    "TarifasLineas"
+  ]
+}

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERIN ERP</title>
+    <link rel="stylesheet" href="nucleo/estilo/general.css">
+  </head>
+  <body>
+    <header data-include="nucleo/componentes/cabecera.html"></header>
+    <div id="crud" data-include="nucleo/componentes/crud.html"></div>
+    <section class="estructura">
+      <nav id="modulos" aria-label="Módulos" data-include="nucleo/componentes/modulos.html"></nav>
+      <nav id="menu" aria-label="Tablas" data-include="nucleo/componentes/menu.html"></nav>
+      <main id="aplicacion"></main>
+    </section>
+    <footer data-include="nucleo/componentes/piedepagina.html"></footer>
+    <script>
+      fetch("api/api.php?bloque=estado")
+      .then(function(respuesta){
+        if(!respuesta.ok){
+          throw new Error("No se ha podido comprobar el estado de ERIN");
+        }
+
+        return respuesta.json();
+      })
+      .then(function(datos){
+        if(!datos.instalado){
+          window.location.replace("instalacion/instalar.php");
+          return;
+        }
+
+        let cargador = document.createElement("script");
+        cargador.setAttribute("src", "nucleo/js/incluir.js?v=021-configuracion");
+        document.body.appendChild(cargador);
+      })
+      .catch(function(error){
+        document.querySelector("main").textContent = error.message;
+      });
+    </script>
+  </body>
+</html>

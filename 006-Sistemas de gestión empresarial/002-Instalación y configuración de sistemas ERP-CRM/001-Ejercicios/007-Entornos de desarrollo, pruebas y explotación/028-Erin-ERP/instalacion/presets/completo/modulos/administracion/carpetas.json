@@ -1,0 +1,17 @@
+{
+  "modulo": "administracion",
+  "tablas": [
+    "Empresas",
+    "Sedes",
+    "Usuarios",
+    "UsuariosRoles",
+    "Roles",
+    "RolesPermisos",
+    "Permisos",
+    "Paises",
+    "Provincias",
+    "Monedas",
+    "TiposCambio",
+    "FormasPago"
+  ]
+}

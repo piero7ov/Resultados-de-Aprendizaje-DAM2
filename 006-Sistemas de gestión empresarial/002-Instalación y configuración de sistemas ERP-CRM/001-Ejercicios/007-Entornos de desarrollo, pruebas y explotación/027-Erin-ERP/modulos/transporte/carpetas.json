@@ -1,0 +1,10 @@
+{
+    "modulo": "transporte",
+    "activo": true,
+    "tablas": [
+        "compras",
+        "pedidos",
+        "productos",
+        "proveedores"
+    ]
+}

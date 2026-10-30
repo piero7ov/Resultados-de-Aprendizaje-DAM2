@@ -1,0 +1,14 @@
+{
+  "modulo": "almacen",
+  "tablas": [
+    "Almacenes",
+    "UbicacionesAlmacen",
+    "Existencias",
+    "MovimientosInventario",
+    "Lotes",
+    "Inventarios",
+    "InventariosLineas",
+    "Productos",
+    "VariantesProducto"
+  ]
+}
